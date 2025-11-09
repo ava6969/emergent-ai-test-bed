@@ -92,6 +92,11 @@ class APIClient {
     return response.data;
   }
 
+  async deleteAllPersonas() {
+    const response = await this.client.delete('/api/personas');
+    return response.data;
+  }
+
   async getGoals(filters = {}) {
     const response = await this.client.get('/api/goals', { params: filters });
     return response.data;
