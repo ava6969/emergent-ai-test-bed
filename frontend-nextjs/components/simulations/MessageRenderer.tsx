@@ -108,13 +108,37 @@ export function MessageRenderer({ message }: MessageRendererProps) {
   }
 
   // Regular text message
+  // Check if content is JSON string or object
+  if (typeof message.content !== 'string') {
+    // Non-string content - render as JSON
+    return (
+      <div className="border rounded-lg overflow-hidden bg-gray-50 border-gray-200 p-3">
+        <JsonViewer data={message.content} />
+      </div>
+    );
+  }
+
+  // Try to parse as JSON
+  let jsonData: any = null;
+  try {
+    jsonData = JSON.parse(message.content);
+  } catch {
+    // Not JSON, render as markdown
+  }
+
+  if (jsonData !== null) {
+    // Content is a JSON string - render with JsonViewer
+    return (
+      <div className="border rounded-lg overflow-hidden bg-gray-50 border-gray-200 p-3">
+        <JsonViewer data={jsonData} />
+      </div>
+    );
+  }
+
+  // Regular markdown content
   return (
     <div className="prose prose-sm max-w-none text-gray-700">
-      <ReactMarkdown>
-        {typeof message.content === 'string'
-          ? message.content
-          : JSON.stringify(message.content, null, 2)}
-      </ReactMarkdown>
+      <ReactMarkdown>{message.content}</ReactMarkdown>
     </div>
   );
 }
