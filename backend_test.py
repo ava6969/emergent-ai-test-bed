@@ -247,8 +247,32 @@ def test_simulation_functionality():
         
         if poll_count >= max_polls:
             print(f"\n⏰ Polling timeout after {max_polls * poll_interval} seconds")
-            print("   This is OK - simulations can take 30-60+ seconds")
-            test_results.append(("Simulation Polling", "PASS", f"Polled {poll_count} times, still running (expected)"))
+            print("   With max_turns=2, simulation should complete faster")
+            print("   Checking final status...")
+            
+            # One final check
+            try:
+                final_response = requests.get(f"{BACKEND_URL}/simulations/{simulation_id}")
+                if final_response.status_code == 200:
+                    final_data = final_response.json()
+                    final_status = final_data.get("status")
+                    final_turns = final_data.get("current_turn", 0)
+                    final_trajectory = final_data.get("trajectory", [])
+                    
+                    print(f"   Final Status: {final_status}")
+                    print(f"   Final Turns: {final_turns}")
+                    print(f"   Final Messages: {len(final_trajectory)}")
+                    
+                    if final_status == "completed":
+                        print(f"   ✅ Simulation completed after timeout")
+                        test_results.append(("Simulation Completion", "PASS", f"Completed after {poll_count} polls"))
+                    else:
+                        print(f"   ⚠️  Simulation still {final_status} after timeout")
+                        test_results.append(("Simulation Polling", "TIMEOUT", f"Still {final_status} after {poll_count} polls"))
+                else:
+                    test_results.append(("Simulation Polling", "TIMEOUT", f"Could not check final status"))
+            except Exception as e:
+                test_results.append(("Simulation Polling", "TIMEOUT", f"Exception checking final status: {e}"))
     
     else:
         print("⚠️  No simulation_id available, testing with fake ID...")
