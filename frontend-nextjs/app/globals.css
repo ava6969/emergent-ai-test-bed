@@ -110,21 +110,21 @@ body::before {
 
 /* Linear-style inputs */
 input, textarea, select {
-  background: var(--bg-secondary);
+  background: var(--input);
   border: 1px solid var(--border);
-  color: var(--primary);
+  color: var(--foreground);
   transition: all 0.2s ease;
 }
 
 input:focus, textarea:focus, select:focus {
   outline: none;
-  border-color: var(--border-light);
-  box-shadow: 0 0 0 3px var(--glow);
-  background: var(--bg-tertiary);
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+  background: var(--muted);
 }
 
 input::placeholder {
-  color: var(--secondary);
+  color: var(--muted-foreground);
 }
 
 /* Button styles */
