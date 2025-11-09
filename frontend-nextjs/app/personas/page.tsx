@@ -266,7 +266,7 @@ export default function PersonasPage() {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => {/* TODO: Open settings modal */}}
+            onClick={() => setSettingsOpen(true)}
             disabled={isGenerating}
           >
             <Settings className="h-5 w-5" />
