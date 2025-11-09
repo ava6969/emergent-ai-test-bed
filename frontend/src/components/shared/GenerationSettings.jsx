@@ -126,10 +126,10 @@ export function GenerationSettings({ open, onClose, type }) {
           </div>
 
           {/* Exa Enrichment */}
-          <div className="flex items-center justify-between rounded-lg border p-4">
-            <div className="space-y-0.5">
-              <Label>Use Exa.ai Enrichment</Label>
-              <p className="text-sm text-muted-foreground">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between rounded-lg border p-3 sm:p-4 gap-3 sm:gap-0">
+            <div className="space-y-0.5 flex-1">
+              <Label className="text-sm sm:text-base">Use Exa.ai Enrichment</Label>
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 Add real-world context from web search
               </p>
             </div>
@@ -138,13 +138,14 @@ export function GenerationSettings({ open, onClose, type }) {
               onCheckedChange={(checked) =>
                 setSettings({ ...settings, use_exa_enrichment: checked })
               }
+              className="self-end sm:self-auto"
             />
           </div>
 
           {/* Exa Results Count */}
           {settings.use_exa_enrichment && (
             <div className="space-y-2">
-              <Label>Exa Results Count</Label>
+              <Label className="text-sm sm:text-base">Exa Results Count</Label>
               <Input
                 type="number"
                 value={settings.exa_results_count}
@@ -156,6 +157,7 @@ export function GenerationSettings({ open, onClose, type }) {
                 }
                 min={1}
                 max={10}
+                className="text-base"
               />
               <p className="text-xs text-muted-foreground">
                 Number of web results to fetch for context
@@ -165,13 +167,14 @@ export function GenerationSettings({ open, onClose, type }) {
 
           {/* Organization Context */}
           <div className="space-y-2">
-            <Label>Organization ID (Optional)</Label>
+            <Label className="text-sm sm:text-base">Organization ID (Optional)</Label>
             <Input
               value={settings.organization_id}
               onChange={(e) =>
                 setSettings({ ...settings, organization_id: e.target.value })
               }
               placeholder="e.g., tech_corp"
+              className="text-base"
             />
             <p className="text-xs text-muted-foreground">
               Link generated item to an organization
