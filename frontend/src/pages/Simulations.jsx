@@ -3,7 +3,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
-import { Play, StopCircle, Clock, Target, User, MessageSquare } from 'lucide-react';
+import { Play, StopCircle, Clock, Target, User, MessageSquare, Sparkles } from 'lucide-react';
 import { apiClient } from '../lib/api/client';
 import { useToast } from '../hooks/use-toast';
 
