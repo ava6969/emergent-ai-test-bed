@@ -1,0 +1,37 @@
+agent_ids:
+- '1'
+evaluators:
+- correctness
+- hallucination
+- conciseness
+generated_with_real_context: false
+id: stat_arbitrage_001_v2
+initial_prompt: Can you assist me in optimizing a statistical arbitrage strategy using
+  the last 3 years of S&P 500 equity data, focusing on the latest 3 months for performance
+  evaluation?
+max_turns: 5
+metadata:
+  complexity: medium
+  data_sources: daily OHLCV data from S&P 500 constituents
+  difficulty: medium
+  overall_goal: Optimize a trading strategy for better performance
+  quantitative_metrics: sharpe_ratio, max_drawdown, win_rate, information_ratio
+  scenario_type: strategy optimization
+  timeframes: last 3 years for in-sample, last 3 months for out-of-sample
+name: Statistical Arbitrage Strategy Optimization
+objective: Develop a statistical arbitrage trading strategy for U.S. equities utilizing
+  daily OHLCV data from the S&P 500 constituents over the last 3 years (approx. 750
+  trading days) and optimize it for performance metrics on the latest 3-month out-of-sample
+  period.
+simulation_mode: false
+success_criteria: "- Generate a portfolio with 20-30 equity positions\n- Achieve an\
+  \ annualized Sharpe ratio \u2265 1.2 using daily net returns with the risk-free\
+  \ rate set to SOFR\n- Maintain a maximum drawdown \u2264 15% on the net-of-costs\
+  \ equity curve\n- Win rate of closed trades \u2265 55%\n- Information ratio \u2265\
+  \ 0.75, calculated against the S&P 500 Total Return Index\n- Provide a comprehensive\
+  \ backtest report that includes monthly return tables, risk metrics (VaR at 1-day\
+  \ 95% historical), beta vs. S&P 500, volatility, turnover, and a parameter sensitivity\
+  \ analysis.\n- Ensure all trades are executed with transaction costs of 2 bps per\
+  \ side and 1 bp slippage, and include short borrow costs of 1% annually, with a\
+  \ minimum average daily volume (ADV) of $20M and stock price > $5."
+test_cases: []
