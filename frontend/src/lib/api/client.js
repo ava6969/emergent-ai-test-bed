@@ -51,13 +51,58 @@ class APIClient {
     return response.data;
   }
 
+  async createPersona(data) {
+    const response = await this.client.post('/api/personas', data);
+    return response.data;
+  }
+
+  async updatePersona(id, data) {
+    const response = await this.client.put(`/api/personas/${id}`, data);
+    return response.data;
+  }
+
+  async deletePersona(id) {
+    const response = await this.client.delete(`/api/personas/${id}`);
+    return response.data;
+  }
+
   async getGoals(filters = {}) {
     const response = await this.client.get('/api/goals', { params: filters });
     return response.data;
   }
 
+  async createGoal(data) {
+    const response = await this.client.post('/api/goals', data);
+    return response.data;
+  }
+
+  async updateGoal(id, data) {
+    const response = await this.client.put(`/api/goals/${id}`, data);
+    return response.data;
+  }
+
+  async deleteGoal(id) {
+    const response = await this.client.delete(`/api/goals/${id}`);
+    return response.data;
+  }
+
   async getOrganizations() {
     const response = await this.client.get('/api/organizations');
+    return response.data;
+  }
+
+  async createOrganization(data) {
+    const response = await this.client.post('/api/organizations', data);
+    return response.data;
+  }
+
+  async updateOrganization(id, data) {
+    const response = await this.client.put(`/api/organizations/${id}`, data);
+    return response.data;
+  }
+
+  async deleteOrganization(id) {
+    const response = await this.client.delete(`/api/organizations/${id}`);
     return response.data;
   }
 
