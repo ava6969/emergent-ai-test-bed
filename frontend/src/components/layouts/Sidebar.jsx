@@ -1,20 +1,16 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import {
-  MessageSquare,
-  Library,
-  PlayCircle,
-  BarChart3,
-  Settings,
+  Users,
+  Target,
+  Building2,
   Sparkles,
 } from 'lucide-react';
 
 const navigation = [
-  { name: 'AI Chat', href: '#', icon: MessageSquare, active: true },
-  { name: 'Library', href: '#', icon: Library },
-  { name: 'Simulations', href: '#', icon: PlayCircle },
-  { name: 'Analytics', href: '#', icon: BarChart3 },
-  { name: 'Settings', href: '#', icon: Settings },
+  { name: 'Personas', page: 'personas', icon: Users },
+  { name: 'Goals', page: 'goals', icon: Target },
+  { name: 'Organizations', page: 'organizations', icon: Building2 },
 ];
 
 export function Sidebar() {
