@@ -103,7 +103,6 @@ export function EvaluateTab({ threadId, messages }: EvaluateTabProps) {
         thread_id: threadId,
         evaluators: selectedEvaluators,
         model,
-        dataset_name: datasetName || undefined,
       });
 
       setResults(evalResults);
