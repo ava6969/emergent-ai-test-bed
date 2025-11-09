@@ -1118,26 +1118,20 @@ async def run_simulation(
 async def run_simulation_background(sim_id: str, persona_id: str, goal_id: str, max_turns: Optional[int]):
     """Background task for running simulation with real-time updates"""
     try:
-        # This will be called for trajectory updates
-        def trajectory_callback(turn: int, messages: List[Dict]):
-            update_simulation_session(
-                simulation_id=sim_id,
-                current_turn=turn,
-                new_messages=messages
-            )
-        
         # Run simulation (this is blocking and takes time)
-        result = await simulation_engine.run_simulation(
+        result = await simulation_engine.run(
             persona_id=persona_id,
             goal_id=goal_id,
             max_turns=max_turns,
             use_persona_memory=False
         )
         
-        # Update with final result
+        # Update with final result including trajectory
         update_simulation_session(
             simulation_id=sim_id,
             status="completed",
+            current_turn=result.turns,
+            new_messages=result.trajectory,
             goal_achieved=result.goal_achieved
         )
         
