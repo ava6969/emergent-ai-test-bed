@@ -250,7 +250,6 @@ async def run_persona_generation(job_id: str, request: GeneratePersonaRequest):
         
         # Stage 1: Preparing
         update_job(job_id, status="running", stage="Preparing generation", progress=10)
-        await asyncio.sleep(0.2)
         
         # Update generator config if custom settings provided
         if request.model != "gpt-4o-mini" or request.temperature != 0.7 or request.max_tokens != 1500:
@@ -261,12 +260,10 @@ async def run_persona_generation(job_id: str, request: GeneratePersonaRequest):
                 max_tokens=request.max_tokens
             )
             persona_manager.generator = type(persona_manager.generator)(config=custom_config)
-            await asyncio.sleep(0.1)
         
         # Stage 2: Organization context (if applicable)
         if request.organization_id:
             update_job(job_id, stage="Loading organization context", progress=20)
-            await asyncio.sleep(0.3)
         
         # Actual generation
         import time
@@ -275,7 +272,6 @@ async def run_persona_generation(job_id: str, request: GeneratePersonaRequest):
         # Stage 3: Exa enrichment (if enabled) - happens during generation
         if request.use_exa_enrichment:
             update_job(job_id, stage=f"🔍 Searching Exa.ai for: '{description[:50]}...'", progress=25)
-            await asyncio.sleep(0.2)
         
         try:
             personas = await persona_manager.generate(
