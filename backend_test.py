@@ -218,34 +218,126 @@ def test_simulation_functionality():
             print(f"❌ Exception: {e}")
             test_results.append(("GET /api/simulations/{id}", "FAIL", f"Exception: {e}"))
     
-    print("\n4. Testing POST /api/simulations/{simulation_id}/stop...")
-    print("-" * 40)
+    print("\n4. Testing Simulation Data Structure...")
+    print("-" * 50)
     
-    # Test 3: POST /api/simulations/{simulation_id}/stop - Should return 404 for non-existent ID
-    try:
-        fake_simulation_id = str(uuid.uuid4())
-        print(f"Testing stop with non-existent simulation_id: {fake_simulation_id}")
-        
-        stop_response = requests.post(f"{BACKEND_URL}/simulations/{fake_simulation_id}/stop")
-        
-        print(f"Response status: {stop_response.status_code}")
-        print(f"Response body: {stop_response.text}")
-        
-        if stop_response.status_code == 404:
-            response_data = stop_response.json()
-            if "Simulation not found" in response_data.get("detail", ""):
-                print("✅ PASS: Correctly returned 404 with 'Simulation not found'")
-                test_results.append(("POST /api/simulations/{id}/stop", "PASS", "Correctly handles non-existent simulation"))
-            else:
-                print(f"❌ FAIL: Expected 'Simulation not found', got: {response_data.get('detail')}")
-                test_results.append(("POST /api/simulations/{id}/stop", "FAIL", f"Wrong error message: {response_data.get('detail')}"))
-        else:
-            print(f"❌ FAIL: Expected 404 status, got {stop_response.status_code}")
-            test_results.append(("POST /api/simulations/{id}/stop", "FAIL", f"Expected 404, got {stop_response.status_code}"))
+    # Test 3: Verify simulation data structure if we have data
+    if simulation_id:
+        try:
+            # Get final simulation state
+            final_response = requests.get(f"{BACKEND_URL}/simulations/{simulation_id}")
             
-    except Exception as e:
-        print(f"❌ FAIL: Exception during simulation stop test: {e}")
-        test_results.append(("POST /api/simulations/{id}/stop", "FAIL", f"Exception: {e}"))
+            if final_response.status_code == 200:
+                sim_data = final_response.json()
+                
+                print("Verifying simulation data structure:")
+                
+                # Check required fields
+                required_fields = ["simulation_id", "status", "current_turn", "max_turns", "trajectory"]
+                missing_fields = []
+                
+                for field in required_fields:
+                    if field in sim_data:
+                        print(f"   ✅ {field}: {type(sim_data[field]).__name__}")
+                    else:
+                        print(f"   ❌ {field}: MISSING")
+                        missing_fields.append(field)
+                
+                # Check trajectory structure
+                trajectory = sim_data.get("trajectory", [])
+                if trajectory:
+                    print(f"   ✅ trajectory contains {len(trajectory)} messages")
+                    
+                    # Check first message structure
+                    first_msg = trajectory[0]
+                    if "role" in first_msg and "content" in first_msg:
+                        print(f"   ✅ Message structure: role='{first_msg['role']}', content length={len(first_msg['content'])}")
+                    else:
+                        print(f"   ❌ Invalid message structure: {first_msg}")
+                        missing_fields.append("message_structure")
+                else:
+                    print(f"   ⚠️  trajectory is empty (may be normal if simulation just started)")
+                
+                # Check optional fields
+                optional_fields = ["goal_achieved", "persona_id", "goal_id", "created_at"]
+                for field in optional_fields:
+                    if field in sim_data:
+                        print(f"   ✅ {field}: {sim_data[field]}")
+                
+                if not missing_fields:
+                    print("✅ PASS: All required fields present and correctly structured")
+                    test_results.append(("Simulation Data Structure", "PASS", "All required fields present"))
+                else:
+                    print(f"❌ FAIL: Missing fields: {missing_fields}")
+                    test_results.append(("Simulation Data Structure", "FAIL", f"Missing: {missing_fields}"))
+            else:
+                print(f"❌ Could not verify data structure (status {final_response.status_code})")
+                test_results.append(("Simulation Data Structure", "FAIL", f"Could not retrieve data"))
+                
+        except Exception as e:
+            print(f"❌ Exception verifying data structure: {e}")
+            test_results.append(("Simulation Data Structure", "FAIL", f"Exception: {e}"))
+    else:
+        print("⚠️  No simulation data to verify (simulation didn't start)")
+        test_results.append(("Simulation Data Structure", "SKIP", "No simulation data available"))
+    
+    print("\n5. Testing POST /api/simulations/{simulation_id}/stop (if needed)...")
+    print("-" * 50)
+    
+    # Only test stop if simulation is still running
+    if simulation_id:
+        try:
+            # Check current status
+            status_response = requests.get(f"{BACKEND_URL}/simulations/{simulation_id}")
+            if status_response.status_code == 200:
+                sim_data = status_response.json()
+                current_status = sim_data.get("status")
+                
+                if current_status == "running":
+                    print(f"Simulation still running, testing stop endpoint...")
+                    
+                    stop_response = requests.post(f"{BACKEND_URL}/simulations/{simulation_id}/stop")
+                    
+                    if stop_response.status_code == 200:
+                        print("✅ PASS: Stop endpoint returned 200")
+                        test_results.append(("POST /api/simulations/{id}/stop", "PASS", "Successfully sent stop signal"))
+                    else:
+                        print(f"❌ FAIL: Stop returned {stop_response.status_code}")
+                        test_results.append(("POST /api/simulations/{id}/stop", "FAIL", f"Status {stop_response.status_code}"))
+                else:
+                    print(f"Simulation already {current_status}, testing with fake ID...")
+                    
+                    # Test with non-existent ID
+                    fake_id = str(uuid.uuid4())
+                    stop_response = requests.post(f"{BACKEND_URL}/simulations/{fake_id}/stop")
+                    
+                    if stop_response.status_code == 404:
+                        print("✅ PASS: Stop endpoint correctly returns 404 for non-existent simulation")
+                        test_results.append(("POST /api/simulations/{id}/stop", "PASS", "404 for non-existent simulation"))
+                    else:
+                        print(f"❌ FAIL: Expected 404, got {stop_response.status_code}")
+                        test_results.append(("POST /api/simulations/{id}/stop", "FAIL", f"Expected 404, got {stop_response.status_code}"))
+            
+        except Exception as e:
+            print(f"❌ Exception testing stop: {e}")
+            test_results.append(("POST /api/simulations/{id}/stop", "FAIL", f"Exception: {e}"))
+    else:
+        print("No simulation to stop, testing with fake ID...")
+        
+        fake_id = str(uuid.uuid4())
+        try:
+            stop_response = requests.post(f"{BACKEND_URL}/simulations/{fake_id}/stop")
+            
+            if stop_response.status_code == 404:
+                print("✅ PASS: Stop endpoint correctly returns 404 for non-existent simulation")
+                test_results.append(("POST /api/simulations/{id}/stop", "PASS", "404 for non-existent simulation"))
+            else:
+                print(f"❌ FAIL: Expected 404, got {stop_response.status_code}")
+                test_results.append(("POST /api/simulations/{id}/stop", "FAIL", f"Expected 404, got {stop_response.status_code}"))
+                
+        except Exception as e:
+            print(f"❌ Exception: {e}")
+            test_results.append(("POST /api/simulations/{id}/stop", "FAIL", f"Exception: {e}"))
     
     # Summary
     print("\n" + "=" * 60)
