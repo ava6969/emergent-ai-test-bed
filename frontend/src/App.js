@@ -31,6 +31,8 @@ function App() {
         return <Products />;
       case 'organizations':
         return <Organizations />;
+      case 'simulations':
+        return <Simulations />;
       default:
         return <Personas />;
     }
