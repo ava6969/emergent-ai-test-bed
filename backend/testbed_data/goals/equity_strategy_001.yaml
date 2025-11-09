@@ -1,0 +1,44 @@
+agent_ids:
+- '1'
+- '2'
+- '3'
+evaluators:
+- correctness
+- hallucination
+- conciseness
+generated_with_real_context: false
+id: equity_strategy_001
+initial_prompt: Can you help me backtest a long-short equity strategy using the S&P
+  500 data from the last two years?
+max_turns: 5
+metadata:
+  complexity: medium
+  data_sources: daily adjusted OHLCV data from S&P 500 constituents sourced from Refinitiv/CRSP
+  difficulty: medium
+  overall_goal: Evaluate a long-short equity strategy's performance
+  product_id: 685a8109-a36a-439f-b6c8-adb1de6cc3d3
+  quantitative_metrics: sharpe_ratio, max_drawdown, win_rate
+  scenario_type: backtest
+  timeframes: January 3, 2022 to December 29, 2023
+name: Long-Short Equity Strategy Backtest
+objective: "Backtest a long-short equity strategy using daily adjusted OHLCV data\
+  \ from S&P 500 constituents point-in-time sourced from Refinitiv/CRSP for the period\
+  \ of January 3, 2022, to December 29, 2023 (2 years). The strategy aims to achieve\
+  \ a Sharpe ratio \u2265 1.0, with a maximum drawdown (MDD) \u2264 15%. The strategy\
+  \ will use a sample signal based on technical indicators such as the 50-day moving\
+  \ average crossover for entry and exit points, with a weekly rebalance frequency."
+simulation_mode: true
+success_criteria: "- Portfolio contains 20-30 positions total, with a maximum of 15\
+  \ positions on either the long or short side at each rebalance.\n- Achieves an annualized\
+  \ Sharpe ratio \u2265 1.0 (risk-free rate = 2%) based on daily returns, with Sharpe\
+  \ calculated using sqrt(252) for annualization.\n- Maximum drawdown \u2264 15% measured\
+  \ on the daily equity curve.\n- Win rate \u2265 55% measured per trade, where a\
+  \ trade is defined as a complete buy-sell cycle for a position.\n- Backtest output\
+  \ includes a detailed performance summary with a monthly returns table, risk metrics\
+  \ (1-day historical VaR at 95% confidence calculated over a trailing 252-day window,\
+  \ beta calculated against SPY using 252 daily returns), and position sizes.\n- Incorporates\
+  \ transaction costs of 5 basis points per side, with a slippage model of 5 basis\
+  \ points. Assumes a short borrow fee of 30 basis points annually for short positions.\n\
+  - Backtesting completes in \u2264 5 minutes on an S&P 500 universe using Python\
+  \ on a 4-core CPU."
+test_cases: []

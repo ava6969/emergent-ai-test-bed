@@ -1,0 +1,14 @@
+evaluation_model: gpt-5
+goal_achieved: false
+goal_id: equity_strategy_001
+id: sim_qt_001_equity_strategy_001_20251109_113922_748ab312
+max_turns: 5
+metadata: {}
+organization_id: Apex Capital
+persona_id: QT-001
+simulation_model: gpt-5
+status: pending
+thread_id: ''
+trajectory_id: traj_qt_001_equity_strategy_001_20251109_113922_fde40e79
+turns_completed: 0
+use_persona_memory: false
