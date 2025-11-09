@@ -326,11 +326,11 @@ export function Simulations() {
                                 Turn {Math.floor(idx / 2) + 1}
                               </span>
                             </div>
-                            <p className="text-sm text-gray-700">
+                            <div className="text-sm text-gray-700 whitespace-pre-wrap">
                               {typeof message.content === 'string' 
                                 ? message.content 
-                                : JSON.stringify(message.content, null, 2)}
-                            </p>
+                                : message.content?.thinking || message.content?.text || JSON.stringify(message.content, null, 2)}
+                            </div>
                           </div>
                         </div>
                       </div>
