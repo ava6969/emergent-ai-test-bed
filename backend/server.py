@@ -732,11 +732,11 @@ class ProductUpdate(BaseModel):
 @api_router.get("/products")
 async def list_products():
     """List all products using FileStorage"""
-    if not file_storage:
+    if not storage:
         raise HTTPException(status_code=500, detail="Storage not initialized")
     
     try:
-        products = await file_storage.list_products()
+        products = await storage.list_products()
         return [p.model_dump() for p in products]
     except Exception as e:
         print(f"Error listing products: {e}")
@@ -745,7 +745,7 @@ async def list_products():
 @api_router.post("/products")
 async def create_product(data: ProductCreate):
     """Create a new product"""
-    if not file_storage:
+    if not storage:
         raise HTTPException(status_code=500, detail="Storage not initialized")
     
     try:
@@ -758,7 +758,7 @@ async def create_product(data: ProductCreate):
             documents=data.documents,
             created_at=datetime.now(timezone.utc).isoformat()
         )
-        await file_storage.save_product(product)
+        await storage.save_product(product)
         return product.model_dump()
     except Exception as e:
         print(f"Error creating product: {e}")
@@ -767,11 +767,11 @@ async def create_product(data: ProductCreate):
 @api_router.put("/products/{product_id}")
 async def update_product(product_id: str, data: ProductUpdate):
     """Update a product"""
-    if not file_storage:
+    if not storage:
         raise HTTPException(status_code=500, detail="Storage not initialized")
     
     try:
-        product = await file_storage.get_product(product_id)
+        product = await storage.get_product(product_id)
         if not product:
             raise HTTPException(status_code=404, detail="Product not found")
         
@@ -785,7 +785,7 @@ async def update_product(product_id: str, data: ProductUpdate):
         if data.documents is not None:
             product.documents = data.documents
         
-        await file_storage.save_product(product)
+        await storage.save_product(product)
         return product.model_dump()
     except HTTPException:
         raise
@@ -796,11 +796,11 @@ async def update_product(product_id: str, data: ProductUpdate):
 @api_router.delete("/products/{product_id}")
 async def delete_product(product_id: str):
     """Delete a product"""
-    if not file_storage:
+    if not storage:
         raise HTTPException(status_code=500, detail="Storage not initialized")
     
     try:
-        await file_storage.delete_product(product_id)
+        await storage.delete_product(product_id)
         return {"success": True}
     except Exception as e:
         print(f"Error deleting product: {e}")
@@ -809,14 +809,14 @@ async def delete_product(product_id: str):
 @api_router.delete("/products")
 async def delete_all_products():
     """Delete all products"""
-    if not file_storage:
+    if not storage:
         raise HTTPException(status_code=500, detail="Storage not initialized")
     
     try:
-        products = await file_storage.list_products()
+        products = await storage.list_products()
         deleted_count = 0
         for product in products:
-            await file_storage.delete_product(product.id)
+            await storage.delete_product(product.id)
             deleted_count += 1
         return {"success": True, "deleted_count": deleted_count}
     except Exception as e:
