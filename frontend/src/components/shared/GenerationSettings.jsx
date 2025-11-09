@@ -82,9 +82,9 @@ export function GenerationSettings({ open, onClose, type }) {
 
           {/* Temperature */}
           <div className="space-y-2">
-            <div className="flex justify-between">
-              <Label>Temperature</Label>
-              <span className="text-sm text-muted-foreground">
+            <div className="flex justify-between items-center">
+              <Label className="text-sm sm:text-base">Temperature</Label>
+              <span className="text-xs sm:text-sm text-muted-foreground font-medium">
                 {settings.temperature}
               </span>
             </div>
@@ -96,6 +96,7 @@ export function GenerationSettings({ open, onClose, type }) {
               min={0}
               max={1}
               step={0.1}
+              className="touch-none"
             />
             <p className="text-xs text-muted-foreground">
               Higher = more creative, Lower = more focused
@@ -104,7 +105,7 @@ export function GenerationSettings({ open, onClose, type }) {
 
           {/* Max Tokens */}
           <div className="space-y-2">
-            <Label>Max Tokens</Label>
+            <Label className="text-sm sm:text-base">Max Tokens</Label>
             <Input
               type="number"
               value={settings.max_tokens}
@@ -117,6 +118,7 @@ export function GenerationSettings({ open, onClose, type }) {
               min={100}
               max={2000}
               step={50}
+              className="text-base"
             />
             <p className="text-xs text-muted-foreground">
               Maximum length of generated content
