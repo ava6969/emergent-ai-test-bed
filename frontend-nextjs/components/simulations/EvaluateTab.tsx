@@ -200,24 +200,6 @@ export function EvaluateTab({ threadId, messages }: EvaluateTabProps) {
           </select>
         </div>
 
-        {/* Dataset Name (Optional) */}
-        <div className="mb-6">
-          <Label htmlFor="dataset" className="text-sm font-medium mb-2 block">
-            Dataset Name (Optional)
-          </Label>
-          <Input
-            id="dataset"
-            type="text"
-            placeholder="e.g., trading-eval-v1"
-            value={datasetName}
-            onChange={(e) => setDatasetName(e.target.value)}
-            disabled={isRunning}
-          />
-          <p className="text-xs text-gray-500 mt-1">
-            Leave empty to skip LangSmith dataset creation
-          </p>
-        </div>
-
         {/* Run Button */}
         <Button
           onClick={runEvaluation}
