@@ -549,7 +549,14 @@ async def list_personas(organization_id: str = None):
     
     try:
         personas = await persona_manager.list(organization_id=organization_id)
-        return [p.model_dump() for p in personas]
+        result = []
+        for p in personas:
+            persona_dict = p.model_dump()
+            # Extract tags from metadata and add as top-level field for UI
+            if "tags" in p.metadata:
+                persona_dict["tags"] = p.metadata["tags"]
+            result.append(persona_dict)
+        return result
     except Exception as e:
         print(f"Error listing personas: {e}")
         raise HTTPException(status_code=500, detail=str(e))
