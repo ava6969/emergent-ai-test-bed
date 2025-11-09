@@ -1,0 +1,16 @@
+{
+  "id": "traj_trd_027_momentum_analysis_001_20251109_074552_d884acfe",
+  "persona_id": "TRD-027",
+  "goal_id": "momentum_analysis_001",
+  "organization_id": "Momentum Advisors",
+  "thread_id": "",
+  "simulation_run_id": "sim_trd_027_momentum_analysis_001_20251109_074552_d22bda0b",
+  "messages": [],
+  "timestamp": "2025-11-09T07:45:52.558924+00:00",
+  "turns": 0,
+  "completed": true,
+  "goal_achieved": false,
+  "learned_context": {},
+  "evaluation_scores": {},
+  "overall_score": 0.5
+}
