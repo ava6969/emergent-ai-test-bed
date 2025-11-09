@@ -217,17 +217,6 @@ export default function GoalsPage() {
           </DialogHeader>
 
           <div className="space-y-4 py-4">
-            {/* Description Input */}
-            <div>
-              <label className="text-sm font-medium mb-2 block">Description</label>
-              <Input
-                placeholder="Describe the goal... (e.g., 'Create a trading strategy backtest goal')"
-                value={generateInput}
-                onChange={(e) => setGenerateInput(e.target.value)}
-                disabled={isGenerating}
-              />
-            </div>
-
             {/* Persona Dropdown */}
             <div>
               <label className="text-sm font-medium mb-2 block">For Persona (Optional)</label>
