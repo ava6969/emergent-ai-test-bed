@@ -193,8 +193,8 @@ export function EvaluateTab({ threadId, messages }: EvaluateTabProps) {
             className="w-full px-3 py-2 border rounded-lg"
             disabled={isRunning}
           >
-            <option value="openai:gpt-4o-mini">GPT-4o Mini (Fast & Cost-effective)</option>
-            <option value="openai:gpt-4o">GPT-4o (Balanced)</option>
+            <option value="openai:gpt-4.1-mini">GPT-4.1 Mini (Fast & Cost-effective)</option>
+            <option value="openai:gpt-4.1">GPT-4.1 (Balanced)</option>
             <option value="openai:gpt-5">GPT-5 (Most Capable)</option>
           </select>
         </div>
