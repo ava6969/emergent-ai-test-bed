@@ -1241,6 +1241,9 @@ async def get_simulation_status(simulation_id: str):
             messages = history.get("values", {}).get("messages", [])
         
         logger.info(f"Extracted {len(messages)} messages from history")
+        if len(messages) == 0 and isinstance(history, list) and history:
+            logger.warning(f"History structure: {list(history[-1].keys())}")
+            logger.warning(f"Values content: {list(history[-1].get('values', {}).keys())}")
         
         # Check if simulation should stop (last message has stop=True)
         should_stop = False
@@ -1424,6 +1427,9 @@ async def run_evaluation(request: EvaluationRequest, background_tasks: Backgroun
             messages = history.get("values", {}).get("messages", [])
         
         logger.info(f"Extracted {len(messages)} messages from history")
+        if len(messages) == 0 and isinstance(history, list) and history:
+            logger.warning(f"History structure: {list(history[-1].keys())}")
+            logger.warning(f"Values content: {list(history[-1].get('values', {}).keys())}")
         
         if not messages:
             raise HTTPException(status_code=404, detail="No messages found in thread")
