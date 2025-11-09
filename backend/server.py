@@ -266,25 +266,38 @@ async def run_persona_generation(job_id: str, request: GeneratePersonaRequest):
             update_job(job_id, stage="Loading organization context", progress=20)
             await asyncio.sleep(0.3)
         
-        # Stage 3: Exa enrichment (if enabled)
-        if request.use_exa_enrichment:
-            update_job(job_id, stage=f"Searching web for: '{description[:50]}...' (Exa.ai)", progress=30)
-            await asyncio.sleep(0.5)
-        
-        # Stage 4: Calling AI model
-        update_job(job_id, stage=f"Calling AI model ({request.model})...", progress=40)
-        
         # Actual generation
         import time
         start_time = time.time()
         
-        personas = await persona_manager.generate(
-            count=1,
-            requirements=description,
-            organization_id=request.organization_id,
-            use_real_context=request.use_exa_enrichment,
-            metadata_schema=request.metadata_schema
-        )
+        # Stage 3: Exa enrichment (if enabled) - happens during generation
+        if request.use_exa_enrichment:
+            update_job(job_id, stage=f"🔍 Searching Exa.ai for: '{description[:50]}...'", progress=25)
+            await asyncio.sleep(0.2)
+        
+        try:
+            personas = await persona_manager.generate(
+                count=1,
+                requirements=description,
+                organization_id=request.organization_id,
+                use_real_context=request.use_exa_enrichment,
+                metadata_schema=request.metadata_schema
+            )
+            
+            # If Exa was used, show completion
+            if request.use_exa_enrichment:
+                update_job(job_id, stage=f"✓ Exa enrichment complete, generating with AI...", progress=50)
+                await asyncio.sleep(0.2)
+            else:
+                # Stage 4: Calling AI model
+                update_job(job_id, stage=f"Calling AI model ({request.model})...", progress=40)
+                
+        except ValueError as e:
+            # Handle Exa errors specifically
+            if "Exa" in str(e):
+                update_job(job_id, status="failed", error=str(e), stage="Exa enrichment failed")
+                return
+            raise
         
         end_time = time.time()
         generation_time = round(end_time - start_time, 2)
