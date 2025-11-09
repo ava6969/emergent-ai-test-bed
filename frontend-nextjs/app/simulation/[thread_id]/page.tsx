@@ -148,15 +148,7 @@ export default function SimulationPage() {
                               </Badge>
                             )}
                           </div>
-                          <div className={`prose prose-sm max-w-none ${
-                            isHuman ? 'text-gray-900' : 'text-gray-700'
-                          }`}>
-                            <ReactMarkdown>
-                              {typeof message.content === 'string'
-                                ? message.content
-                                : JSON.stringify(message.content, null, 2)}
-                            </ReactMarkdown>
-                          </div>
+                          <MessageRenderer message={message} />
                         </div>
                       </div>
                     );
