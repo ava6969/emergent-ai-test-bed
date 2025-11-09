@@ -94,6 +94,11 @@ export default function GoalsPage() {
               setIsGenerating(false);
               setGenerationProgress(0);
               setGenerationStage('');
+              setCreateModalOpen(false);
+              // Reset form
+              setSelectedPersona('');
+              setDifficulty('');
+              setCount(1);
             }, 500);
           } else if (status.status === 'failed') {
             clearInterval(pollingInterval);
