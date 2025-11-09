@@ -97,25 +97,7 @@ class APIClient {
     return response.data;
   }
 
-  async generateGoal(description: string, settings?: any) {
-    const response = await this.client.post('/api/ai/generate/goal/async', {
-      description: description,
-      message: description, // backwards compatibility
-      count: settings?.count || 1,
-      model: settings?.model || 'gpt-5',
-      temperature: settings?.temperature || 0.7,
-      reasoning_effort: settings?.reasoning_effort || 'medium',
-      max_tokens: settings?.max_tokens || 1500,
-      agent_ids: settings?.agent_ids || [],
-      product_context: settings?.product_context || null,
-    });
-    return response.data;
-  }
-
-  async checkJobStatus(jobId: string) {
-    const response = await this.client.get(`/api/ai/generate/status/${jobId}`);
-    return response.data;
-  }
+  // Removed duplicate generateGoal - see below in GOAL ENDPOINTS section
 
   async deletePersona(id: string): Promise<void> {
     await this.client.delete(`/api/personas/${id}`);
