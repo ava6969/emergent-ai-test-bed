@@ -5,7 +5,7 @@ import { Label } from '../ui/label';
 import { Card } from '../ui/card';
 import { X, ChevronDown, ChevronUp } from 'lucide-react';
 
-export default function GoalGenerationModal({ personas, products, onGenerate, onClose, isGenerating }) {
+export default function GoalGenerationModal({ personas, products, onGenerate, onClose, isGenerating, generationStage, generationProgress }) {
   const [formData, setFormData] = useState({
     persona_ids: [],
     product_id: null,
