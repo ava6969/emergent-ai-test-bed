@@ -71,6 +71,7 @@ try:
         persona_manager,
         goal_manager,
         organization_manager,
+        simulation_engine,
         create_generator_config,
         default_generator_config
     )
