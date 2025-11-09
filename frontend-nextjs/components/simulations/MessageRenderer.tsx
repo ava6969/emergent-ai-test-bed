@@ -24,12 +24,31 @@ export function MessageRenderer({ message }: MessageRendererProps) {
 
   // Handle tool calls (from assistant)
   if (message.type === 'ai' && message.tool_calls && message.tool_calls.length > 0) {
+    // Check if content is JSON
+    let contentIsJson = false;
+    let contentJsonData = null;
+    if (message.content && typeof message.content === 'string' && message.content.trim()) {
+      try {
+        contentJsonData = JSON.parse(message.content);
+        contentIsJson = true;
+      } catch {
+        // Not JSON
+      }
+    }
+
     return (
       <div className="space-y-2">
         {/* Regular content if exists */}
-        {message.content && typeof message.content === 'string' && message.content.trim() && (
+        {message.content && typeof message.content === 'string' && message.content.trim() && !contentIsJson && (
           <div className="prose prose-sm max-w-none text-gray-700 mb-3">
             <ReactMarkdown>{message.content}</ReactMarkdown>
+          </div>
+        )}
+        
+        {/* JSON content */}
+        {contentIsJson && contentJsonData && (
+          <div className="border rounded-lg overflow-hidden bg-gray-50 border-gray-200 p-3 mb-3">
+            <JsonViewer data={contentJsonData} />
           </div>
         )}
 
