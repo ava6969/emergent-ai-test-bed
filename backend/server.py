@@ -1184,9 +1184,60 @@ async def stop_simulation_endpoint(simulation_id: str):
 
 @api_router.get("/simulations")
 async def list_simulations():
-    """List all simulation sessions"""
+    """List all simulation sessions (deprecated - use /threads with metadata filter)"""
     sessions = list_simulation_sessions()
     return sessions
+
+# ==================== THREAD/TRAJECTORY ENDPOINTS ====================
+
+@api_router.get("/threads")
+async def list_threads(metadata: Optional[str] = None, limit: int = 100):
+    """List threads from LangGraph with optional metadata filter
+    
+    Example: /api/threads?metadata={"owner":"testing-ai"}&limit=50
+    """
+    from testbed_bridge import simulation_engine
+    
+    if not simulation_engine or not simulation_engine.epoch_client:
+        raise HTTPException(status_code=503, detail="LangGraph client not initialized")
+    
+    try:
+        # Parse metadata filter if provided
+        metadata_filter = {}
+        if metadata:
+            import json
+            metadata_filter = json.loads(metadata)
+        
+        # Fetch threads from LangGraph
+        threads_response = await simulation_engine.epoch_client.client.threads.search(
+            metadata=metadata_filter,
+            limit=limit
+        )
+        
+        return threads_response
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch threads: {str(e)}")
+
+@api_router.get("/threads/{thread_id}/messages")
+async def get_thread_messages(thread_id: str):
+    """Get messages for a specific thread"""
+    from testbed_bridge import simulation_engine
+    
+    if not simulation_engine or not simulation_engine.epoch_client:
+        raise HTTPException(status_code=503, detail="LangGraph client not initialized")
+    
+    try:
+        # Fetch thread history from LangGraph
+        history = await simulation_engine.epoch_client.get_thread_history(thread_id)
+        
+        return {
+            "thread_id": thread_id,
+            "messages": history.get("values", {}).get("messages", [])
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch thread messages: {str(e)}")
 
 # Include the router in the main app
 app.include_router(api_router)
