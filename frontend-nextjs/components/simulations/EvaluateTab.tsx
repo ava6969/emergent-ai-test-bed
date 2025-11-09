@@ -105,6 +105,7 @@ export function EvaluateTab({ threadId, messages }: EvaluateTabProps) {
         model,
       });
 
+      console.log('Evaluation results:', JSON.stringify(evalResults, null, 2));
       setResults(evalResults);
       toast.success('Evaluation completed successfully!');
     } catch (error: any) {
