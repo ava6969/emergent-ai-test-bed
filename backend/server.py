@@ -651,19 +651,93 @@ async def delete_all_personas(delete_trajectories: bool = False):
         raise HTTPException(status_code=500, detail=str(e))
 
 # Goal Models
+class GoalGenerateRequest(BaseModel):
+    """Request model for AI goal generation"""
+    persona_ids: List[str] = []  # Optional persona selection
+    product_id: Optional[str] = None  # Optional product context
+    difficulty: str = "medium"  # easy, medium, hard, expert
+    max_turns_override: Optional[int] = None  # Override AI-suggested max_turns
+    organization_id: Optional[str] = None
+
 class GoalCreate(BaseModel):
     name: str
     objective: str
     success_criteria: str
     initial_prompt: str
     max_turns: int = 10
+    agent_ids: List[str] = []
+    difficulty: Optional[str] = None
+    product_id: Optional[str] = None
 
 class GoalUpdate(BaseModel):
-    name: str = None
-    objective: str = None
-    success_criteria: str = None
-    initial_prompt: str = None
-    max_turns: int = None
+    name: Optional[str] = None
+    objective: Optional[str] = None
+    success_criteria: Optional[str] = None
+    initial_prompt: Optional[str] = None
+    max_turns: Optional[int] = None
+
+# AI Goal Generation
+@api_router.post("/ai/generate/goal")
+async def generate_goal_ai(request: GoalGenerateRequest):
+    """Generate goal using AI with difficulty-based complexity tuning"""
+    if not goal_manager:
+        raise HTTPException(status_code=500, detail="Goal manager not initialized")
+    
+    try:
+        # Get product documentation if provided
+        product_context = ""
+        if request.product_id and storage:
+            product = await storage.get_product(request.product_id)
+            if product:
+                product_context = f"\n\n=== Product Context: {product.name} ===\n"
+                product_context += f"Description: {product.description}\n"
+                if product.documents:
+                    product_context += f"\nDocumentation ({len(product.documents)} files):\n"
+                    for doc in product.documents[:5]:  # Limit to first 5 docs
+                        product_context += f"\n--- {doc['filename']} ---\n"
+                        product_context += doc['content'][:500] + "...\n"  # Truncate long docs
+        
+        # Build requirements combining difficulty and context
+        requirements = f"Difficulty: {request.difficulty}"
+        if product_context:
+            requirements += product_context
+        
+        # Generate using GoalManager
+        goals = await goal_manager.generate(
+            count=1,
+            persona_ids=request.persona_ids or [],
+            organization_id=request.organization_id,
+            requirements=requirements,
+            use_real_context=False,  # Product docs provide context
+            complexity=request.difficulty
+        )
+        
+        if not goals:
+            raise HTTPException(status_code=500, detail="Goal generation failed")
+        
+        goal = goals[0]
+        
+        # Override max_turns if specified
+        if request.max_turns_override:
+            goal.max_turns = request.max_turns_override
+        
+        # Store difficulty and product_id in metadata
+        if not goal.metadata:
+            goal.metadata = {}
+        goal.metadata["difficulty"] = request.difficulty
+        if request.product_id:
+            goal.metadata["product_id"] = request.product_id
+        
+        # Save to storage
+        await storage.save_goal(goal)
+        
+        return goal.model_dump()
+        
+    except Exception as e:
+        print(f"Error generating goal: {e}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.get("/goals")
 async def list_goals():
