@@ -62,93 +62,50 @@ export default function PersonasPage() {
   });
 
   const handleGenerate = async () => {
-    if (!generateInput.trim()) return;
-    
-    setIsGenerating(true);
-    setGenerationStage('Initializing...');
-    setGenerationProgress(0);
-    
-    const settings = JSON.parse(
-      localStorage.getItem('generation_settings_persona') || '{}'
-    );
-    
-    const maxTokens = Math.max(settings.max_tokens || 1500, 1500);
-    
+    if (!generateInput.trim()) {
+      toast.error('Please enter a persona description');
+      return;
+    }
+
     try {
-      const startResponse = await apiClient.generatePersona(generateInput.trim(), {
-        ...settings,
-        max_tokens: maxTokens,
-        count: count,
-      });
+      setIsGenerating(true);
+      setGenerationProgress(0);
+      setGenerationStage('Generating personas...');
       
-      const jobId = startResponse.job_id;
-      
-      // Poll for status with exponential backoff
-      let pollAttempts = 0;
-      let pollInterval = 2000; // Start with 2 seconds
-      const maxInterval = 5000; // Max 5 seconds between polls
-      
-      const pollStatus = async () => {
-        try {
-          const status = await apiClient.checkJobStatus(jobId);
-          
-          if (status.stage) {
-            setGenerationStage(status.stage);
-          }
-          if (status.progress !== undefined) {
-            setGenerationProgress(status.progress);
-          }
-          
-          if (status.status === 'completed') {
-            queryClient.invalidateQueries({ queryKey: ['personas'] });
-            setGenerateInput('');
-            const personaCount = count > 1 ? `${count} personas` : 'persona';
-            toast.success(`Successfully created ${personaCount} in ${status.generation_time}s`);
-            
-            setTimeout(() => {
-              setIsGenerating(false);
-              setGenerationStage('');
-              setGenerationProgress(0);
-            }, 1500);
-            return; // Stop polling
-          }
-          
-          if (status.status === 'failed') {
-            setIsGenerating(false);
-            const errorMsg = status.error || 'Generation failed';
-            if (errorMsg.includes('429') || errorMsg.includes('rate limit')) {
-              toast.error('Rate limit reached. Please wait a moment and try again.');
-            } else {
-              toast.error(errorMsg);
-            }
-            return; // Stop polling
-          }
-          
-          // Continue polling with exponential backoff
-          pollAttempts++;
-          pollInterval = Math.min(pollInterval * 1.2, maxInterval); // Increase interval
-          setTimeout(pollStatus, pollInterval);
-          
-        } catch (pollError: any) {
-          console.error('Polling error:', pollError);
-          
-          // Handle rate limit errors
-          if (pollError?.response?.status === 429) {
-            toast.error('Rate limit reached. Retrying in 10 seconds...');
-            setTimeout(pollStatus, 10000); // Wait 10 seconds before retry
-          } else {
-            // Continue polling on other errors
-            setTimeout(pollStatus, pollInterval);
-          }
-        }
+      // Load settings from localStorage
+      const settingsKey = 'generation_settings_persona';
+      const storedSettings = localStorage.getItem(settingsKey);
+      const settings = storedSettings ? JSON.parse(storedSettings) : {
+        model: 'gpt-5',
+        temperature: 0.7,
+        reasoning_effort: 'medium',
+        max_tokens: 1500,
       };
+
+      // Synchronous generation - no polling needed
+      const response = await apiClient.generatePersona(generateInput.trim(), { ...settings, count });
+
+      // Success!
+      queryClient.invalidateQueries({ queryKey: ['personas'] });
+      setGenerateInput('');
+      const personaCount = count > 1 ? `${count} personas` : 'persona';
+      toast.success(response.message || `Successfully created ${personaCount}`);
       
-      // Start polling
-      setTimeout(pollStatus, pollInterval);
+      setIsGenerating(false);
+      setGenerationStage('');
+      setGenerationProgress(0);
       
     } catch (error: any) {
       setIsGenerating(false);
-      toast.error(error.message || 'Failed to start generation');
+      setGenerationStage('');
+      setGenerationProgress(0);
+      
+      const errorMsg = error?.response?.data?.detail || error.message || 'Failed to generate persona';
+      if (errorMsg.includes('429') || errorMsg.includes('rate limit')) {
+        toast.error('Rate limit reached. Please wait a moment and try again.');
+      } else {
+        toast.error(errorMsg);
+      }
     }
   };
 
