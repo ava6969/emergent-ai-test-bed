@@ -1074,7 +1074,7 @@ async def run_simulation(
     reasoning_effort: Optional[str] = None,
     background_tasks: BackgroundTasks = None
 ):
-    """Start a simulation run - returns thread_id immediately
+    """Start a simulation run - creates thread and returns thread_id immediately
     
     Args:
         persona_id: ID of persona to simulate
@@ -1086,8 +1086,12 @@ async def run_simulation(
     Returns:
         {"thread_id": "...", "message": "Simulation started"}
     """
+    from testbed_bridge import storage, simulation_engine
+    from thread_status import set_thread_status
+    from datetime import datetime, timezone
+    
     if not simulation_engine:
-        raise HTTPException(status_code=500, detail="Simulation engine not initialized. Check LangGraph configuration.")
+        raise HTTPException(status_code=503, detail="Simulation engine not initialized. Check LangGraph configuration.")
     
     try:
         # Get persona and goal for validation
@@ -1097,24 +1101,49 @@ async def run_simulation(
         if not persona or not goal:
             raise HTTPException(status_code=404, detail="Persona or goal not found")
         
-        # Start background simulation - it creates thread and returns thread_id
+        # Determine max turns
+        turns_limit = max_turns or goal.max_turns
+        reasoning_model = reasoning_model or "gpt-5"
+        reasoning_effort = reasoning_effort or "medium"
+        
+        # Create thread FIRST so we can return thread_id immediately
+        thread_info = await simulation_engine.epoch_client.create_thread(
+            metadata={
+                "owner": "testing-ai",
+                "persona_id": persona_id,
+                "persona_name": persona.name,
+                "goal_id": goal_id,
+                "goal_name": goal.name,
+                "reasoning_model": reasoning_model,
+                "reasoning_effort": reasoning_effort,
+                "max_turns": turns_limit,
+                "started_at": datetime.now(timezone.utc).isoformat()
+            }
+        )
+        
+        thread_id = thread_info["thread_id"]
+        
+        # Set initial status
+        set_thread_status(thread_id, "running", current_turn=0, max_turns=turns_limit)
+        
+        # Start background task to run simulation loop with existing thread
         background_tasks.add_task(
             run_simulation_background,
+            thread_id,
             persona_id,
             goal_id,
-            max_turns,
+            turns_limit,
             reasoning_model,
             reasoning_effort
         )
         
-        # Note: thread_id will be available after background task starts
-        # Frontend should poll /api/threads?metadata={"persona_id":"..."} to find it
         return {
+            "thread_id": thread_id,
             "message": "Simulation started",
             "persona_id": persona_id,
             "goal_id": goal_id,
-            "reasoning_model": reasoning_model or "gpt-5",
-            "reasoning_effort": reasoning_effort or "medium"
+            "reasoning_model": reasoning_model,
+            "reasoning_effort": reasoning_effort
         }
         
     except Exception as e:
