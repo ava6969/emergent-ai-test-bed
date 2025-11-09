@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AppShell } from '@/components/layouts/AppShell';
 import { Personas } from '@/pages/Personas';
 import { Goals } from '@/pages/Goals';
+import { Products } from '@/pages/Products';
 import { Organizations } from '@/pages/Organizations';
 
 // Create a client
