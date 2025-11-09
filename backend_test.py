@@ -59,42 +59,60 @@ def test_simulation_functionality():
     
     # Test results tracking
     test_results = []
+    simulation_id = None
     
-    print("\n2. Testing POST /api/simulations/run...")
-    print("-" * 40)
+    print("\n2. Testing POST /api/simulations/run (Start Real Simulation)...")
+    print("-" * 50)
     
-    # Test 1: POST /api/simulations/run - Should return error when SimulationEngine not configured
+    # Test 1: POST /api/simulations/run - Should start a real simulation now
     try:
         run_payload = {
             "persona_id": persona_id,
             "goal_id": goal_id
         }
         
-        print(f"Sending request with persona_id: {persona_id}, goal_id: {goal_id}")
+        print(f"Starting simulation with:")
+        print(f"  - Persona: {persona_id} (Elena Marquez)")
+        print(f"  - Goal: {goal_id} (Sector Momentum Analysis)")
         
         run_response = requests.post(
             f"{BACKEND_URL}/simulations/run",
             params=run_payload,
-            timeout=10
+            timeout=15
         )
         
         print(f"Response status: {run_response.status_code}")
         print(f"Response body: {run_response.text}")
         
-        if run_response.status_code == 500:
+        if run_response.status_code == 200:
             response_data = run_response.json()
-            if "Simulation engine not initialized" in response_data.get("detail", ""):
-                print("✅ PASS: Correctly returned 500 with 'Simulation engine not initialized'")
-                test_results.append(("POST /api/simulations/run", "PASS", "Correctly handles missing LangGraph credentials"))
+            simulation_id = response_data.get("simulation_id")
+            status = response_data.get("status")
+            
+            if simulation_id and status == "running":
+                print(f"✅ PASS: Simulation started successfully!")
+                print(f"   Simulation ID: {simulation_id}")
+                print(f"   Status: {status}")
+                test_results.append(("POST /api/simulations/run", "PASS", f"Started simulation {simulation_id}"))
             else:
-                print(f"❌ FAIL: Expected 'Simulation engine not initialized', got: {response_data.get('detail')}")
-                test_results.append(("POST /api/simulations/run", "FAIL", f"Wrong error message: {response_data.get('detail')}"))
+                print(f"❌ FAIL: Expected simulation_id and status='running', got: {response_data}")
+                test_results.append(("POST /api/simulations/run", "FAIL", f"Invalid response: {response_data}"))
+        elif run_response.status_code == 500:
+            response_data = run_response.json()
+            error_detail = response_data.get("detail", "")
+            if "Simulation engine not initialized" in error_detail:
+                print("❌ FAIL: LangGraph credentials still not working")
+                print(f"   Error: {error_detail}")
+                test_results.append(("POST /api/simulations/run", "FAIL", "LangGraph credentials not configured properly"))
+            else:
+                print(f"❌ FAIL: Unexpected 500 error: {error_detail}")
+                test_results.append(("POST /api/simulations/run", "FAIL", f"Server error: {error_detail}"))
         else:
-            print(f"❌ FAIL: Expected 500 status, got {run_response.status_code}")
-            test_results.append(("POST /api/simulations/run", "FAIL", f"Expected 500, got {run_response.status_code}"))
+            print(f"❌ FAIL: Unexpected status code {run_response.status_code}")
+            test_results.append(("POST /api/simulations/run", "FAIL", f"Status {run_response.status_code}"))
             
     except Exception as e:
-        print(f"❌ FAIL: Exception during simulation run test: {e}")
+        print(f"❌ FAIL: Exception during simulation start: {e}")
         test_results.append(("POST /api/simulations/run", "FAIL", f"Exception: {e}"))
     
     print("\n3. Testing GET /api/simulations/{simulation_id}...")
