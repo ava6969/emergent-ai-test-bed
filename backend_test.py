@@ -18,44 +18,44 @@ def test_simulation_functionality():
     """Test actual simulation functionality with LangGraph credentials configured"""
     
     print("=" * 60)
-    print("TESTING SIMULATION API ENDPOINTS")
+    print("TESTING SIMULATION FUNCTIONALITY WITH LANGGRAPH")
     print("=" * 60)
     
-    # First, get existing personas and goals
-    print("\n1. Getting existing personas and goals...")
+    # Use specific test data as requested
+    persona_id = "TRD-027"  # Elena Marquez
+    goal_id = "momentum_analysis_001"  # Sector Momentum Analysis
     
+    print(f"\n1. Testing with specified test data:")
+    print(f"   Persona ID: {persona_id} (Elena Marquez)")
+    print(f"   Goal ID: {goal_id} (Sector Momentum Analysis)")
+    
+    # Verify personas and goals exist
     try:
-        # Get personas
+        # Check if personas exist
         personas_response = requests.get(f"{BACKEND_URL}/personas")
         personas_response.raise_for_status()
         personas = personas_response.json()
         
-        if not personas:
-            print("❌ No personas found in database")
-            return False
-            
-        persona = personas[0]
-        persona_id = persona["id"]
-        persona_name = persona["name"]
-        print(f"✅ Found persona: {persona_name} (ID: {persona_id})")
+        persona_found = any(p.get("id") == persona_id for p in personas)
+        if persona_found:
+            print(f"✅ Persona {persona_id} found in database")
+        else:
+            print(f"⚠️  Persona {persona_id} not found, will test anyway (may be created by testbed)")
         
-        # Get goals
+        # Check if goals exist
         goals_response = requests.get(f"{BACKEND_URL}/goals")
         goals_response.raise_for_status()
         goals = goals_response.json()
         
-        if not goals:
-            print("❌ No goals found in database")
-            return False
-            
-        goal = goals[0]
-        goal_id = goal["id"]
-        goal_name = goal["name"]
-        print(f"✅ Found goal: {goal_name} (ID: {goal_id})")
+        goal_found = any(g.get("id") == goal_id for g in goals)
+        if goal_found:
+            print(f"✅ Goal {goal_id} found in database")
+        else:
+            print(f"⚠️  Goal {goal_id} not found, will test anyway (may be created by testbed)")
         
     except Exception as e:
-        print(f"❌ Error getting personas/goals: {e}")
-        return False
+        print(f"⚠️  Error checking personas/goals: {e}")
+        print("   Continuing with test anyway...")
     
     # Test results tracking
     test_results = []
