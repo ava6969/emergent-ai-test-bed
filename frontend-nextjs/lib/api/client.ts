@@ -33,6 +33,13 @@ export interface Product {
   metadata?: Record<string, any>;
 }
 
+export interface Organization {
+  id: string;
+  name: string;
+  description: string;
+  metadata?: Record<string, any>;
+}
+
 export interface SimulationStatus {
   simulation_id: string;
   status: 'running' | 'completed' | 'failed';
