@@ -11,11 +11,24 @@ export function Simulations() {
   const [selectedPersona, setSelectedPersona] = useState('');
   const [selectedGoal, setSelectedGoal] = useState('');
   const [maxTurns, setMaxTurns] = useState('');
-  const [reasoningModel, setReasoningModel] = useState('gpt-4o');
+  const [reasoningModel, setReasoningModel] = useState('gpt-5');
+  const [reasoningEffort, setReasoningEffort] = useState('medium');
   const [isSimulating, setIsSimulating] = useState(false);
   const [simulationId, setSimulationId] = useState(null);
   const [simulationData, setSimulationData] = useState(null);
   const { toast } = useToast();
+
+  // Helper to check if model is a reasoning model
+  const isReasoningModel = (model) => {
+    const modelLower = model.toLowerCase();
+    return modelLower.startsWith('o1') || 
+           modelLower.startsWith('o3') || 
+           modelLower.startsWith('gpt-5') ||
+           modelLower.startsWith('gpt-6') ||
+           modelLower.startsWith('gpt-7') ||
+           modelLower.startsWith('gpt-8') ||
+           modelLower.startsWith('gpt-9');
+  };
 
   // Fetch personas
   const { data: personas = [] } = useQuery({
