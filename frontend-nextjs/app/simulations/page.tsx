@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api/client';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Play, StopCircle, Clock, Target, User, Sparkles } from 'lucide-react';
 import { ThreadMessagesOnly } from '@/components/simulations/ThreadMessagesOnly';
 import { toast } from 'sonner';
