@@ -4,8 +4,9 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api/client';
-import { motion } from 'framer-motion';
-import { User, Target, Clock, Sparkles, Play, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { User, Target, Clock, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function Home() {
@@ -64,141 +65,117 @@ export default function Home() {
   const selectedGoalObj = goals.find((g) => g.id === selectedGoal);
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-8 relative z-0">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-2xl"
-      >
+    <div className="flex items-center justify-center min-h-screen p-8 bg-gray-50">
+      <Card className="w-full max-w-2xl p-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2 text-white luminance-glow">Create New Simulation</h1>
-          <p className="text-[#A0A0A0] text-sm">Configure and run agent evaluation simulations</p>
+          <h1 className="text-3xl font-bold mb-2">Create New Simulation</h1>
+          <p className="text-gray-600">Configure and run agent evaluation simulations</p>
         </div>
 
         <div className="space-y-6">
           {/* Persona Selection */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.1 }}
-          >
-            <label className="block text-sm font-medium mb-3 text-[#E5E5E5]">
-              <User className="inline w-4 h-4 mr-2" />
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              <User className="inline w-4 h-4 mr-1" />
               Select Persona
             </label>
             <select
               value={selectedPersona}
               onChange={(e) => setSelectedPersona(e.target.value)}
               disabled={isStarting}
-              className="w-full px-4 py-3 bg-[#141414] border border-[#2A2A2A] rounded text-[#E5E5E5] focus:border-[#3A3A3A] focus:bg-[#1E1E1E] focus:outline-none transition-all"
+              className="w-full px-3 py-2 border rounded-lg"
             >
-              <option value="" className="bg-[#0A0A0A]">Choose persona...</option>
+              <option value="">Choose persona...</option>
               {personas.map((persona) => (
-                <option key={persona.id} value={persona.id} className="bg-[#0A0A0A]">
+                <option key={persona.id} value={persona.id}>
                   {persona.name}
                 </option>
               ))}
             </select>
             {selectedPersonaObj && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                className="mt-3 p-4 bg-[#141414] border border-[#2A2A2A] rounded dark-card"
-              >
-                <p className="font-medium text-white">{selectedPersonaObj.name}</p>
-                <p className="text-[#A0A0A0] text-xs mt-1 line-clamp-2">
+              <div className="mt-2 p-3 bg-gray-50 rounded-lg text-sm">
+                <p className="font-medium">{selectedPersonaObj.name}</p>
+                <p className="text-gray-600 text-xs mt-1 line-clamp-2">
                   {selectedPersonaObj.background}
                 </p>
-              </motion.div>
+              </div>
             )}
-          </motion.div>
+          </div>
 
           {/* Goal Selection */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            <label className="block text-sm font-medium mb-3 text-[#E5E5E5]">
-              <Target className="inline w-4 h-4 mr-2" />
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              <Target className="inline w-4 h-4 mr-1" />
               Select Goal
             </label>
             <select
               value={selectedGoal}
               onChange={(e) => setSelectedGoal(e.target.value)}
               disabled={isStarting}
-              className="w-full px-4 py-3 bg-[#141414] border border-[#2A2A2A] rounded text-[#E5E5E5] focus:border-[#3A3A3A] focus:bg-[#1E1E1E] focus:outline-none transition-all"
+              className="w-full px-3 py-2 border rounded-lg"
             >
-              <option value="" className="bg-[#0A0A0A]">Choose goal...</option>
+              <option value="">Choose goal...</option>
               {goals.map((goal) => (
-                <option key={goal.id} value={goal.id} className="bg-[#0A0A0A]">
+                <option key={goal.id} value={goal.id}>
                   {goal.name}
                 </option>
               ))}
             </select>
             {selectedGoalObj && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                className="mt-3 p-4 bg-[#141414] border border-[#2A2A2A] rounded dark-card"
-              >
-                <p className="font-medium text-white">{selectedGoalObj.name}</p>
-                <p className="text-[#A0A0A0] text-xs mt-1">
+              <div className="mt-2 p-3 bg-gray-50 rounded-lg text-sm">
+                <p className="font-medium">{selectedGoalObj.name}</p>
+                <p className="text-gray-600 text-xs mt-1">
                   Max turns: {selectedGoalObj.max_turns}
                 </p>
-              </motion.div>
+              </div>
             )}
-          </motion.div>
+          </div>
 
-          {/* Advanced Settings */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3 }}
-            className="grid grid-cols-2 gap-4"
-          >
-            <div>
-              <label className="block text-sm font-medium mb-3 text-[#E5E5E5]">
-                <Clock className="inline w-4 h-4 mr-2" />
-                Max Turns
-              </label>
-              <input
-                type="number"
-                value={maxTurns}
-                onChange={(e) => setMaxTurns(e.target.value)}
-                disabled={isStarting}
-                placeholder={selectedGoalObj ? String(selectedGoalObj.max_turns) : '5'}
-                className="w-full px-4 py-3 bg-[#141414] border border-[#2A2A2A] rounded text-[#E5E5E5] focus:border-[#3A3A3A] focus:bg-[#1E1E1E] focus:outline-none transition-all"
-              />
-            </div>
+          {/* Max Turns Override */}
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              <Clock className="inline w-4 h-4 mr-1" />
+              Max Turns (optional)
+            </label>
+            <input
+              type="number"
+              value={maxTurns}
+              onChange={(e) => setMaxTurns(e.target.value)}
+              disabled={isStarting}
+              placeholder={
+                selectedGoalObj ? String(selectedGoalObj.max_turns) : 'Default: 5'
+              }
+              className="w-full px-3 py-2 border rounded-lg"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Override goal's default max turns
+            </p>
+          </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-3 text-[#E5E5E5]">
-                <Sparkles className="inline w-4 h-4 mr-2" />
-                Model
-              </label>
-              <select
-                value={reasoningModel}
-                onChange={(e) => setReasoningModel(e.target.value)}
-                disabled={isStarting}
-                className="w-full px-4 py-3 bg-[#141414] border border-[#2A2A2A] rounded text-[#E5E5E5] focus:border-[#3A3A3A] focus:bg-[#1E1E1E] focus:outline-none transition-all"
-              >
-                <option value="gpt-5" className="bg-[#0A0A0A]">GPT-5</option>
-                <option value="gpt-4o" className="bg-[#0A0A0A]">GPT-4o</option>
-                <option value="o1" className="bg-[#0A0A0A]">O1</option>
-                <option value="o3" className="bg-[#0A0A0A]">O3</option>
-              </select>
-            </div>
-          </motion.div>
+          {/* Reasoning Model & Settings */}
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              <Sparkles className="inline w-4 h-4 mr-1" />
+              Reasoning Model
+            </label>
+            <select
+              value={reasoningModel}
+              onChange={(e) => setReasoningModel(e.target.value)}
+              disabled={isStarting}
+              className="w-full px-3 py-2 border rounded-lg"
+            >
+              <option value="gpt-5">GPT-5 (Reasoning)</option>
+              <option value="o1">O1 (Reasoning)</option>
+              <option value="o3">O3 (Reasoning)</option>
+              <option value="gpt-4o">GPT-4o (Standard)</option>
+              <option value="gpt-4o-mini">GPT-4o Mini (Standard)</option>
+            </select>
+          </div>
 
           {/* Reasoning Effort (only for reasoning models) */}
           {isReasoningModel(reasoningModel) && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-            >
-              <label className="block text-sm font-medium mb-3 text-[#E5E5E5]">
+            <div>
+              <label className="block text-sm font-medium mb-2">
                 Reasoning Effort
               </label>
               <div className="flex gap-2">
@@ -207,45 +184,33 @@ export default function Home() {
                     key={effort}
                     onClick={() => setReasoningEffort(effort)}
                     disabled={isStarting}
-                    className={`flex-1 px-4 py-2 border rounded transition-all ${
+                    className={`flex-1 px-4 py-2 border rounded-lg transition-colors ${
                       reasoningEffort === effort
-                        ? 'bg-[#2A2A2A] border-[#3A3A3A] text-white'
-                        : 'border-[#2A2A2A] text-[#A0A0A0] hover:bg-[#141414] hover:text-white'
+                        ? 'bg-blue-50 border-blue-500 text-blue-700'
+                        : 'bg-white hover:bg-gray-50'
                     }`}
                   >
                     {effort.charAt(0).toUpperCase() + effort.slice(1)}
                   </button>
                 ))}
               </div>
-            </motion.div>
+              <p className="text-xs text-gray-500 mt-1">
+                Controls how much reasoning the model applies
+              </p>
+            </div>
           )}
 
           {/* Start Button */}
-          <motion.button
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+          <Button
             onClick={handleStartSimulation}
             disabled={isStarting || !selectedPersona || !selectedGoal}
-            className="w-full py-4 bg-gradient-to-r from-[#2A2A2A] to-[#1E1E1E] border border-[#3A3A3A] rounded text-white font-medium hover:from-[#3A3A3A] hover:to-[#2A2A2A] hover:border-[#4A4A4A] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 animate-glow relative overflow-hidden"
+            className="w-full"
+            size="lg"
           >
-            <div className="absolute inset-0 animate-shimmer"></div>
-            {isStarting ? (
-              <>
-                <Loader2 className="w-5 h-5 animate-spin relative z-10" />
-                <span className="relative z-10">Starting Simulation...</span>
-              </>
-            ) : (
-              <>
-                <Play className="w-5 h-5 relative z-10" />
-                <span className="relative z-10">Start Simulation</span>
-              </>
-            )}
-          </motion.button>
+            {isStarting ? 'Starting Simulation...' : 'Start Simulation'}
+          </Button>
         </div>
-      </motion.div>
+      </Card>
     </div>
   );
 }
