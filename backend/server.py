@@ -275,6 +275,206 @@ Format your response as JSON:
             "actions": []
         }
 
+# ==================== CRUD ENDPOINTS ====================
+
+# Persona Models
+class PersonaCreate(BaseModel):
+    name: str
+    background: str
+    organization_id: str = None
+    tags: list[str] = []
+
+class PersonaUpdate(BaseModel):
+    name: str = None
+    background: str = None
+    organization_id: str = None
+    tags: list[str] = None
+
+@api_router.get("/personas")
+async def list_personas():
+    """List all personas"""
+    personas = []
+    cursor = db.personas.find()
+    async for doc in cursor:
+        doc['_id'] = str(doc['_id'])
+        personas.append(doc)
+    return personas
+
+@api_router.post("/personas")
+async def create_persona(data: PersonaCreate):
+    """Create a new persona"""
+    persona = {
+        "id": str(uuid.uuid4()),
+        "name": data.name,
+        "background": data.background,
+        "organization_id": data.organization_id,
+        "tags": data.tags,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.personas.insert_one(persona)
+    return persona
+
+@api_router.put("/personas/{persona_id}")
+async def update_persona(persona_id: str, data: PersonaUpdate):
+    """Update a persona"""
+    update_data = {k: v for k, v in data.dict().items() if v is not None}
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    result = await db.personas.update_one(
+        {"id": persona_id},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Persona not found")
+    
+    persona = await db.personas.find_one({"id": persona_id})
+    persona['_id'] = str(persona['_id'])
+    return persona
+
+@api_router.delete("/personas/{persona_id}")
+async def delete_persona(persona_id: str):
+    """Delete a persona"""
+    result = await db.personas.delete_one({"id": persona_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Persona not found")
+    return {"success": True}
+
+# Goal Models
+class GoalCreate(BaseModel):
+    name: str
+    objective: str
+    success_criteria: str
+    initial_prompt: str
+    max_turns: int = 10
+
+class GoalUpdate(BaseModel):
+    name: str = None
+    objective: str = None
+    success_criteria: str = None
+    initial_prompt: str = None
+    max_turns: int = None
+
+@api_router.get("/goals")
+async def list_goals():
+    """List all goals"""
+    goals = []
+    cursor = db.goals.find()
+    async for doc in cursor:
+        doc['_id'] = str(doc['_id'])
+        goals.append(doc)
+    return goals
+
+@api_router.post("/goals")
+async def create_goal(data: GoalCreate):
+    """Create a new goal"""
+    goal = {
+        "id": str(uuid.uuid4()),
+        "name": data.name,
+        "objective": data.objective,
+        "success_criteria": data.success_criteria,
+        "initial_prompt": data.initial_prompt,
+        "max_turns": data.max_turns,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.goals.insert_one(goal)
+    return goal
+
+@api_router.put("/goals/{goal_id}")
+async def update_goal(goal_id: str, data: GoalUpdate):
+    """Update a goal"""
+    update_data = {k: v for k, v in data.dict().items() if v is not None}
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    result = await db.goals.update_one(
+        {"id": goal_id},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Goal not found")
+    
+    goal = await db.goals.find_one({"id": goal_id})
+    goal['_id'] = str(goal['_id'])
+    return goal
+
+@api_router.delete("/goals/{goal_id}")
+async def delete_goal(goal_id: str):
+    """Delete a goal"""
+    result = await db.goals.delete_one({"id": goal_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Goal not found")
+    return {"success": True}
+
+# Organization Models
+class OrganizationCreate(BaseModel):
+    name: str
+    description: str
+    type: str = None
+    industry: str = None
+    created_from_real_company: bool = False
+    use_exa_search: bool = False
+
+class OrganizationUpdate(BaseModel):
+    name: str = None
+    description: str = None
+    type: str = None
+    industry: str = None
+
+@api_router.get("/organizations")
+async def list_organizations():
+    """List all organizations"""
+    orgs = []
+    cursor = db.organizations.find()
+    async for doc in cursor:
+        doc['_id'] = str(doc['_id'])
+        orgs.append(doc)
+    return orgs
+
+@api_router.post("/organizations")
+async def create_organization(data: OrganizationCreate):
+    """Create a new organization"""
+    org = {
+        "id": str(uuid.uuid4()),
+        "name": data.name,
+        "description": data.description,
+        "type": data.type,
+        "industry": data.industry,
+        "created_from_real_company": data.created_from_real_company,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.organizations.insert_one(org)
+    return org
+
+@api_router.put("/organizations/{org_id}")
+async def update_organization(org_id: str, data: OrganizationUpdate):
+    """Update an organization"""
+    update_data = {k: v for k, v in data.dict().items() if v is not None}
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    result = await db.organizations.update_one(
+        {"id": org_id},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Organization not found")
+    
+    org = await db.organizations.find_one({"id": org_id})
+    org['_id'] = str(org['_id'])
+    return org
+
+@api_router.delete("/organizations/{org_id}")
+async def delete_organization(org_id: str):
+    """Delete an organization"""
+    result = await db.organizations.delete_one({"id": org_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Organization not found")
+    return {"success": True}
+
 # Include the router in the main app
 app.include_router(api_router)
 
