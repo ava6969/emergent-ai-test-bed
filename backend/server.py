@@ -305,6 +305,11 @@ async def run_persona_generation(job_id: str, request: GeneratePersonaRequest):
         
         # Stage 7: Complete
         persona_dict = persona.model_dump()
+        
+        # Extract tags from metadata and add as top-level field for UI
+        if "tags" in persona.metadata:
+            persona_dict["tags"] = persona.metadata["tags"]
+        
         result = {
             "message": f"✓ Created persona: {persona.name}",
             "generated_items": {
