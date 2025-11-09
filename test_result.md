@@ -151,8 +151,39 @@ User requested to:
 - ✅ Organization field available (user can specify via settings)
 - ✅ Metadata extensible for future attributes
 
+### Organization ID Now AI-Generated! ✅
+
+**Problem**: organization_id was always null even though mentioned in background
+**Root Cause**: PersonaManager was overwriting AI-generated organization_id with the parameter value (which was null)
+
+**Solution**:
+1. Made `organization_id` required (not Optional) in `SimpleAgent` model
+2. Updated prompt to explicitly instruct AI to generate organization_id
+3. Fixed PersonaManager to only override organization_id if user explicitly provides one
+4. Added debug logging to verify AI generation
+
+**Files Modified**:
+- `/app/backend/testbed/src/generation/persona_generator.py`: Made organization_id required
+- `/app/backend/testbed/src/generation/prompt_template.py`: Enhanced prompt with organization_id examples
+- `/app/backend/testbed/src/personas/manager.py`: Fixed organization_id override logic
+
+**Verified Working Examples**:
+- ✅ "Software engineer at Microsoft" → `microsoft`
+- ✅ "Freelance graphic designer" → `independent`
+- ✅ "Healthcare startup called MediTech" → `healthcare-startup`
+
+**Current Complete Feature Set**:
+- ✅ AI generates 3-5 relevant tags per persona
+- ✅ AI generates organization_id by inferring from context
+- ✅ Tags displayed in UI
+- ✅ Organization displayed in UI
+- ✅ Exa search progress shows query
+- ✅ Modal shows real-time progress
+- ✅ Delete All button works
+- ✅ 1 persona per generate click
+
 ### Next Steps
-User to test tags generation and Exa progress display. Then proceed with Goals generation implementation.
+Ready for user testing. All persona fields now populated by AI. Then proceed with Goals generation implementation.
 
 ## Incorporate User Feedback
 - If user reports any issues, investigate and fix before proceeding
