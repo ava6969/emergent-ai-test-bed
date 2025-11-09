@@ -312,7 +312,7 @@ def test_simulation_functionality():
             if final_response.status_code == 200:
                 sim_data = final_response.json()
                 
-                print("Verifying simulation data structure:")
+                print("Verifying model factory integration and message conversion:")
                 
                 # Check required fields
                 required_fields = ["simulation_id", "status", "current_turn", "max_turns", "trajectory"]
@@ -325,33 +325,59 @@ def test_simulation_functionality():
                         print(f"   ❌ {field}: MISSING")
                         missing_fields.append(field)
                 
-                # Check trajectory structure
+                # Check trajectory structure (LangGraph to LangChain message conversion)
                 trajectory = sim_data.get("trajectory", [])
                 if trajectory:
                     print(f"   ✅ trajectory contains {len(trajectory)} messages")
                     
-                    # Check first message structure
-                    first_msg = trajectory[0]
-                    if "role" in first_msg and "content" in first_msg:
-                        print(f"   ✅ Message structure: role='{first_msg['role']}', content length={len(first_msg['content'])}")
+                    # Verify message conversion from LangGraph to LangChain format
+                    valid_messages = 0
+                    for i, msg in enumerate(trajectory):
+                        if "role" in msg and "content" in msg:
+                            role = msg["role"]
+                            content = msg["content"]
+                            if role in ["user", "assistant", "system"] and isinstance(content, str) and content.strip():
+                                valid_messages += 1
+                                if i == 0:  # Show first message details
+                                    print(f"   ✅ Message {i+1}: role='{role}', content_length={len(content)}")
+                            else:
+                                print(f"   ❌ Invalid message {i+1}: role='{role}', content_type={type(content)}")
+                                missing_fields.append(f"message_{i+1}_invalid")
+                        else:
+                            print(f"   ❌ Missing role/content in message {i+1}: {msg}")
+                            missing_fields.append(f"message_{i+1}_structure")
+                    
+                    if valid_messages == len(trajectory):
+                        print(f"   ✅ All {valid_messages} messages properly converted from LangGraph to LangChain format")
+                        test_results.append(("Message Conversion", "PASS", f"All {valid_messages} messages valid"))
                     else:
-                        print(f"   ❌ Invalid message structure: {first_msg}")
-                        missing_fields.append("message_structure")
+                        print(f"   ❌ Only {valid_messages}/{len(trajectory)} messages valid")
+                        test_results.append(("Message Conversion", "FAIL", f"Only {valid_messages}/{len(trajectory)} valid"))
                 else:
                     print(f"   ⚠️  trajectory is empty (may be normal if simulation just started)")
                 
-                # Check optional fields
-                optional_fields = ["goal_achieved", "persona_id", "goal_id", "created_at"]
-                for field in optional_fields:
+                # Check for model factory specific fields
+                model_fields = ["persona_id", "goal_id"]
+                for field in model_fields:
                     if field in sim_data:
                         print(f"   ✅ {field}: {sim_data[field]}")
                 
-                if not missing_fields:
-                    print("✅ PASS: All required fields present and correctly structured")
-                    test_results.append(("Simulation Data Structure", "PASS", "All required fields present"))
+                # Check for no temperature errors (reasoning models shouldn't use temperature)
+                error_field = sim_data.get("error", "")
+                if error_field and "temperature" in error_field.lower():
+                    print(f"   ❌ Temperature error found: {error_field}")
+                    test_results.append(("Temperature Error Check", "FAIL", f"Temperature error: {error_field}"))
+                    missing_fields.append("temperature_error")
                 else:
-                    print(f"❌ FAIL: Missing fields: {missing_fields}")
-                    test_results.append(("Simulation Data Structure", "FAIL", f"Missing: {missing_fields}"))
+                    print(f"   ✅ No temperature-related errors (correct for reasoning models)")
+                    test_results.append(("Temperature Error Check", "PASS", "No temperature errors"))
+                
+                if not missing_fields:
+                    print("✅ PASS: Model factory integration working correctly")
+                    test_results.append(("Model Factory Integration", "PASS", "All components working"))
+                else:
+                    print(f"❌ FAIL: Issues found: {missing_fields}")
+                    test_results.append(("Model Factory Integration", "FAIL", f"Issues: {missing_fields}"))
             else:
                 print(f"❌ Could not verify data structure (status {final_response.status_code})")
                 test_results.append(("Simulation Data Structure", "FAIL", f"Could not retrieve data"))
