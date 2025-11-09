@@ -65,8 +65,26 @@ User requested to:
   - Added `handleDeleteAll()` handler
   - Added "Delete All" button to header
 
+### Issue Reported by User: Generation Stuck
+
+**Problem**: User reported that persona generation was getting stuck halfway through and no personas were being created.
+
+**Root Cause**: OpenAI's structured output was hitting the `max_tokens` limit (500 tokens), causing a `LengthFinishReasonError`. The model needed more tokens to complete the persona generation with all required fields.
+
+**Solution**: Increased `max_tokens` from 500 to 1500 in:
+- `/app/backend/server.py`: `GeneratePersonaRequest` model default
+- `/app/backend/testbed_bridge.py`: `create_generator_config()` function default
+- `/app/frontend/src/pages/Personas.jsx`: Frontend API call fallback
+
+**Testing Results**:
+- ✅ Persona generation now completes successfully
+- ✅ Modal shows progress and completes to 100%
+- ✅ New personas appear in the table (e.g., "Lily Chen" - Senior Software Engineer)
+- ✅ Generation time: ~10 seconds
+- ✅ No more token limit errors in logs
+
 ### Next Steps
-User will test the modal and delete all functionality, then proceed with Goals generation implementation.
+User will test the complete flow (modal, generation, delete all), then proceed with Goals generation implementation.
 
 ## Incorporate User Feedback
 - If user reports any issues, investigate and fix before proceeding
