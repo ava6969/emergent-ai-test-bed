@@ -1141,6 +1141,11 @@ async def run_simulation_background(sim_id: str, persona_id: str, goal_id: str, 
             max_turns=max_turns
         )
         
+        # Update session with thread_id so frontend can find it
+        session = get_simulation_session(sim_id)
+        if session:
+            session["thread_id"] = result.thread_id
+        
         # Update with final result including trajectory
         update_simulation_session(
             simulation_id=sim_id,
