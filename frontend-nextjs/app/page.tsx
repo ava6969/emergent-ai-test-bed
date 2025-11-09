@@ -198,7 +198,7 @@ export default function Home() {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
             >
-              <label className="block text-sm font-medium mb-3 text-[#00FF41] opacity-80">
+              <label className="block text-sm font-medium mb-3 text-[#E5E5E5]">
                 Reasoning Effort
               </label>
               <div className="flex gap-2">
@@ -209,8 +209,8 @@ export default function Home() {
                     disabled={isStarting}
                     className={`flex-1 px-4 py-2 border rounded transition-all ${
                       reasoningEffort === effort
-                        ? 'bg-[#00FF41] bg-opacity-20 border-[#00FF41] text-[#00FF41]'
-                        : 'border-[#00FF41] border-opacity-20 text-[#00FF41] opacity-60 hover:opacity-100'
+                        ? 'bg-[#2A2A2A] border-[#3A3A3A] text-white'
+                        : 'border-[#2A2A2A] text-[#A0A0A0] hover:bg-[#141414] hover:text-white'
                     }`}
                   >
                     {effort.charAt(0).toUpperCase() + effort.slice(1)}
