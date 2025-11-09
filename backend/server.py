@@ -98,11 +98,6 @@ class ChatRequest(BaseModel):
     conversation_id: str
     context: dict = {}
 
-class GeneratePersonaRequest(BaseModel):
-    description: str
-    conversation_id: str
-    context: dict = {}
-
 @api_router.post("/ai/chat")
 async def ai_chat(request: ChatRequest):
     """Main conversational endpoint for AI assistant"""
