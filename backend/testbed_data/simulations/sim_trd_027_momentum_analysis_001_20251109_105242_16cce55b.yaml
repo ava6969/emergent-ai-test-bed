@@ -1,3 +1,5 @@
+completed_at: '2025-11-09T10:54:21.777791+00:00'
+error: '''list'' object has no attribute ''get'''
 evaluation_model: gpt-5
 goal_achieved: false
 goal_id: momentum_analysis_001
@@ -8,7 +10,7 @@ organization_id: Momentum Advisors
 persona_id: TRD-027
 simulation_model: gpt-5
 started_at: '2025-11-09T10:52:42.107019+00:00'
-status: running
+status: failed
 thread_id: b9128de6-1469-4107-9657-1ded24e7c3d7
 trajectory_id: traj_trd_027_momentum_analysis_001_20251109_105242_bd25e772
 turns_completed: 0
