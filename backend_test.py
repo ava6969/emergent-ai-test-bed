@@ -12,7 +12,7 @@ import time
 from datetime import datetime
 
 # Backend URL from environment
-BACKEND_URL = "https://agentlab-3.preview.emergentagent.com/api"
+BACKEND_URL = "https://evaluscape.preview.emergentagent.com/api"
 
 def test_simulation_functionality():
     """Test actual simulation functionality with LangGraph credentials configured"""

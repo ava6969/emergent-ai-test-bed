@@ -313,7 +313,7 @@ USER ACTION: Types message and presses Enter
 
 **Request:**
 ```http
-POST https://agentlab-3.preview.emergentagent.com/api/ai/chat
+POST https://evaluscape.preview.emergentagent.com/api/ai/chat
 Content-Type: application/json
 
 {
