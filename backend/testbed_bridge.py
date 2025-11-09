@@ -91,22 +91,29 @@ goal_manager = GoalManager(
 )
 print("✓ Initialized GoalManager")
 
-# Initialize SimulationEngine
-from src.simulations import SimulationEngine
-from src.orchestrator.epoch_client import EpochClient
+# Initialize SimulationEngine (optional - requires LangGraph Cloud credentials)
+simulation_engine = None
+try:
+    from src.simulations import SimulationEngine
+    from src.orchestrator.epoch_client import EpochClient
 
-# Initialize EpochClient (LLM orchestrator)
-epoch_client = EpochClient(
-    api_key=os.getenv("OPENAI_API_KEY")
-)
-
-simulation_engine = SimulationEngine(
-    storage=storage,
-    epoch_client=epoch_client,
-    simulation_model="gpt-4o-mini",
-    evaluation_model="gpt-4o-mini"
-)
-print("✓ Initialized SimulationEngine")
+    # Check if LangGraph credentials are available
+    if os.getenv("LANGGRAPH_API_URL") and os.getenv("LANGGRAPH_API_KEY"):
+        # Initialize EpochClient (LLM orchestrator)
+        epoch_client = EpochClient()
+        
+        simulation_engine = SimulationEngine(
+            storage=storage,
+            epoch_client=epoch_client,
+            simulation_model="gpt-4o-mini",
+            evaluation_model="gpt-4o-mini"
+        )
+        print("✓ Initialized SimulationEngine with LangGraph Cloud")
+    else:
+        print("⚠ SimulationEngine not initialized (LangGraph Cloud credentials not configured)")
+        print("  To enable simulations, set LANGGRAPH_API_URL and LANGGRAPH_API_KEY")
+except Exception as e:
+    print(f"⚠ Failed to initialize SimulationEngine: {e}")
 
 # Export for use in server.py
 __all__ = [
