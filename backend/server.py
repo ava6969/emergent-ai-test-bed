@@ -606,6 +606,24 @@ async def delete_persona(persona_id: str, delete_trajectories: bool = False):
         print(f"Error deleting persona: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.delete("/personas")
+async def delete_all_personas(delete_trajectories: bool = False):
+    """Delete all personas using PersonaManager"""
+    if not persona_manager:
+        raise HTTPException(status_code=500, detail="Persona manager not initialized")
+    
+    try:
+        # Get all personas and delete them one by one
+        personas = await persona_manager.list()
+        deleted_count = 0
+        for persona in personas:
+            await persona_manager.delete(persona.id, delete_trajectories=delete_trajectories)
+            deleted_count += 1
+        return {"success": True, "deleted_count": deleted_count}
+    except Exception as e:
+        print(f"Error deleting all personas: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 # Goal Models
 class GoalCreate(BaseModel):
     name: str
