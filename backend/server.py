@@ -737,14 +737,15 @@ async def generate_goal_background(job_id: str, request: GoalGenerateRequest):
             requirements += product_context
         
         # Stage 3: AI Generation (this will make 10+ LLM calls and take 60-90 seconds)
-        update_job(job_id, stage="🤖 AI generating goal (analyzing context, defining objectives)...", progress=30)
+        goal_count_text = f"{request.count} goal{'s' if request.count > 1 else ''}"
+        update_job(job_id, stage=f"🤖 AI generating {goal_count_text} (analyzing context, defining objectives)...", progress=30)
         
         import time
         start_time = time.time()
         
         # This is a blocking call that makes multiple LLM requests internally
         goals = await goal_manager.generate(
-            count=1,
+            count=request.count,
             persona_ids=request.persona_ids or [],
             organization_id=request.organization_id,
             requirements=requirements,
@@ -756,21 +757,21 @@ async def generate_goal_background(job_id: str, request: GoalGenerateRequest):
             update_job(job_id, status="failed", error="Goal generation failed - no goals returned")
             return
         
-        goal = goals[0]
-        
-        # Override max_turns if specified
-        if request.max_turns_override:
-            goal.max_turns = request.max_turns_override
-        
-        # Store difficulty and product_id in metadata
-        if not goal.metadata:
-            goal.metadata = {}
-        goal.metadata["difficulty"] = request.difficulty
-        if request.product_id:
-            goal.metadata["product_id"] = request.product_id
-        
-        # Save to storage
-        await storage.save_goal(goal)
+        # Save all generated goals
+        for goal in goals:
+            # Override max_turns if specified
+            if request.max_turns_override:
+                goal.max_turns = request.max_turns_override
+            
+            # Store difficulty and product_id in metadata
+            if not goal.metadata:
+                goal.metadata = {}
+            goal.metadata["difficulty"] = request.difficulty
+            if request.product_id:
+                goal.metadata["product_id"] = request.product_id
+            
+            # Save to storage
+            await storage.save_goal(goal)
         
         end_time = time.time()
         generation_time = round(end_time - start_time, 2)
