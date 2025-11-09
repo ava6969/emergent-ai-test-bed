@@ -34,6 +34,16 @@ export default function SimulationPage() {
     fetchStateHistory: true, // Fetch historical messages for completed threads
   });
 
+  // Poll status first (lightweight check for completed/failed)
+  const { data: statusData } = useQuery({
+    queryKey: ['thread-status', thread_id],
+    queryFn: () => apiClient.getThreadStatus(thread_id),
+    refetchInterval: stream.isLoading ? 1000 : 5000, // Poll faster while running
+    enabled: !!thread_id,
+  });
+
+  const status = statusData?.status || 'running';
+
   // Also poll thread state for live updates (workaround for stream limitations)
   const { data: threadState } = useQuery({
     queryKey: ['thread-messages', thread_id],
@@ -47,14 +57,6 @@ export default function SimulationPage() {
     },
     refetchInterval: 2000, // Poll every 2 seconds for new messages
     enabled: !!thread_id && status !== 'completed',
-  });
-
-  // Still poll status separately (lightweight check for completed/failed)
-  const { data: statusData } = useQuery({
-    queryKey: ['thread-status', thread_id],
-    queryFn: () => apiClient.getThreadStatus(thread_id),
-    refetchInterval: stream.isLoading ? 1000 : 5000, // Poll faster while running
-    enabled: !!thread_id,
   });
 
   // Merge messages from stream and polling
