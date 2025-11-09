@@ -436,6 +436,69 @@ Without these, the UI works but simulations will return an error. Backend gracef
 - Real conversations happening between personas and EpochClient
 - No critical issues remaining
 
+## Model Configuration Standardization (2025-11-09)
+
+### Implementation Complete ✅
+
+**Changes Made:**
+
+1. **Backend Model Factory** (`/app/backend/testbed/src/generation/model_factory.py`)
+   - ✅ Created centralized factory for ChatOpenAI model initialization
+   - ✅ Auto-detects reasoning models (o1, o3, gpt-5+)
+   - ✅ Applies `reasoning_effort` for reasoning models (NO temperature)
+   - ✅ Applies `temperature` for regular models (NO reasoning_effort)
+   - ✅ Reusable across all generators and environments
+
+2. **TestEnvironment Refactor** (`/app/backend/testbed/src/environment/test_environment.py`)
+   - ✅ Removed `ChatPromptTemplate` and `MessagesPlaceholder`
+   - ✅ Uses model factory for initialization
+   - ✅ Simple system prompt string with persona/goal context
+   - ✅ Converts LangGraph messages to LangChain Message objects
+   - ✅ Returns `[SystemMessage] + [converted_messages]` for LLM
+   - ✅ Added `reasoning_effort` parameter (default: "medium")
+
+3. **Updated Generators**
+   - ✅ PersonaGenerator uses model factory
+   - ✅ GoalGenerator uses model factory
+   - ✅ Consistent configuration across all generation
+
+4. **Frontend UI Enhancement** (`/app/frontend/src/components/shared/GenerationSettings.jsx`)
+   - ✅ Added "Reasoning Effort" selector (low/medium/high)
+   - ✅ Conditionally shows effort for reasoning models (o1, o3, gpt-5+)
+   - ✅ Conditionally shows temperature for regular models (gpt-4o, etc.)
+   - ✅ Brain emoji (🧠) for reasoning models, lightning (⚡) for regular
+   - ✅ Reusable across Personas, Goals, and Simulations
+
+5. **Simulations Page Update** (`/app/frontend/src/pages/Simulations.jsx`)
+   - ✅ Reasoning Model selector with gpt-5 as default
+   - ✅ Reasoning Effort selector (only shown for reasoning models)
+   - ✅ Helpful tooltips explaining model types
+   - ✅ Passes reasoning_effort to backend API
+
+6. **Backend API Updates** (`/app/backend/server.py`, `/app/backend/testbed/src/simulations/engine.py`)
+   - ✅ Added `reasoning_effort` parameter to simulation endpoints
+   - ✅ Default: gpt-5 with medium effort
+   - ✅ Properly propagated through background tasks
+
+7. **Default Configuration** (`/app/backend/testbed/src/generation/config.py`)
+   - ✅ Changed default model from gpt-4o to gpt-5
+   - ✅ Changed default reasoning_effort from "low" to "medium"
+   - ✅ Temperature now 0.7 (only used for non-reasoning models)
+
+**UI Verification:**
+- ✅ Simulations page shows GPT-5 with Medium effort by default
+- ✅ Reasoning Effort selector visible for reasoning models
+- ✅ Temperature slider hidden for reasoning models
+- ✅ Switching to GPT-4o shows temperature slider, hides effort selector
+- ✅ All UI feedback messages correctly reflect model type
+
+**Technical Benefits:**
+- Single source of truth for model initialization
+- Prevents temperature errors on reasoning models
+- Clean separation of concerns
+- Easy to add new model types in the future
+- Consistent UX across all generation features
+
 ## Incorporate User Feedback
 - If user reports any issues, investigate and fix before proceeding
 - If user has LangGraph credentials, configure them to enable full simulation functionality
@@ -448,9 +511,10 @@ Without these, the UI works but simulations will return an error. Backend gracef
 - ✅ Conversation trajectory display working
 - ✅ Goal achievement indicator working
 - ✅ run_direct method successfully bypasses LangSmith
+- ✅ Model configuration standardized with reasoning effort support
 
-**Current Status: SIMULATION FEATURE COMPLETE**
-- Backend: All APIs working correctly
-- Frontend: UI fully functional with real-time updates
+**Current Status: SIMULATION FEATURE COMPLETE WITH STANDARDIZED MODEL CONFIGURATION**
+- Backend: All APIs working correctly with model factory
+- Frontend: UI fully functional with conditional model settings
 - Integration: LangGraph Cloud connected and operational
-- Simulations execute successfully with Elena Marquez persona and Sector Momentum Analysis goal
+- Models: gpt-5 with medium effort as default across all features
