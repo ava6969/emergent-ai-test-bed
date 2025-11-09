@@ -1109,12 +1109,15 @@ class OrganizationUpdate(BaseModel):
 @api_router.get("/organizations")
 async def list_organizations():
     """List all organizations"""
-    orgs = []
-    cursor = db.organizations.find()
-    async for doc in cursor:
-        doc['_id'] = str(doc['_id'])
-        orgs.append(doc)
-    return orgs
+    try:
+        orgs = []
+        cursor = db.organizations.find({}, {"_id": 0})  # Exclude _id field
+        async for doc in cursor:
+            orgs.append(doc)
+        return orgs
+    except Exception as e:
+        print(f"Error listing organizations: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.get("/organizations/{organization_id}")
 async def get_organization(organization_id: str):
