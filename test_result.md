@@ -513,8 +513,64 @@ Without these, the UI works but simulations will return an error. Backend gracef
 - ✅ run_direct method successfully bypasses LangSmith
 - ✅ Model configuration standardized with reasoning effort support
 
-**Current Status: SIMULATION FEATURE COMPLETE WITH STANDARDIZED MODEL CONFIGURATION**
-- Backend: All APIs working correctly with model factory
-- Frontend: UI fully functional with conditional model settings
-- Integration: LangGraph Cloud connected and operational
-- Models: gpt-5 with medium effort as default across all features
+## Updated Simulation Testing Results (2025-11-09 09:21:00)
+
+### Model Factory Integration & Reasoning Effort Testing ✅
+
+**Test Status**: SUCCESS - New Model Factory Working Perfectly
+
+**Key Findings:**
+
+1. **Model Factory Integration WORKING**
+   - POST /api/simulations/run with reasoning_model=gpt-5 and reasoning_effort=medium: ✅ SUCCESS
+   - Parameters correctly passed and returned in response
+   - No temperature-related errors (correct for reasoning models)
+   - Model factory properly initializes gpt-5 with medium reasoning effort
+
+2. **TestEnvironment Message Handling WORKING**
+   - LangGraph to LangChain message conversion: ✅ SUCCESS
+   - Proper message structure with role/content fields
+   - Realistic conversation generated between Elena Marquez and system
+   - Conversation relevant to sector momentum analysis goal
+
+3. **Simulation Execution SUCCESS**
+   - Simulation ID: dd8a3c74-592e-4f4f-a47d-20242f196ce3
+   - Status: completed in 2 turns (as expected with max_turns=2)
+   - Goal achieved: true (Elena successfully initiated momentum analysis)
+   - Total trajectory messages: 4 (proper conversation flow)
+
+4. **Conversation Quality Verification**
+   - Elena Marquez persona context properly applied
+   - Request: "Can you help me find the best performing sectors from September 29, 2023?"
+   - System response included sector ETF analysis (XLK, XLF, XLE, etc.)
+   - Conversation contains relevant financial/momentum analysis content
+   - Professional investment advisor tone maintained
+
+5. **Technical Verification**
+   - No temperature errors with gpt-5 reasoning model
+   - Proper thread creation and management
+   - Real-time polling working correctly
+   - Simulation tracking and status updates functional
+   - Message conversion from LangGraph format to LangChain format working
+
+**Test Results Summary:**
+- POST /api/simulations/run with new parameters: ✅ PASS
+- Model factory parameter handling: ✅ PASS  
+- TestEnvironment message conversion: ✅ PASS
+- Reasoning effort integration: ✅ PASS
+- No temperature-related errors: ✅ PASS
+- Realistic conversation generation: ✅ PASS
+- Simulation completion: ✅ PASS
+- Real-time polling: ✅ PASS
+
+**Assessment:**
+- Model Factory Integration: ✅ WORKING - Correctly handles gpt-5 with medium reasoning effort
+- TestEnvironment Refactor: ✅ WORKING - Message handling and conversion working perfectly
+- Reasoning Model Support: ✅ WORKING - No temperature conflicts, proper reasoning_effort usage
+- End-to-End Flow: ✅ WORKING - Complete simulation with realistic conversation
+
+**Current Status: MODEL FACTORY INTEGRATION COMPLETE AND TESTED**
+- Backend: Model factory working correctly with reasoning models
+- TestEnvironment: Message handling refactor successful
+- Integration: gpt-5 with medium effort working as expected
+- Conversation Quality: Realistic persona-based interactions generated
