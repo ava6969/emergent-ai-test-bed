@@ -1,26 +1,24 @@
-background: Aisha Patel is a senior backend engineer at Stripe, where she leads a
-  team responsible for developing and maintaining scalable payment processing systems.
-  With over 8 years of experience in software development, Aisha has progressed from
-  a junior developer role at a fintech startup to her current position at Stripe due
-  to her strong coding skills and ability to solve complex technical problems. She
-  is proficient in languages such as Java and Python and specializes in distributed
-  systems and microservices architecture. Aisha is driven by her passion for building
-  efficient systems that enhance user experience and improve transaction security.
-  Her primary motivation is to lead innovative projects that push the boundaries of
-  payment technology, but she often feels overwhelmed by the demands of tight deadlines
-  and the need to constantly stay updated with emerging technologies. Known for her
-  analytical mindset and attention to detail, Aisha thrives in collaborative environments
-  and values open communication with her team. She also participates in mentoring
-  junior engineers, which she finds fulfilling, as it allows her to share her knowledge
-  and foster a supportive work culture.
+background: Sofia Kim is a Machine Learning Engineer specializing in integrity at
+  OpenAI, where she has worked for the past four years. After completing her Master's
+  in Computer Science at Stanford, she joined a tech startup as a data scientist,
+  quickly moving into machine learning roles. At OpenAI, her primary responsibilities
+  include developing algorithms to detect and mitigate adversarial threats, ensuring
+  system integrity, and collaborating with cross-functional teams to improve user
+  experience. Sofia is passionate about ethical AI and is motivated by the challenge
+  of creating secure, robust systems. She is skilled in Python, TensorFlow, and has
+  a strong understanding of cybersecurity principles. Sofia is known for her analytical
+  mindset and exceptional problem-solving skills, but she often struggles with time
+  management due to her perfectionist tendencies. She aims to deepen her knowledge
+  of AI safety and contribute to policies that promote responsible AI deployment.
+created_at: '2025-11-09T05:17:31.640605+00:00'
 created_from_real_data: false
 id: ENG001
 metadata:
   tags:
-  - senior
+  - mid-level
   - technical
-  - leadership
-  - cloud-native
-name: Aisha Patel
-organization_id: Stripe
+  - individual-contributor
+  - data-driven
+name: Sofia Kim
+organization_id: OpenAI
 trajectory_ids: []
