@@ -285,6 +285,8 @@ export function Goals() {
           onGenerate={handleGenerate}
           onClose={() => setShowGenerateModal(false)}
           isGenerating={isGenerating}
+          generationStage={generationStage}
+          generationProgress={generationProgress}
         />
       )}
     </div>
