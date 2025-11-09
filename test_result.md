@@ -340,10 +340,50 @@ Without these, the UI works but simulations will return an error. Backend gracef
 
 Without these, the UI works but simulations will return an error. Backend gracefully handles missing credentials.
 
-### Next Steps
-- ✅ Backend simulation endpoints tested and working correctly
-- Test frontend UI flow
-- Ask user for LangGraph credentials OR create simplified simulation engine using OpenAI directly
+### LangGraph Simulation Testing Results (2025-11-09 07:35:19)
+
+**Test Status**: PARTIAL SUCCESS - LangGraph Working, LangSmith Issue
+
+**Key Findings:**
+
+1. **LangGraph Integration WORKING**
+   - LangGraph API URL: https://epoch-ai-agent-7754c6dd92975fe99da9646f6e5cb4a6.us.langgraph.app
+   - LangGraph API Key: Configured and working
+   - Assistant ID: epoch-ai
+   - Simulation engine successfully initializes with LangGraph Cloud
+
+2. **POST /api/simulations/run - SUCCESS**
+   - Test: Start simulation with persona_id: TRD-027 (Elena Marquez) and goal_id: momentum_analysis_001
+   - Result: PASS - Returns 200 with simulation_id and status="running"
+   - Simulation ID Generated: d70d68ad-c900-4ee0-ac28-bab0518e2956
+
+3. **GET /api/simulations/{simulation_id} - WORKING**
+   - Test: Poll simulation status in real-time
+   - Result: PASS - Returns proper simulation data structure
+   - Data Structure Verified: status, current_turn, max_turns, trajectory, goal_achieved, persona_id, goal_id
+
+4. **SIMULATION EXECUTION FAILURE**
+   - Issue: LangSmith API 403 Forbidden error
+   - Root Cause: LANGSMITH_API_KEY=your_langsmith_key_here (placeholder, not real key)
+   - Error: Failed to POST /datasets in LangSmith API
+   - Impact: Simulation starts but fails during execution when trying to create evaluation datasets
+
+**Test Results Summary:**
+- POST /api/simulations/run: PASS (Started simulation successfully)
+- Simulation Completion: FAIL (LangSmith API permission issue)
+- GET /api/simulations/{id}: PASS (Real-time polling works)
+- POST /api/simulations/{id}/stop: PASS (404 for non-existent)
+- GET /api/simulations: PASS (List endpoint works)
+
+**Assessment:**
+- LangGraph Integration: WORKING - Can start simulations successfully
+- Real-time Polling: WORKING - Can retrieve simulation status and data
+- Simulation Execution: BLOCKED by LangSmith API key issue
+
+**Next Steps:**
+- LangGraph credentials are properly configured and working
+- Need valid LangSmith API key to complete simulation execution
+- Alternative: Disable LangSmith evaluation to allow simulations to run without dataset creation
 
 ## Incorporate User Feedback
 - If user reports any issues, investigate and fix before proceeding
