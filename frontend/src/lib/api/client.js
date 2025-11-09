@@ -181,6 +181,30 @@ class APIClient {
 
   // ==================== SIMULATION ENDPOINTS ====================
 
+  async runSimulation(data) {
+    const response = await this.client.post('/api/simulations/run', null, {
+      params: data,
+    });
+    return response.data;
+  }
+
+  async getSimulation(simulationId) {
+    const response = await this.client.get(`/api/simulations/${simulationId}`);
+    return response.data;
+  }
+
+  async stopSimulation(simulationId) {
+    const response = await this.client.post(`/api/simulations/${simulationId}/stop`);
+    return response.data;
+  }
+
+  async listSimulations() {
+    const response = await this.client.get('/api/simulations');
+    return response.data;
+  }
+
+  // ==================== OLD SIMULATION ENDPOINTS ====================
+
   async runSimulation(config) {
     const response = await this.client.post('/api/simulations/run', config);
     return response.data;
