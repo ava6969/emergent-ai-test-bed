@@ -1,0 +1,18 @@
+completed_at: '2025-11-09T07:35:19.791757+00:00'
+error: 'Failed to POST /datasets in LangSmith API. HTTPError(''403 Client Error: Forbidden
+  for url: https://api.smith.langchain.com/datasets'', ''{"detail":"Forbidden"}'')'
+evaluation_model: gpt-4o-mini
+goal_achieved: false
+goal_id: momentum_analysis_001
+id: sim_trd_027_momentum_analysis_001_20251109_073519_20f99ef8
+max_turns: 5
+metadata: {}
+organization_id: Momentum Advisors
+persona_id: TRD-027
+simulation_model: gpt-4o-mini
+started_at: '2025-11-09T07:35:19.314074+00:00'
+status: failed
+thread_id: ''
+trajectory_id: traj_trd_027_momentum_analysis_001_20251109_073519_abad427c
+turns_completed: 0
+use_persona_memory: false
