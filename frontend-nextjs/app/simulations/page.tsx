@@ -227,22 +227,37 @@ export default function SimulationsPage() {
 
         <div className="lg:col-span-2">
           <Card className="p-6">
-            <h2 className="text-xl font-semibold mb-4">Conversation Trajectory</h2>
-            {!simulationData ? (
-              <div className="flex items-center justify-center h-96 text-gray-500">
-                <div className="text-center">
-                  <p>Select a persona and goal to start a simulation</p>
+            <div className="mb-4">
+              <h2 className="text-xl font-semibold">Conversation Trajectory</h2>
+              {simulationData && (
+                <div className="flex items-center gap-2 mt-2">
+                  <span className={`px-2 py-1 text-xs rounded-full ${
+                    simulationData.status === 'running' ? 'bg-blue-100 text-blue-800' :
+                    simulationData.status === 'completed' ? 'bg-green-100 text-green-800' :
+                    'bg-red-100 text-red-800'
+                  }`}>
+                    {simulationData.status}
+                  </span>
+                  {simulationData.current_turn > 0 && (
+                    <span className="text-sm text-gray-600">
+                      Turn {simulationData.current_turn} / {simulationData.max_turns || 10}
+                    </span>
+                  )}
+                  {simulationData.status === 'completed' && (
+                    <span className={`ml-auto text-sm font-medium ${
+                      simulationData.goal_achieved ? 'text-green-600' : 'text-yellow-600'
+                    }`}>
+                      {simulationData.goal_achieved ? '✓ Goal Achieved' : '⚠ Goal Not Achieved'}
+                    </span>
+                  )}
                 </div>
-              </div>
-            ) : (
-              <TrajectoryViewer
-                messages={simulationData.trajectory || []}
-                status={simulationData.status}
-                currentTurn={simulationData.current_turn}
-                maxTurns={simulationData.max_turns || 10}
-                goalAchieved={simulationData.goal_achieved}
-              />
-            )}
+              )}
+            </div>
+            
+            <ChatOnlyThread
+              messages={(simulationData?.trajectory || []) as Message[]}
+              isLoading={isSimulating}
+            />
           </Card>
         </div>
       </div>
