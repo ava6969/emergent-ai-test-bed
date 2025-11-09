@@ -127,14 +127,14 @@ async def ai_chat(request: ChatRequest):
 class GeneratePersonaRequest(BaseModel):
     """Request model for persona generation"""
     description: str
-    message: str = None  # Backwards compatibility
+    message: Optional[str] = None  # Backwards compatibility
     conversation_id: str = "api"
     context: dict = {}
     
     # Generation settings
-    organization_id: str = None
+    organization_id: Optional[str] = None
     use_exa_enrichment: bool = False
-    metadata_schema: dict = None
+    metadata_schema: Optional[dict] = None
     model: str = "gpt-4o-mini"
     temperature: float = 0.7
     max_tokens: int = 500
