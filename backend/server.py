@@ -777,14 +777,16 @@ async def generate_goal_background(job_id: str, request: GoalGenerateRequest):
         generation_time = round(end_time - start_time, 2)
         
         # Complete
+        goal_names = [g.name for g in goals]
+        goal_count_text = f"{len(goals)} goal{'s' if len(goals) > 1 else ''}"
         update_job(
             job_id,
             status="completed",
             stage="Goal generation complete",
             progress=100,
             result={
-                "message": f"✓ Created goal: {goal.name}",
-                "goal": goal.model_dump(),
+                "message": f"✓ Created {goal_count_text}: {', '.join(goal_names)}",
+                "goals": [g.model_dump() for g in goals],
                 "generation_time": generation_time
             }
         )
