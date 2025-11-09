@@ -80,11 +80,23 @@ organization_manager = OrganizationManager(
 )
 print("✓ Initialized OrganizationManager")
 
+# Initialize GoalManager
+from src.goals.manager import GoalManager
+
+goal_manager = GoalManager(
+    storage=storage,
+    exa_integration=exa,
+    generator_config=default_generator_config,
+    use_agent_generator=True
+)
+print("✓ Initialized GoalManager")
+
 # Export for use in server.py
 __all__ = [
     'storage',
     'exa',
     'persona_manager',
+    'goal_manager',
     'organization_manager',
     'create_generator_config',
     'default_generator_config',
