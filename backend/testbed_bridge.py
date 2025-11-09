@@ -91,12 +91,30 @@ goal_manager = GoalManager(
 )
 print("✓ Initialized GoalManager")
 
+# Initialize SimulationEngine
+from src.simulations import SimulationEngine
+from src.orchestrator.epoch_client import EpochClient
+
+# Initialize EpochClient (LLM orchestrator)
+epoch_client = EpochClient(
+    api_key=os.getenv("OPENAI_API_KEY")
+)
+
+simulation_engine = SimulationEngine(
+    storage=storage,
+    epoch_client=epoch_client,
+    simulation_model="gpt-4o-mini",
+    evaluation_model="gpt-4o-mini"
+)
+print("✓ Initialized SimulationEngine")
+
 # Export for use in server.py
 __all__ = [
     'storage',
     'exa',
     'persona_manager',
     'goal_manager',
+    'simulation_engine',
     'organization_manager',
     'create_generator_config',
     'default_generator_config',
