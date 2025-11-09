@@ -20,7 +20,6 @@ export function MatrixSidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const pathname = usePathname();
 
-  // Fetch simulation threads
   const { data: threads } = useQuery({
     queryKey: ['simulation-threads'],
     queryFn: () => apiClient.getSimulationThreads(),
@@ -43,10 +42,13 @@ export function MatrixSidebar() {
         width: isCollapsed ? '60px' : '240px',
       }}
       transition={{ duration: 0.3, ease: 'easeInOut' }}
-      className="h-screen bg-black border-r border-[#00FF41] border-opacity-20 flex flex-col relative"
+      className="h-screen bg-[#0A0A0A] border-r border-[#2A2A2A] flex flex-col relative z-10"
+      style={{
+        boxShadow: '4px 0 24px rgba(0, 0, 0, 0.4)',
+      }}
     >
       {/* Logo/Brand */}
-      <div className="p-4 border-b border-[#00FF41] border-opacity-20">
+      <div className="p-4 border-b border-[#2A2A2A]">
         <AnimatePresence mode="wait">
           {!isCollapsed ? (
             <motion.div
@@ -55,12 +57,12 @@ export function MatrixSidebar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="flex items-center gap-2"
+              className="flex items-center gap-3"
             >
-              <div className="w-8 h-8 bg-[#00FF41] bg-opacity-10 rounded flex items-center justify-center">
-                <span className="text-[#00FF41] font-bold text-sm matrix-glow">D</span>
+              <div className="w-8 h-8 bg-gradient-to-br from-[#3A3A3A] to-[#2A2A2A] rounded flex items-center justify-center">
+                <span className="text-white font-bold text-sm">D</span>
               </div>
-              <span className="text-[#00FF41] font-semibold text-lg matrix-glow">
+              <span className="text-white font-semibold text-lg luminance-glow">
                 DAGIVerse
               </span>
             </motion.div>
@@ -73,8 +75,8 @@ export function MatrixSidebar() {
               transition={{ duration: 0.2 }}
               className="flex justify-center"
             >
-              <div className="w-8 h-8 bg-[#00FF41] bg-opacity-10 rounded flex items-center justify-center">
-                <span className="text-[#00FF41] font-bold text-sm matrix-glow">D</span>
+              <div className="w-8 h-8 bg-gradient-to-br from-[#3A3A3A] to-[#2A2A2A] rounded flex items-center justify-center">
+                <span className="text-white font-bold text-sm">D</span>
               </div>
             </motion.div>
           )}
@@ -84,30 +86,31 @@ export function MatrixSidebar() {
       {/* Toggle Button */}
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="absolute -right-3 top-20 w-6 h-6 bg-black border border-[#00FF41] border-opacity-30 rounded-full flex items-center justify-center hover:bg-[#00FF41] hover:bg-opacity-10 transition-all z-10"
+        className="absolute -right-3 top-20 w-6 h-6 bg-[#141414] border border-[#2A2A2A] rounded-full flex items-center justify-center hover:bg-[#1E1E1E] hover:border-[#3A3A3A] transition-all z-10"
       >
         {isCollapsed ? (
-          <ChevronRight className="w-3 h-3 text-[#00FF41]" />
+          <ChevronRight className="w-3 h-3 text-[#A0A0A0]" />
         ) : (
-          <ChevronLeft className="w-3 h-3 text-[#00FF41]" />
+          <ChevronLeft className="w-3 h-3 text-[#A0A0A0]" />
         )}
       </button>
 
       {/* New Simulation Button */}
-      <div className="p-3 border-b border-[#00FF41] border-opacity-20">
+      <div className="p-3 border-b border-[#2A2A2A]">
         <Link href="/">
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             className={`w-full ${
               isCollapsed ? 'p-2' : 'p-2.5'
-            } bg-[#00FF41] bg-opacity-10 border border-[#00FF41] border-opacity-30 rounded flex items-center ${
+            } bg-gradient-to-r from-[#2A2A2A] to-[#1E1E1E] border border-[#3A3A3A] rounded flex items-center ${
               isCollapsed ? 'justify-center' : 'justify-start gap-2'
-            } hover:bg-opacity-20 transition-all group`}
+            } hover:from-[#3A3A3A] hover:to-[#2A2A2A] hover:border-[#4A4A4A] transition-all group relative overflow-hidden`}
           >
-            <Plus className="w-4 h-4 text-[#00FF41] group-hover:rotate-90 transition-transform" />
+            <div className="absolute inset-0 animate-shimmer"></div>
+            <Plus className="w-4 h-4 text-white group-hover:rotate-90 transition-transform relative z-10" />
             {!isCollapsed && (
-              <span className="text-[#00FF41] text-sm font-medium">New Simulation</span>
+              <span className="text-white text-sm font-medium relative z-10">New Simulation</span>
             )}
           </motion.button>
         </Link>
@@ -123,21 +126,21 @@ export function MatrixSidebar() {
                 isCollapsed ? 'justify-center p-2' : 'gap-3 p-2.5'
               } rounded cursor-pointer transition-all ${
                 isActive(item.path)
-                  ? 'bg-[#00FF41] bg-opacity-20 border border-[#00FF41] border-opacity-40'
-                  : 'hover:bg-[#00FF41] hover:bg-opacity-10'
+                  ? 'bg-[#1E1E1E] border border-[#3A3A3A]'
+                  : 'hover:bg-[#141414]'
               }`}
             >
               <item.icon
                 className={`w-4 h-4 ${
-                  isActive(item.path) ? 'text-[#00FF41]' : 'text-[#00FF41] opacity-60'
+                  isActive(item.path) ? 'text-white' : 'text-[#A0A0A0]'
                 }`}
               />
               {!isCollapsed && (
                 <span
                   className={`text-sm ${
                     isActive(item.path)
-                      ? 'text-[#00FF41] font-medium'
-                      : 'text-[#00FF41] opacity-60'
+                      ? 'text-white font-medium'
+                      : 'text-[#A0A0A0]'
                   }`}
                 >
                   {item.label}
@@ -149,10 +152,10 @@ export function MatrixSidebar() {
       </nav>
 
       {/* Simulation History */}
-      <div className="border-t border-[#00FF41] border-opacity-20 p-3 max-h-[300px] overflow-y-auto">
+      <div className="border-t border-[#2A2A2A] p-3 max-h-[300px] overflow-y-auto">
         {!isCollapsed && (
           <div className="mb-2">
-            <span className="text-[#00FF41] text-xs font-semibold opacity-60 uppercase tracking-wider">
+            <span className="text-[#A0A0A0] text-xs font-semibold uppercase tracking-wider">
               Simulations
             </span>
           </div>
@@ -171,18 +174,18 @@ export function MatrixSidebar() {
                     isCollapsed ? 'p-2 flex justify-center' : 'p-2'
                   } rounded cursor-pointer transition-all ${
                     isThreadActive
-                      ? 'bg-[#00FF41] bg-opacity-10 border border-[#00FF41] border-opacity-30'
-                      : 'hover:bg-[#00FF41] hover:bg-opacity-5'
+                      ? 'bg-[#1E1E1E] border border-[#2A2A2A]'
+                      : 'hover:bg-[#141414]'
                   }`}
                 >
                   {isCollapsed ? (
-                    <div className="w-2 h-2 bg-[#00FF41] rounded-full opacity-60"></div>
+                    <div className="w-2 h-2 bg-white rounded-full opacity-40"></div>
                   ) : (
                     <div className="space-y-0.5">
-                      <div className="text-[#00FF41] text-xs font-medium opacity-80 truncate">
+                      <div className="text-white text-xs font-medium opacity-90 truncate">
                         {personaName}
                       </div>
-                      <div className="text-[#00FF41] text-xs opacity-40 truncate">
+                      <div className="text-[#A0A0A0] text-xs opacity-60 truncate">
                         {goalName.substring(0, 25)}
                         {goalName.length > 25 ? '...' : ''}
                       </div>
@@ -193,7 +196,7 @@ export function MatrixSidebar() {
             );
           })}
           {(!threads?.threads || threads.threads.length === 0) && !isCollapsed && (
-            <div className="text-[#00FF41] text-xs opacity-40 text-center py-4">
+            <div className="text-[#A0A0A0] text-xs opacity-40 text-center py-4">
               No simulations yet
             </div>
           )}
