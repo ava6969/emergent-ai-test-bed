@@ -38,7 +38,7 @@ export function GenerationSettingsModal({
   const [settings, setSettings] = useState<GenerationSettings>({
     model: 'gpt-5',
     temperature: 0.7,
-    max_tokens: 1500,
+    max_tokens: 8000,  // Higher for reasoning models
     reasoning_effort: 'medium',
     use_exa_enrichment: false,
   });
