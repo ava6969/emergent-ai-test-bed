@@ -8,8 +8,19 @@ import { Trash2, Target } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 
+import { useState, useEffect } from 'react';
+import { Input } from '@/components/ui/input';
+import { Settings, Sparkles } from 'lucide-react';
+import { GenerationSettingsModal } from '@/components/GenerationSettingsModal';
+
 export default function GoalsPage() {
   const queryClient = useQueryClient();
+  const [generateInput, setGenerateInput] = useState('');
+  const [count, setCount] = useState(1);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generationStage, setGenerationStage] = useState('');
+  const [generationProgress, setGenerationProgress] = useState(0);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   // Fetch goals
   const { data: goals = [], isLoading } = useQuery({
@@ -29,6 +40,81 @@ export default function GoalsPage() {
   const handleDelete = (id: string) => {
     if (window.confirm('Are you sure you want to delete this goal?')) {
       deleteMutation.mutate(id);
+    }
+  };
+
+  const handleGenerate = async () => {
+    if (!generateInput.trim()) {
+      toast.error('Please enter a goal description');
+      return;
+    }
+
+    try {
+      setIsGenerating(true);
+      setGenerationProgress(0);
+      
+      // Load settings from localStorage
+      const settingsKey = 'generation_settings_goal';
+      const storedSettings = localStorage.getItem(settingsKey);
+      const settings = storedSettings ? JSON.parse(storedSettings) : {
+        model: 'gpt-5',
+        temperature: 0.7,
+        reasoning_effort: 'medium',
+        max_tokens: 1500,
+      };
+
+      const startResponse = await apiClient.generateGoal(generateInput.trim(), {
+        ...settings,
+        count: count,
+      });
+
+      const jobId = startResponse.job_id;
+
+      // Poll for status
+      const pollingInterval = setInterval(async () => {
+        try {
+          const status = await apiClient.checkJobStatus(jobId);
+
+          setGenerationStage(status.stage || '');
+          setGenerationProgress(status.progress || 0);
+
+          if (status.status === 'completed') {
+            clearInterval(pollingInterval);
+            queryClient.invalidateQueries({ queryKey: ['goals'] });
+            setGenerateInput('');
+            const goalCount = count > 1 ? `${count} goals` : 'goal';
+            toast.success(`Successfully created ${goalCount} in ${status.generation_time}s`);
+            
+            setTimeout(() => {
+              setIsGenerating(false);
+              setGenerationProgress(0);
+              setGenerationStage('');
+            }, 500);
+          } else if (status.status === 'failed') {
+            clearInterval(pollingInterval);
+            toast.error(`Generation failed: ${status.error || 'Unknown error'}`);
+            setIsGenerating(false);
+            setGenerationProgress(0);
+            setGenerationStage('');
+          }
+        } catch (error) {
+          console.error('Polling error:', error);
+        }
+      }, 1000);
+
+      // Cleanup on unmount
+      setTimeout(() => {
+        if (pollingInterval) {
+          clearInterval(pollingInterval);
+        }
+      }, 120000); // 2 minute timeout
+
+    } catch (error: any) {
+      console.error('Generation error:', error);
+      toast.error(error.message || 'Failed to start generation');
+      setIsGenerating(false);
+      setGenerationProgress(0);
+      setGenerationStage('');
     }
   };
 
