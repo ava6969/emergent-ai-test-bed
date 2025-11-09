@@ -188,8 +188,22 @@ export function Personas() {
     <div className="flex flex-col h-full">
       {/* Header */}
       <div className="border-b p-6">
-        <h1 className="text-2xl font-bold">Personas</h1>
-        <p className="text-muted-foreground">Manage your test personas</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold">Personas</h1>
+            <p className="text-muted-foreground">Manage your test personas</p>
+          </div>
+          {personas.length > 0 && (
+            <Button
+              variant="destructive"
+              onClick={handleDeleteAll}
+              disabled={deleteAllMutation.isPending}
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Delete All
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Table */}
