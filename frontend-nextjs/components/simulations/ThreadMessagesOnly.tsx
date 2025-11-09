@@ -84,22 +84,31 @@ export function ThreadMessagesOnly({
                   <>
                     {messages
                       .filter((m) => !m.id?.startsWith(DO_NOT_RENDER_ID_PREFIX))
-                      .map((message, index) =>
-                        message.type === 'human' ? (
-                          <HumanMessage
-                            key={message.id || `${message.type}-${index}`}
-                            message={message}
-                            isLoading={isLoading}
-                          />
+                      .map((message, index) => {
+                        // Get reward from additional_kwargs for color coding
+                        const reward = message.additional_kwargs?.reward;
+                        const borderColor = 
+                          reward === 1 ? 'border-l-4 border-l-green-500' :  // Good response
+                          reward === -1 ? 'border-l-4 border-l-red-500' :    // Bad response
+                          '';  // Neutral (0) or no reward
+                        
+                        return message.type === 'human' ? (
+                          <div key={message.id || `${message.type}-${index}`} className={borderColor}>
+                            <HumanMessage
+                              message={message}
+                              isLoading={isLoading}
+                            />
+                          </div>
                         ) : (
-                          <AssistantMessage
-                            key={message.id || `${message.type}-${index}`}
-                            message={message}
-                            isLoading={isLoading}
-                            handleRegenerate={() => {}}
-                          />
-                        ),
-                      )}
+                          <div key={message.id || `${message.type}-${index}`} className={borderColor}>
+                            <AssistantMessage
+                              message={message}
+                              isLoading={isLoading}
+                              handleRegenerate={() => {}}
+                            />
+                          </div>
+                        );
+                      })}
                     {isLoading && <AssistantMessageLoading />}
                   </>
                 )}
