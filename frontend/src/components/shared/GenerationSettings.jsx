@@ -16,7 +16,7 @@ import { Switch } from '@/components/ui/switch';
 const DEFAULT_SETTINGS = {
   model: 'gpt-4o-mini',
   temperature: 0.7,
-  max_tokens: 500,
+  max_tokens: 1000,
   use_exa_enrichment: false,
   exa_results_count: 3,
   organization_id: '',
