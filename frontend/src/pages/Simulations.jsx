@@ -230,7 +230,7 @@ export function Simulations() {
             </div>
 
             {/* Reasoning Model Selector */}
-            <div className="mb-6">
+            <div className="mb-4">
               <label className="block text-sm font-medium mb-2">
                 <Sparkles className="inline w-4 h-4 mr-1" />
                 Reasoning Model
@@ -241,15 +241,41 @@ export function Simulations() {
                 disabled={isSimulating}
                 className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
               >
+                <option value="gpt-5">GPT-5 (Advanced Reasoning, Default)</option>
+                <option value="o1">O1 (Deep Reasoning)</option>
+                <option value="o3">O3 (Advanced Reasoning)</option>
                 <option value="gpt-4o">GPT-4o (Fast)</option>
-                <option value="gpt-4o-mini">GPT-4o Mini (Faster)</option>
-                <option value="o1-preview">o1 Preview (Deep Reasoning)</option>
-                <option value="o1-mini">o1 Mini (Reasoning)</option>
+                <option value="gpt-4o-mini">GPT-4o Mini (Fastest)</option>
               </select>
               <p className="text-xs text-gray-500 mt-1">
-                Model used by the test persona to decide next actions
+                {isReasoningModel(reasoningModel) 
+                  ? '🧠 Reasoning model: Thinks through persona decisions carefully'
+                  : '⚡ Standard model: Fast responses for quick simulations'}
               </p>
             </div>
+
+            {/* Reasoning Effort (for reasoning models only) */}
+            {isReasoningModel(reasoningModel) && (
+              <div className="mb-6">
+                <label className="block text-sm font-medium mb-2">
+                  <Sparkles className="inline w-4 h-4 mr-1" />
+                  Reasoning Effort
+                </label>
+                <select
+                  value={reasoningEffort}
+                  onChange={(e) => setReasoningEffort(e.target.value)}
+                  disabled={isSimulating}
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                >
+                  <option value="low">Low - Faster, less thorough</option>
+                  <option value="medium">Medium - Balanced (Default)</option>
+                  <option value="high">High - Slower, most thorough</option>
+                </select>
+                <p className="text-xs text-gray-500 mt-1">
+                  Controls how deeply the model reasons about persona actions
+                </p>
+              </div>
+            )}
 
             {/* Action Buttons */}
             <div className="space-y-2">
