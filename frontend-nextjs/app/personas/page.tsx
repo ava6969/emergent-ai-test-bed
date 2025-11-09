@@ -296,6 +296,15 @@ export default function PersonasPage() {
           </div>
         )}
       </div>
+
+      {/* Generation Settings Modal */}
+      <GenerationSettingsModal
+        open={settingsOpen}
+        onOpenChange={setSettingsOpen}
+        settingsKey="generation_settings_persona"
+        title="Persona Generation Settings"
+        description="Configure AI model parameters for generating personas"
+      />
     </div>
   );
 }
