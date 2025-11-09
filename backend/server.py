@@ -1436,8 +1436,23 @@ async def run_evaluation(request: EvaluationRequest, background_tasks: Backgroun
         trajectory = []
         for msg in messages:
             if isinstance(msg, dict):
+                # Map LangGraph message types to standard roles
+                msg_type = msg.get("type", "")
+                role_mapping = {
+                    "human": "human",
+                    "ai": "ai",
+                    "tool": "tool",
+                    "system": "system",
+                    "function": "function"
+                }
+                role = role_mapping.get(msg_type, msg_type)
+                
+                # Debug log first few messages to see structure
+                if len(trajectory) < 3:
+                    logger.info(f"Message {len(trajectory)}: type={msg_type}, content_length={len(str(msg.get('content', '')))}")
+                
                 trajectory.append({
-                    "role": msg.get("type", "unknown"),
+                    "role": role,
                     "content": msg.get("content", ""),
                     "additional_kwargs": msg.get("additional_kwargs", {})
                 })
