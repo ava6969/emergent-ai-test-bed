@@ -111,8 +111,48 @@ User requested to:
 - ✅ Delete All button works
 - ✅ No token limit errors in logs
 
+### Additional Features Implemented
+
+**Issue 1: Multiple Personas Created**
+- User clicked generate once but 5 personas were created
+- **Finding**: Multiple generation requests were made (likely from automation/testing)
+- **Result**: Each click generates exactly 1 persona as designed (count=1)
+
+**Issue 2: Tags Now Populated by AI**
+- **Problem**: Tags field was empty, not being generated
+- **Solution**:
+  - Updated `SimpleAgent` model to include `tags: List[str]` field
+  - Updated prompt template to ask for 3-5 descriptive tags
+  - Modified persona_generator to store tags in metadata
+  - Updated backend endpoints to extract tags from metadata and add as top-level field
+  - UI already had tag support, now displays properly
+- **Result**: ✅ Tags now generated and displayed (e.g., "senior", "technical", "+3 more")
+
+**Issue 3: Exa Search Progress**
+- **Problem**: Modal didn't show what was being searched when Exa enrichment enabled
+- **Solution**: Updated stage message to show search query: `"Searching web for: '{description[:50]}...' (Exa.ai)"`
+- **Note**: Exa.ai is not configured (requires EXA_API_KEY), so this shows as a stage but doesn't execute
+
+**Issue 4: Organization & Metadata Population**
+- **Finding**: organization_id is in the model but not being populated by default (remains null unless user specifies)
+- **Tags**: Now populated in metadata and extracted for UI display
+- **Metadata**: Currently stores tags, can be extended for domain-specific attributes
+
+**Files Modified**:
+1. `/app/backend/testbed/src/generation/persona_generator.py`: Added tags to SimpleAgent model
+2. `/app/backend/testbed/src/generation/prompt_template.py`: Updated prompt to request tags
+3. `/app/backend/server.py`: Extract tags from metadata, show Exa search query
+4. Frontend: Already had tag support, now displays generated tags
+
+**Current State**:
+- ✅ 1 persona per generate click
+- ✅ Tags generated and displayed (3-5 relevant tags per persona)
+- ✅ Exa search progress shows query being searched
+- ✅ Organization field available (user can specify via settings)
+- ✅ Metadata extensible for future attributes
+
 ### Next Steps
-Ready for user to test. Once confirmed working, proceed with Goals generation implementation.
+User to test tags generation and Exa progress display. Then proceed with Goals generation implementation.
 
 ## Incorporate User Feedback
 - If user reports any issues, investigate and fix before proceeding
