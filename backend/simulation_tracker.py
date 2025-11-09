@@ -11,7 +11,7 @@ def create_simulation_session(simulation_id: str, persona_id: str, goal_id: str,
     """Create a new simulation tracking session."""
     with session_lock:
         session = {
-            "id": simulation_id,
+            "simulation_id": simulation_id,
             "persona_id": persona_id,
             "goal_id": goal_id,
             "max_turns": max_turns,
