@@ -48,12 +48,14 @@ export function GenerationSettings({ open, onClose, type }) {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-lg w-[95vw] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Generation Settings - {type}</DialogTitle>
+          <DialogTitle className="text-lg sm:text-xl">
+            Generation Settings - {type}
+          </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6 py-2">
           {/* Model Selection */}
           <div className="space-y-2">
             <Label>Model</Label>
