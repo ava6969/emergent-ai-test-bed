@@ -193,6 +193,106 @@ async def generate_persona_endpoint(request: GeneratePersonaRequest):
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.get("/ai/generate/persona/stream")
+async def generate_persona_streaming(
+    description: str,
+    organization_id: str = None,
+    use_exa_enrichment: bool = False,
+    model: str = "gpt-4o-mini",
+    temperature: float = 0.7,
+    max_tokens: int = 500
+):
+    """Generate persona with Server-Sent Events for real-time progress"""
+    from fastapi.responses import StreamingResponse
+    import json
+    import asyncio
+    
+    if not persona_manager:
+        async def error_generator():
+            yield f"data: {json.dumps({'error': 'Persona manager not initialized'})}\n\n"
+        return StreamingResponse(error_generator(), media_type="text/event-stream")
+    
+    async def event_generator():
+        try:
+            # Stage 1: Request received
+            yield f"data: {json.dumps({'stage': 'Request received', 'progress': 5})}\n\n"
+            await asyncio.sleep(0.1)
+            
+            # Stage 2: Preparing
+            yield f"data: {json.dumps({'stage': 'Preparing generation', 'progress': 10})}\n\n"
+            await asyncio.sleep(0.2)
+            
+            # Update generator config if needed
+            if model != "gpt-4o-mini" or temperature != 0.7 or max_tokens != 500:
+                yield f"data: {json.dumps({'stage': f'Configuring {model}', 'progress': 15})}\n\n"
+                custom_config = create_generator_config(
+                    model=model,
+                    temperature=temperature,
+                    max_tokens=max_tokens
+                )
+                persona_manager.generator = type(persona_manager.generator)(config=custom_config)
+                await asyncio.sleep(0.1)
+            
+            # Stage 3: Organization context (if applicable)
+            if organization_id:
+                yield f"data: {json.dumps({'stage': 'Loading organization context', 'progress': 20})}\n\n"
+                await asyncio.sleep(0.3)
+            
+            # Stage 4: Exa enrichment (if enabled)
+            if use_exa_enrichment:
+                yield f"data: {json.dumps({'stage': 'Fetching real-world context (Exa.ai)', 'progress': 30})}\n\n"
+                await asyncio.sleep(0.5)
+            
+            # Stage 5: Calling AI model (this is the long operation)
+            yield f"data: {json.dumps({'stage': f'Calling AI model ({model})...', 'progress': 40})}\n\n"
+            await asyncio.sleep(0.2)
+            
+            # Actual generation
+            start_time = asyncio.get_event_loop().time()
+            personas = await persona_manager.generate(
+                count=1,
+                requirements=description,
+                organization_id=organization_id,
+                use_real_context=use_exa_enrichment,
+                metadata_schema=None
+            )
+            end_time = asyncio.get_event_loop().time()
+            generation_time = round(end_time - start_time, 2)
+            
+            # Stage 6: Processing response
+            yield f"data: {json.dumps({'stage': 'Processing AI response', 'progress': 85})}\n\n"
+            await asyncio.sleep(0.2)
+            
+            if not personas:
+                yield f"data: {json.dumps({'error': 'No persona generated'})}\n\n"
+                return
+            
+            persona = personas[0]
+            
+            # Stage 7: Saving
+            yield f"data: {json.dumps({'stage': 'Saving persona', 'progress': 95})}\n\n"
+            await asyncio.sleep(0.1)
+            
+            # Stage 8: Complete
+            persona_dict = persona.model_dump()
+            yield f"data: {json.dumps({{\n                'stage': 'Complete',\n                'progress': 100,\n                'complete': True,\n                'generation_time': generation_time,\n                'result': {{\n                    'message': f'✓ Created persona: {persona.name}',\n                    'generated_items': {{\n                        'persona': persona_dict\n                    }},\n                    'actions': [\n                        {{'label': 'Create Goal', 'action': 'create_goal', 'variant': 'default'}},\n                        {{'label': 'View Details', 'action': 'view_details'}},\n                        {{'label': 'Regenerate', 'action': 'regenerate'}}\n                    ]\n                }}\n            }})}\n\n"
+            
+        except Exception as e:
+            print(f"Error in streaming generation: {e}")
+            import traceback
+            traceback.print_exc()
+            yield f"data: {json.dumps({'error': str(e), 'stage': 'Error occurred'})}\n\n"
+    
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no"  # Disable nginx buffering
+        }
+    )
+
 @api_router.post("/ai/generate/goal")
 async def generate_goal_endpoint(request: ChatRequest):
     """Generate goal from description"""
