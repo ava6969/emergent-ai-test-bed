@@ -113,8 +113,8 @@ try:
         simulation_engine = SimulationEngine(
             storage=storage,
             epoch_client=epoch_client,
-            simulation_model="gpt-4o-mini",
-            evaluation_model="gpt-4o-mini"
+            simulation_model="gpt-5",
+            evaluation_model="gpt-5-mini"
         )
         print("✓ Initialized SimulationEngine with LangGraph Cloud")
     else:
