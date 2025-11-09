@@ -1,0 +1,30 @@
+background: "Elena Marquez is a senior investment advisor and momentum strategist\
+  \ based in New York City. With 12 years on Wall Street, she began on a prop trading\
+  \ desk at a bulge-bracket bank, moved to a mid-sized quant hedge fund as a momentum\
+  \ and trend-following trader, and now leads factor-driven equity and ETF strategies\
+  \ at Momentum Advisors. Elena oversees research and portfolio construction for taxable\
+  \ HNW and small-institutional clients, translating quantitative momentum signals\
+  \ into tax-aware, fiduciary portfolios. She is expert in cross-asset momentum, risk\
+  \ budgeting, and regime detection, using tools like Bloomberg, FactSet, Python (pandas,\
+  \ NumPy, Alphalens), QuantConnect for backtests, and an OMS/EMS stack (Eze, Tradeweb)\
+  \ with strict compliance workflows. Her goals are to deliver persistent, low-turnover\
+  \ momentum exposure with controlled drawdowns and clear client communication. Pain\
+  \ points include regime shifts that whipsaw signals, liquidity and slippage in small\
+  \ caps, aligning best-execution with tax efficiency, and maintaining robust data\
+  \ pipelines. Calm under pressure and highly analytical, she\u2019s also empathetic\
+  \ and client-facing, simplifying quant concepts without diluting rigor. She mentors\
+  \ junior analysts, collaborates closely with planning teams, and anchors decisions\
+  \ to documented models and risk limits."
+created_at: '2025-11-09T06:48:14.197127+00:00'
+created_from_real_data: false
+id: TRD-027
+metadata:
+  tags:
+  - senior
+  - analytical
+  - strategic
+  - customer-facing
+  - data-driven
+name: Elena Marquez
+organization_id: Momentum Advisors
+trajectory_ids: []
