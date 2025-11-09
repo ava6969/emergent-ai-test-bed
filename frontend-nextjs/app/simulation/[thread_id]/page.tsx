@@ -23,7 +23,7 @@ export default function SimulationPage() {
   // Get LangGraph API key from env (should be set server-side for security)
   const langGraphApiKey = process.env.NEXT_PUBLIC_LANGGRAPH_API_KEY;
 
-  // Use LangGraph streaming instead of polling
+  // Use LangGraph streaming with polling for real-time updates
   const stream = useStream<{ messages: Message[] }>({
     apiUrl: process.env.NEXT_PUBLIC_LANGGRAPH_API_URL || '',
     apiKey: langGraphApiKey,
@@ -32,6 +32,21 @@ export default function SimulationPage() {
     threadId: thread_id,
     streamMode: 'messages', // Stream messages as they arrive
     fetchStateHistory: true, // Fetch historical messages for completed threads
+  });
+
+  // Also poll thread state for live updates (workaround for stream limitations)
+  const { data: threadState } = useQuery({
+    queryKey: ['thread-messages', thread_id],
+    queryFn: async () => {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_LANGGRAPH_API_URL}/threads/${thread_id}/state`, {
+        headers: {
+          'X-Api-Key': langGraphApiKey || '',
+        },
+      });
+      return response.json();
+    },
+    refetchInterval: 2000, // Poll every 2 seconds for new messages
+    enabled: !!thread_id && status !== 'completed',
   });
 
   // Still poll status separately (lightweight check for completed/failed)
