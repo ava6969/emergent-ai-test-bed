@@ -1112,14 +1112,16 @@ async def run_simulation(
             persona_id,
             goal_id,
             max_turns,
-            reasoning_model
+            reasoning_model,
+            reasoning_effort
         )
         
         return {
             "simulation_id": sim_id,
             "status": "running",
             "message": "Simulation started",
-            "reasoning_model": reasoning_model or "gpt-4o"
+            "reasoning_model": reasoning_model or "gpt-5",
+            "reasoning_effort": reasoning_effort or "medium"
         }
     except Exception as e:
         print(f"Error starting simulation: {e}")
