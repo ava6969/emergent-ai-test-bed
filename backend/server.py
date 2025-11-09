@@ -137,7 +137,7 @@ class GeneratePersonaRequest(BaseModel):
     metadata_schema: Optional[dict] = None
     model: str = "gpt-4o-mini"
     temperature: float = 0.7
-    max_tokens: int = 500
+    max_tokens: int = 1500
 
 @api_router.post("/ai/generate/persona")
 async def generate_persona_endpoint(request: GeneratePersonaRequest):
