@@ -1,6 +1,118 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+:root {
+  --matrix-green: #00FF41;
+  --matrix-dark: #0D0208;
+  --matrix-darker: #000000;
+  --matrix-gray: #1a1a1a;
+  --matrix-green-dim: rgba(0, 255, 65, 0.1);
+  --matrix-green-glow: rgba(0, 255, 65, 0.3);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--matrix-darker);
+  color: var(--matrix-green);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  overflow: hidden;
+}
+
+/* Matrix glow effect */
+.matrix-glow {
+  text-shadow: 0 0 10px var(--matrix-green-glow),
+               0 0 20px var(--matrix-green-glow);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--matrix-darker);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--matrix-green);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--matrix-green);
+  box-shadow: 0 0 10px var(--matrix-green-glow);
+}
+
+/* Animations */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 5px var(--matrix-green-glow);
+  }
+  50% {
+    box-shadow: 0 0 20px var(--matrix-green-glow);
+  }
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+/* Linear-style inputs */
+input, textarea, select {
+  background: transparent;
+  border: 1px solid rgba(0, 255, 65, 0.2);
+  color: var(--matrix-green);
+  transition: all 0.2s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--matrix-green);
+  box-shadow: 0 0 10px var(--matrix-green-glow);
+}
+
+input::placeholder {
+  color: rgba(0, 255, 65, 0.3);
+}
+
+/* Button styles */
+button {
+  transition: all 0.2s ease;
+}
+
+button:hover {
+  box-shadow: 0 0 15px var(--matrix-green-glow);
+}
+
+/* Card styles */
+.matrix-card {
+  background: rgba(0, 255, 65, 0.03);
+  border: 1px solid rgba(0, 255, 65, 0.2);
+  transition: all 0.3s ease;
+}
+
+.matrix-card:hover {
+  border-color: var(--matrix-green);
+  box-shadow: 0 0 20px var(--matrix-green-glow);
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
