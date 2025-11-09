@@ -268,7 +268,7 @@ async def run_persona_generation(job_id: str, request: GeneratePersonaRequest):
         
         # Stage 3: Exa enrichment (if enabled)
         if request.use_exa_enrichment:
-            update_job(job_id, stage="Fetching real-world context (Exa.ai)", progress=30)
+            update_job(job_id, stage=f"Searching web for: '{description[:50]}...' (Exa.ai)", progress=30)
             await asyncio.sleep(0.5)
         
         # Stage 4: Calling AI model
