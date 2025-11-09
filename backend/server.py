@@ -669,14 +669,14 @@ async def generate_goal_async(request: GoalGenerateRequest, background_tasks: Ba
         raise HTTPException(status_code=500, detail="Goal manager not initialized")
     
     # Create job
-    job_id = str(uuid.uuid4())
-    create_job(job_id, "queued", "Initializing goal generation", 0)
+    job = create_job()
+    update_job(job.id, status="queued", stage="Initializing goal generation", progress=0)
     
     # Start background task
-    background_tasks.add_task(generate_goal_background, job_id, request)
+    background_tasks.add_task(generate_goal_background, job.id, request)
     
     return {
-        "job_id": job_id,
+        "job_id": job.id,
         "status": "queued",
         "message": "Goal generation started. Poll /api/ai/jobs/{job_id} for progress"
     }
