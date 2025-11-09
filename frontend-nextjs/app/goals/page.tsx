@@ -198,8 +198,9 @@ export default function GoalsPage() {
       </div>
 
       {/* Generation Input */}
-      <div className="border-t p-6 bg-white">
-        <div className="flex gap-2">
+      <div className="border-t p-6 bg-white space-y-4">
+        {/* Description Input */}
+        <div>
           <Input
             placeholder="Describe the goal to generate... (e.g., 'Create a trading strategy backtest goal')"
             value={generateInput}
@@ -210,10 +211,41 @@ export default function GoalsPage() {
               }
             }}
             disabled={isGenerating}
-            className="flex-1"
+            className="w-full"
           />
-          <div className="flex items-center gap-2">
-            <label className="text-sm text-gray-600 whitespace-nowrap">Count:</label>
+        </div>
+
+        {/* Options Row */}
+        <div className="flex gap-4">
+          {/* Persona Dropdown */}
+          <div className="flex-1">
+            <label className="text-sm text-gray-600 mb-1 block">For Persona (Optional)</label>
+            <select
+              className="w-full px-3 py-2 border rounded-lg"
+              disabled={isGenerating}
+            >
+              <option value="">All Personas</option>
+              {/* TODO: Load personas from API */}
+            </select>
+          </div>
+
+          {/* Difficulty Selector */}
+          <div className="flex-1">
+            <label className="text-sm text-gray-600 mb-1 block">Difficulty (Optional)</label>
+            <select
+              className="w-full px-3 py-2 border rounded-lg"
+              disabled={isGenerating}
+            >
+              <option value="">Any</option>
+              <option value="easy">Easy</option>
+              <option value="medium">Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+          </div>
+
+          {/* Count */}
+          <div className="w-32">
+            <label className="text-sm text-gray-600 mb-1 block">Count</label>
             <Input
               type="number"
               min="1"
@@ -221,24 +253,27 @@ export default function GoalsPage() {
               value={count}
               onChange={(e) => setCount(Math.min(10, Math.max(1, parseInt(e.target.value) || 1)))}
               disabled={isGenerating}
-              className="w-20"
             />
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setSettingsOpen(true)}
-            disabled={isGenerating}
-          >
-            <Settings className="h-5 w-5" />
-          </Button>
-          <Button
-            onClick={handleGenerate}
-            disabled={isGenerating || !generateInput.trim()}
-          >
-            <Sparkles className="h-4 w-4 mr-2" />
-            {isGenerating ? 'Generating...' : 'Generate'}
-          </Button>
+
+          {/* Actions */}
+          <div className="flex items-end gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setSettingsOpen(true)}
+              disabled={isGenerating}
+            >
+              <Settings className="h-5 w-5" />
+            </Button>
+            <Button
+              onClick={handleGenerate}
+              disabled={isGenerating || !generateInput.trim()}
+            >
+              <Sparkles className="h-4 w-4 mr-2" />
+              {isGenerating ? 'Generating...' : 'Generate'}
+            </Button>
+          </div>
         </div>
         
         {/* Progress Bar */}
