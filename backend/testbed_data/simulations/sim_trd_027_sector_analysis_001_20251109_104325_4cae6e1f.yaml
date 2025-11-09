@@ -1,0 +1,17 @@
+completed_at: '2025-11-09T10:43:25.222769+00:00'
+error: name 'turns_limit' is not defined
+evaluation_model: gpt-5
+goal_achieved: false
+goal_id: sector_analysis_001
+id: sim_trd_027_sector_analysis_001_20251109_104325_4cae6e1f
+max_turns: 5
+metadata: {}
+organization_id: Momentum Advisors
+persona_id: TRD-027
+simulation_model: gpt-5
+started_at: '2025-11-09T10:43:25.221726+00:00'
+status: failed
+thread_id: ''
+trajectory_id: traj_trd_027_sector_analysis_001_20251109_104325_de94d109
+turns_completed: 0
+use_persona_memory: false
