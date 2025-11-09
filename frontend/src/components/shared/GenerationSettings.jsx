@@ -89,39 +89,69 @@ export function GenerationSettings({ open, onClose, type }) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="gpt-4o">GPT-4o</SelectItem>
-                <SelectItem value="gpt-4o-mini">GPT-4o Mini (Default)</SelectItem>
+                <SelectItem value="gpt-5">GPT-5 (Reasoning, Default)</SelectItem>
                 <SelectItem value="o1">O1 (Reasoning)</SelectItem>
-                <SelectItem value="gpt-5">GPT-5 (Reasoning, Latest)</SelectItem>
+                <SelectItem value="o3">O3 (Advanced Reasoning)</SelectItem>
+                <SelectItem value="gpt-4o">GPT-4o (Fast)</SelectItem>
+                <SelectItem value="gpt-4o-mini">GPT-4o Mini (Fastest)</SelectItem>
               </SelectContent>
             </Select>
             <p className="text-xs text-muted-foreground">
-              Choose the AI model for generation
+              {isReasoningModel(settings.model) 
+                ? '🧠 Reasoning model: Uses effort level instead of temperature'
+                : '⚡ Standard model: Uses temperature for creativity control'}
             </p>
           </div>
 
-          {/* Temperature */}
-          <div className="space-y-2">
-            <div className="flex justify-between items-center">
-              <Label className="text-sm sm:text-base">Temperature</Label>
-              <span className="text-xs sm:text-sm text-muted-foreground font-medium">
-                {settings.temperature}
-              </span>
+          {/* Reasoning Effort (for reasoning models only) */}
+          {isReasoningModel(settings.model) && (
+            <div className="space-y-2">
+              <Label className="text-sm sm:text-base">Reasoning Effort</Label>
+              <Select
+                value={settings.reasoning_effort}
+                onValueChange={(value) =>
+                  setSettings({ ...settings, reasoning_effort: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="low">Low - Faster, less thorough</SelectItem>
+                  <SelectItem value="medium">Medium - Balanced (Default)</SelectItem>
+                  <SelectItem value="high">High - Slower, most thorough</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                Controls how much reasoning the model performs
+              </p>
             </div>
-            <Slider
-              value={[settings.temperature]}
-              onValueChange={([value]) =>
-                setSettings({ ...settings, temperature: value })
-              }
-              min={0}
-              max={1}
-              step={0.1}
-              className="touch-none"
-            />
-            <p className="text-xs text-muted-foreground">
-              Higher = more creative, Lower = more focused
-            </p>
-          </div>
+          )}
+
+          {/* Temperature (for non-reasoning models only) */}
+          {!isReasoningModel(settings.model) && (
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <Label className="text-sm sm:text-base">Temperature</Label>
+                <span className="text-xs sm:text-sm text-muted-foreground font-medium">
+                  {settings.temperature}
+                </span>
+              </div>
+              <Slider
+                value={[settings.temperature]}
+                onValueChange={([value]) =>
+                  setSettings({ ...settings, temperature: value })
+                }
+                min={0}
+                max={1}
+                step={0.1}
+                className="touch-none"
+              />
+              <p className="text-xs text-muted-foreground">
+                Higher = more creative, Lower = more focused
+              </p>
+            </div>
+          )}
 
           {/* Max Tokens */}
           <div className="space-y-2">
