@@ -70,9 +70,123 @@ export function Personas() {
 
   const handleGenerate = async () => {
     if (!generateInput.trim()) return;
+    
+    // Reset state
     setIsGenerating(true);
-    await generateMutation.mutateAsync(generateInput);
-    setIsGenerating(false);
+    setGenerationStage('Initializing...');
+    setGenerationProgress(0);
+    setGenerationError(null);
+    setElapsedTime(0);
+    
+    // Load settings
+    const settings = JSON.parse(
+      localStorage.getItem('generation_settings_persona') || '{}'
+    );
+    
+    // Start elapsed timer
+    const startTime = Date.now();
+    const timer = setInterval(() => {
+      setElapsedTime(Math.floor((Date.now() - startTime) / 1000));
+    }, 1000);
+    
+    try {
+      // Build URL with query parameters
+      const params = new URLSearchParams({
+        description: generateInput.trim(),
+        model: settings.model || 'gpt-4o-mini',
+        temperature: settings.temperature || 0.7,
+        max_tokens: settings.max_tokens || 500,
+      });
+      
+      if (settings.organization_id) {
+        params.append('organization_id', settings.organization_id);
+      }
+      if (settings.use_exa_enrichment) {
+        params.append('use_exa_enrichment', 'true');
+      }
+      
+      const apiUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+      const url = `${apiUrl}/api/ai/generate/persona/stream?${params.toString()}`;
+      
+      // Create EventSource for SSE
+      const eventSource = new EventSource(url);
+      
+      eventSource.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          
+          if (data.stage) {
+            setGenerationStage(data.stage);
+          }
+          
+          if (data.progress !== undefined) {
+            setGenerationProgress(data.progress);
+          }
+          
+          if (data.error) {
+            setGenerationError(data.error);
+            eventSource.close();
+            clearInterval(timer);
+            setIsGenerating(false);
+            toast({
+              title: 'Generation Failed',
+              description: data.error,
+              variant: 'destructive',
+            });
+          }
+          
+          if (data.complete && data.result) {
+            // Generation complete
+            eventSource.close();
+            clearInterval(timer);
+            
+            // Refresh personas list
+            queryClient.invalidateQueries(['personas']);
+            
+            // Clear input
+            setGenerateInput('');
+            
+            // Show success
+            toast({
+              title: 'Persona Generated',
+              description: `Successfully created ${data.result.generated_items.persona.name} in ${data.generation_time}s`,
+            });
+            
+            // Keep modal open briefly to show 100%
+            setTimeout(() => {
+              setIsGenerating(false);
+              setGenerationStage('');
+              setGenerationProgress(0);
+            }, 1500);
+          }
+        } catch (err) {
+          console.error('Error parsing SSE data:', err);
+        }
+      };
+      
+      eventSource.onerror = (error) => {
+        console.error('SSE error:', error);
+        eventSource.close();
+        clearInterval(timer);
+        setGenerationError('Connection error. Please try again.');
+        setIsGenerating(false);
+        toast({
+          title: 'Connection Error',
+          description: 'Failed to connect to server',
+          variant: 'destructive',
+        });
+      };
+      
+    } catch (error) {
+      clearInterval(timer);
+      setGenerationError(error.message);
+      setIsGenerating(false);
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+      });
+    }
   };
 
   const handleEdit = (persona) => {
