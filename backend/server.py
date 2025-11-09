@@ -1074,7 +1074,7 @@ async def run_simulation(
     reasoning_effort: Optional[str] = None,
     background_tasks: BackgroundTasks = None
 ):
-    """Start a simulation run with TestEnvironment
+    """Start a simulation run - returns thread_id immediately
     
     Args:
         persona_id: ID of persona to simulate
@@ -1082,34 +1082,24 @@ async def run_simulation(
         max_turns: Optional max turns override
         reasoning_model: Model for test environment (e.g., gpt-5, o1, gpt-4o)
         reasoning_effort: Effort level for reasoning models (low/medium/high)
+        
+    Returns:
+        {"thread_id": "...", "message": "Simulation started"}
     """
     if not simulation_engine:
-        raise HTTPException(status_code=500, detail="Simulation engine not initialized")
+        raise HTTPException(status_code=500, detail="Simulation engine not initialized. Check LangGraph configuration.")
     
     try:
-        # Generate simulation ID
-        sim_id = str(uuid.uuid4())
-        
-        # Get persona and goal for display
+        # Get persona and goal for validation
         persona = await storage.get_persona(persona_id)
         goal = await storage.get_goal(goal_id)
         
         if not persona or not goal:
             raise HTTPException(status_code=404, detail="Persona or goal not found")
         
-        # Create tracking session
-        create_simulation_session(
-            simulation_id=sim_id,
-            persona_id=persona_id,
-            goal_id=goal_id,
-            max_turns=max_turns or goal.max_turns
-        )
-        
-        # Start background simulation with TestEnvironment
-        # Pass sim_id so we can update session with thread_id immediately
+        # Start background simulation - it creates thread and returns thread_id
         background_tasks.add_task(
             run_simulation_background,
-            sim_id,
             persona_id,
             goal_id,
             max_turns,
@@ -1117,17 +1107,17 @@ async def run_simulation(
             reasoning_effort
         )
         
+        # Note: thread_id will be available after background task starts
+        # Frontend should poll /api/threads?metadata={"persona_id":"..."} to find it
         return {
-            "simulation_id": sim_id,
-            "status": "running",
             "message": "Simulation started",
+            "persona_id": persona_id,
+            "goal_id": goal_id,
             "reasoning_model": reasoning_model or "gpt-5",
             "reasoning_effort": reasoning_effort or "medium"
         }
+        
     except Exception as e:
-        print(f"Error starting simulation: {e}")
-        import traceback
-        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
 async def run_simulation_background(sim_id: str, persona_id: str, goal_id: str, max_turns: Optional[int], reasoning_model: Optional[str], reasoning_effort: Optional[str]):
