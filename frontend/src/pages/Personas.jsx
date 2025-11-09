@@ -173,6 +173,12 @@ export function Personas() {
     }
   };
 
+  const handleDeleteAll = () => {
+    if (window.confirm(`Are you sure you want to delete all ${personas.length} persona(s)? This action cannot be undone.`)) {
+      deleteAllMutation.mutate();
+    }
+  };
+
   const handleFormClose = () => {
     setShowForm(false);
     setEditingPersona(null);
