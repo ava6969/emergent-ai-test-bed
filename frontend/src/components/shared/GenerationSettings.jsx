@@ -16,11 +16,13 @@ import { Switch } from '@/components/ui/switch';
 const DEFAULT_SETTINGS = {
   model: 'gpt-4o-mini',
   temperature: 0.7,
-  max_tokens: 1000,
+  max_tokens: 1500,
   use_exa_enrichment: false,
   exa_results_count: 3,
   organization_id: '',
 };
+
+const MIN_MAX_TOKENS = 1500; // Minimum required for structured output
 
 export function GenerationSettings({ open, onClose, type }) {
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
@@ -29,7 +31,12 @@ export function GenerationSettings({ open, onClose, type }) {
   useEffect(() => {
     const stored = localStorage.getItem(`generation_settings_${type}`);
     if (stored) {
-      setSettings({ ...DEFAULT_SETTINGS, ...JSON.parse(stored) });
+      const loadedSettings = { ...DEFAULT_SETTINGS, ...JSON.parse(stored) };
+      // Ensure max_tokens is at least 1500
+      if (loadedSettings.max_tokens < MIN_MAX_TOKENS) {
+        loadedSettings.max_tokens = MIN_MAX_TOKENS;
+      }
+      setSettings(loadedSettings);
     }
   }, [type]);
 
