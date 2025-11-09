@@ -11,6 +11,7 @@ export function Simulations() {
   const [selectedPersona, setSelectedPersona] = useState('');
   const [selectedGoal, setSelectedGoal] = useState('');
   const [maxTurns, setMaxTurns] = useState('');
+  const [reasoningModel, setReasoningModel] = useState('gpt-4o');
   const [isSimulating, setIsSimulating] = useState(false);
   const [simulationId, setSimulationId] = useState(null);
   const [simulationData, setSimulationData] = useState(null);
