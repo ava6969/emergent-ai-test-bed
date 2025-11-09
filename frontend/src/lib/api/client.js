@@ -205,13 +205,16 @@ class APIClient {
 
   // ==================== SIMULATION ENDPOINTS ====================
 
-  async startSimulation(persona_id, goal_id, max_turns = null, reasoning_model = null) {
+  async startSimulation(persona_id, goal_id, max_turns = null, reasoning_model = null, reasoning_effort = null) {
     const params = { persona_id, goal_id };
     if (max_turns) {
       params.max_turns = max_turns;
     }
     if (reasoning_model) {
       params.reasoning_model = reasoning_model;
+    }
+    if (reasoning_effort) {
+      params.reasoning_effort = reasoning_effort;
     }
     const response = await this.client.post('/api/simulations/run', null, { params });
     return response.data;
