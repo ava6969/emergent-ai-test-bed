@@ -4,12 +4,14 @@ import {
   Users,
   Target,
   Building2,
+  Package,
   Sparkles,
 } from 'lucide-react';
 
 const navigation = [
   { name: 'Personas', page: 'personas', icon: Users },
   { name: 'Goals', page: 'goals', icon: Target },
+  { name: 'Products', page: 'products', icon: Package },
   { name: 'Organizations', page: 'organizations', icon: Building2 },
 ];
 
