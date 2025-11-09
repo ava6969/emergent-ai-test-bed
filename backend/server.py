@@ -61,9 +61,30 @@ async def get_messages():
     
     return messages
 
+# ==================== TESTBED INTEGRATION ====================
+
+# Import testbed components
+try:
+    from testbed_bridge import (
+        storage,
+        exa,
+        persona_manager,
+        organization_manager,
+        create_generator_config,
+        default_generator_config
+    )
+    print("✓ Testbed components initialized")
+except Exception as e:
+    print(f"⚠ Failed to initialize testbed: {e}")
+    import traceback
+    traceback.print_exc()
+    storage = None
+    persona_manager = None
+    organization_manager = None
+
 # ==================== AI ENDPOINTS ====================
 
-# Import OpenAI
+# Import OpenAI (for backwards compatibility)
 try:
     from openai import OpenAI
     openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
