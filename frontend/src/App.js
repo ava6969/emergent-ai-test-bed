@@ -26,6 +26,8 @@ function App() {
         return <Personas />;
       case 'goals':
         return <Goals />;
+      case 'products':
+        return <Products />;
       case 'organizations':
         return <Organizations />;
       default:
