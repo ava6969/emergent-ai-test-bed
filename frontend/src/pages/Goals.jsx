@@ -101,10 +101,6 @@ export function Goals() {
     setShowForm(true);
   };
 
-  const handleGenerate = () => {
-    generateMutation.mutate(generationSettings);
-  };
-
   const handleFormClose = () => {
     setShowForm(false);
     setEditingGoal(null);
