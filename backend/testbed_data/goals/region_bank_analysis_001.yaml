@@ -1,0 +1,30 @@
+agent_ids:
+- '1'
+evaluators:
+- correctness
+- hallucination
+- conciseness
+generated_with_real_context: false
+id: region_bank_analysis_001
+initial_prompt: Can you help me analyze how U.S. regional banks performed over the
+  last four quarters?
+max_turns: 5
+metadata:
+  complexity: medium
+  data_sources: quarterly earnings reports, stock price data
+  difficulty: medium
+  overall_goal: Evaluate financial performance of regional banks
+  quantitative_metrics: EPS growth, stock price performance, data completeness
+  scenario_type: analysis
+  timeframes: Q1 2023 to Q4 2023
+name: Regional Bank Performance Analysis
+objective: Analyze the performance of U.S. regional banks over the last four quarters
+  (Q1 2023 to Q4 2023) using quarterly earnings data and stock price movements.
+simulation_mode: false
+success_criteria: "- Agent must identify top 5 regional banks by earnings per share\
+  \ (EPS) growth over the specified period.\n- Provide percentage EPS growth figures\
+  \ with \xB10.01% precision.\n- Include stock price performance (percentage change)\
+  \ for each bank over the same period.\n- Validate data completeness with >90% of\
+  \ expected earnings reports available.\n- Deliver results in a structured table\
+  \ format within 3 minutes of request."
+test_cases: []
