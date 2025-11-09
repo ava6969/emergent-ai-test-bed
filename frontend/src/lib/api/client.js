@@ -102,6 +102,11 @@ class APIClient {
     return response.data;
   }
 
+  async generateGoal(request) {
+    const response = await this.client.post('/api/ai/generate/goal', request);
+    return response.data;
+  }
+
   async createGoal(data) {
     const response = await this.client.post('/api/goals', data);
     return response.data;
@@ -114,6 +119,11 @@ class APIClient {
 
   async deleteGoal(id) {
     const response = await this.client.delete(`/api/goals/${id}`);
+    return response.data;
+  }
+
+  async deleteAllGoals() {
+    const response = await this.client.delete('/api/goals');
     return response.data;
   }
 
