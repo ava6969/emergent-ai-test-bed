@@ -1,0 +1,29 @@
+agent_ids:
+- '1'
+evaluators:
+- correctness
+- hallucination
+- conciseness
+generated_with_real_context: false
+id: stat_arbitrage_001
+initial_prompt: Can you help me validate my statistical arbitrage strategy using the
+  last two months of data?
+max_turns: 5
+metadata:
+  complexity: easy
+  data_sources: OHLCV, 5-minute, January 1 - March 31, 2023
+  difficulty: easy
+  overall_goal: Validate statistical arbitrage strategy
+  quantitative_metrics: Sharpe ratio, max drawdown, total trades, win rate
+  scenario_type: validation
+  timeframes: January 1 - March 31, 2023
+name: Statistical Arbitrage Strategy Validation
+objective: Validate a statistical arbitrage strategy for U.S. equities using 5-minute
+  OHLCV data from January 1, 2023, to March 31, 2023 (60 trading days).
+simulation_mode: false
+success_criteria: "- Strategy generates a Sharpe ratio \u2265 1.2 (annualized, risk-free\
+  \ rate = 4%)\n- Maximum drawdown \u2264 10%\n- Total trades executed: 50-100\n-\
+  \ Win rate \u2265 60%\n- Detailed performance report with monthly returns table\
+  \ and risk metrics (VaR, beta vs SPY)\n- Completion of validation within 3 minutes\
+  \ of request"
+test_cases: []
