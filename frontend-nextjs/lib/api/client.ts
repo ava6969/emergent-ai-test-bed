@@ -128,7 +128,8 @@ class APIClient {
     organization_id?: string;
     count?: number;
   }) {
-    const response = await this.client.post('/api/ai/generate/goal/async', request);
+    // Use synchronous endpoint - no polling needed
+    const response = await this.client.post('/api/ai/generate/goal', request);
     return response.data;
   }
 
