@@ -13,14 +13,32 @@ import { Input } from '@/components/ui/input';
 import { Settings, Sparkles } from 'lucide-react';
 import { GenerationSettingsModal } from '@/components/GenerationSettingsModal';
 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+
 export default function GoalsPage() {
   const queryClient = useQueryClient();
+  const [createModalOpen, setCreateModalOpen] = useState(false);
   const [generateInput, setGenerateInput] = useState('');
+  const [selectedPersona, setSelectedPersona] = useState('');
+  const [difficulty, setDifficulty] = useState('');
   const [count, setCount] = useState(1);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationStage, setGenerationStage] = useState('');
   const [generationProgress, setGenerationProgress] = useState(0);
   const [settingsOpen, setSettingsOpen] = useState(false);
+
+  // Fetch personas for dropdown
+  const { data: personas = [] } = useQuery({
+    queryKey: ['personas'],
+    queryFn: () => apiClient.getPersonas(),
+  });
 
   // Fetch goals
   const { data: goals = [], isLoading } = useQuery({
