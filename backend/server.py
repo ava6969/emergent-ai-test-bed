@@ -353,22 +353,7 @@ async def run_persona_generation(job_id: str, request: GeneratePersonaRequest):
         update_job(job_id, status="failed", error=str(e), stage="Error occurred")
 
 # SSE endpoint removed - using polling instead (nginx doesn't support SSE properly)
-
-@api_router.post("/ai/generate/goal")
-async def generate_goal_endpoint(request: ChatRequest):
-    """Generate goal from description"""
-    try:
-        result = await handle_goal_generation(request.message, request.conversation_id, request.context)
-        
-        # If goal was generated, also save to DB
-        if result.get("generated_items") and result["generated_items"].get("goal"):
-            goal = result["generated_items"]["goal"]
-            await db.goals.insert_one(goal)
-        
-        return result
-    except Exception as e:
-        print(f"Error generating goal: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+# Old goal generation endpoint removed - now using AI-powered generation below
 
 async def handle_persona_generation(message: str, conversation_id: str, context: dict):
     """Generate a persona based on user description"""
