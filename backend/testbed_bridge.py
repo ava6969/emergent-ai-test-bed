@@ -13,6 +13,11 @@ This module initializes:
 import os
 import sys
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load environment variables
+ROOT_DIR = Path(__file__).parent
+load_dotenv(ROOT_DIR / '.env')
 
 # Add testbed to Python path
 TESTBED_DIR = Path(__file__).parent / "testbed"
