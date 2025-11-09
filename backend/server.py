@@ -1056,6 +1056,129 @@ async def delete_organization(org_id: str):
         raise HTTPException(status_code=404, detail="Organization not found")
     return {"success": True}
 
+# Simulation endpoints
+from simulation_tracker import (
+    create_simulation_session,
+    update_simulation_session,
+    get_simulation_session,
+    stop_simulation,
+    list_simulation_sessions
+)
+
+@api_router.post("/simulations/run")
+async def run_simulation(
+    persona_id: str,
+    goal_id: str,
+    max_turns: Optional[int] = None,
+    background_tasks: BackgroundTasks = None
+):
+    """Start a simulation run"""
+    if not simulation_engine:
+        raise HTTPException(status_code=500, detail="Simulation engine not initialized")
+    
+    try:
+        # Generate simulation ID
+        sim_id = str(uuid.uuid4())
+        
+        # Get persona and goal for display
+        persona = await storage.get_persona(persona_id)
+        goal = await storage.get_goal(goal_id)
+        
+        if not persona or not goal:
+            raise HTTPException(status_code=404, detail="Persona or goal not found")
+        
+        # Create tracking session
+        create_simulation_session(
+            simulation_id=sim_id,
+            persona_id=persona_id,
+            goal_id=goal_id,
+            max_turns=max_turns or goal.max_turns
+        )
+        
+        # Start background simulation
+        background_tasks.add_task(
+            run_simulation_background,
+            sim_id,
+            persona_id,
+            goal_id,
+            max_turns
+        )
+        
+        return {
+            "simulation_id": sim_id,
+            "status": "running",
+            "message": "Simulation started"
+        }
+    except Exception as e:
+        print(f"Error starting simulation: {e}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
+
+async def run_simulation_background(sim_id: str, persona_id: str, goal_id: str, max_turns: Optional[int]):
+    """Background task for running simulation with real-time updates"""
+    try:
+        # This will be called for trajectory updates
+        def trajectory_callback(turn: int, messages: List[Dict]):
+            update_simulation_session(
+                simulation_id=sim_id,
+                current_turn=turn,
+                new_messages=messages
+            )
+        
+        # Run simulation (this is blocking and takes time)
+        result = await simulation_engine.run_simulation(
+            persona_id=persona_id,
+            goal_id=goal_id,
+            max_turns=max_turns,
+            use_persona_memory=False
+        )
+        
+        # Update with final result
+        update_simulation_session(
+            simulation_id=sim_id,
+            status="completed",
+            goal_achieved=result.goal_achieved
+        )
+        
+    except Exception as e:
+        print(f"Error in simulation background: {e}")
+        import traceback
+        traceback.print_exc()
+        update_simulation_session(
+            simulation_id=sim_id,
+            status="failed",
+            error=str(e)
+        )
+
+@api_router.get("/simulations/{simulation_id}")
+async def get_simulation_status(simulation_id: str):
+    """Get simulation status and trajectory"""
+    session = get_simulation_session(simulation_id)
+    
+    if not session:
+        raise HTTPException(status_code=404, detail="Simulation not found")
+    
+    return session
+
+@api_router.post("/simulations/{simulation_id}/stop")
+async def stop_simulation_endpoint(simulation_id: str):
+    """Stop a running simulation"""
+    success = stop_simulation(simulation_id)
+    
+    if not success:
+        raise HTTPException(status_code=404, detail="Simulation not found")
+    
+    update_simulation_session(simulation_id, status="stopped")
+    
+    return {"success": True, "message": "Simulation stop signal sent"}
+
+@api_router.get("/simulations")
+async def list_simulations():
+    """List all simulation sessions"""
+    sessions = list_simulation_sessions()
+    return sessions
+
 # Include the router in the main app
 app.include_router(api_router)
 
