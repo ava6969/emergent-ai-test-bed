@@ -993,6 +993,23 @@ async def list_products():
         print(f"Error listing products: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.get("/products/{product_id}")
+async def get_product(product_id: str):
+    """Get a single product by ID"""
+    if not storage:
+        raise HTTPException(status_code=500, detail="Storage not initialized")
+    
+    try:
+        product = await storage.get_product(product_id)
+        if not product:
+            raise HTTPException(status_code=404, detail="Product not found")
+        return product.model_dump()
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error getting product: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.post("/products")
 async def create_product(data: ProductCreate):
     """Create a new product"""
