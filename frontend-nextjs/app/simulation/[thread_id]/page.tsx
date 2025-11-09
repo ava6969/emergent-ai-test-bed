@@ -14,6 +14,7 @@ import type { Message } from '@langchain/langgraph-sdk';
 
 export default function SimulationPage() {
   const params = useParams();
+  const router = useRouter();
   const thread_id = params.thread_id as string;
 
   // Get LangGraph API key from env (should be set server-side for security)
