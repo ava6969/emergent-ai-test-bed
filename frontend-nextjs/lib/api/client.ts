@@ -187,6 +187,26 @@ class APIClient {
   async stopSimulation(simulation_id: string): Promise<void> {
     await this.client.post(`/api/simulations/${simulation_id}/stop`);
   }
+
+  // ==================== THREAD/TRAJECTORY ENDPOINTS ====================
+
+  async getSimulationThreads(): Promise<any[]> {
+    // Fetch threads from LangGraph with owner="testing-ai" metadata filter
+    // This gets all simulation runs as threads
+    const response = await this.client.get('/api/threads', {
+      params: {
+        metadata: JSON.stringify({ owner: 'testing-ai' }),
+        limit: 100,
+      },
+    });
+    return response.data;
+  }
+
+  async getThreadMessages(thread_id: string): Promise<any> {
+    // Fetch messages for a specific thread
+    const response = await this.client.get(`/api/threads/${thread_id}/messages`);
+    return response.data;
+  }
 }
 
 export const apiClient = new APIClient();
