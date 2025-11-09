@@ -12,12 +12,17 @@ export default function SimulationPage() {
   const params = useParams();
   const thread_id = params.thread_id as string;
 
+  // Get LangGraph API key from env (should be set server-side for security)
+  const langGraphApiKey = process.env.NEXT_PUBLIC_LANGGRAPH_API_KEY;
+
   // Use LangGraph streaming instead of polling
   const stream = useStream<{ messages: Message[] }>({
     apiUrl: process.env.NEXT_PUBLIC_LANGGRAPH_API_URL || '',
-    assistantId: process.env.NEXT_PUBLIC_ASSISTANT_ID || 'agent',
+    apiKey: langGraphApiKey,
+    assistantId: process.env.NEXT_PUBLIC_ASSISTANT_ID || 'epoch-ai',
     messagesKey: 'messages',
     threadId: thread_id,
+    fetchStateHistory: true, // Fetch historical messages for completed threads
   });
 
   // Still poll status separately (lightweight check for completed/failed)
