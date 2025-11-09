@@ -1149,7 +1149,7 @@ async def run_simulation(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-async def run_simulation_background(persona_id: str, goal_id: str, max_turns: Optional[int], reasoning_model: Optional[str], reasoning_effort: Optional[str]):
+async def run_simulation_background(thread_id: str, persona_id: str, goal_id: str, max_turns: int, reasoning_model: str, reasoning_effort: str):
     """Background task for running simulation - creates thread and runs loop"""
     try:
         # Run simulation with TestEnvironment (RL-style loop)
