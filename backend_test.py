@@ -101,12 +101,23 @@ def test_simulation_functionality():
             response_data = run_response.json()
             simulation_id = response_data.get("simulation_id")
             status = response_data.get("status")
+            returned_model = response_data.get("reasoning_model")
+            returned_effort = response_data.get("reasoning_effort")
             
             if simulation_id and status == "running":
-                print(f"✅ PASS: Simulation started successfully!")
+                print(f"✅ PASS: Simulation started successfully with new parameters!")
                 print(f"   Simulation ID: {simulation_id}")
                 print(f"   Status: {status}")
-                test_results.append(("POST /api/simulations/run", "PASS", f"Started simulation {simulation_id}"))
+                print(f"   Reasoning Model: {returned_model}")
+                print(f"   Reasoning Effort: {returned_effort}")
+                
+                # Verify model factory parameters are correctly returned
+                if returned_model == reasoning_model and returned_effort == reasoning_effort:
+                    print(f"✅ Model factory parameters correctly configured")
+                    test_results.append(("POST /api/simulations/run", "PASS", f"Started simulation {simulation_id} with gpt-5/medium"))
+                else:
+                    print(f"⚠️  Model parameters mismatch: expected {reasoning_model}/{reasoning_effort}, got {returned_model}/{returned_effort}")
+                    test_results.append(("POST /api/simulations/run", "PARTIAL", f"Started but parameter mismatch"))
             else:
                 print(f"❌ FAIL: Expected simulation_id and status='running', got: {response_data}")
                 test_results.append(("POST /api/simulations/run", "FAIL", f"Invalid response: {response_data}"))
