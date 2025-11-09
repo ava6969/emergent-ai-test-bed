@@ -1,0 +1,29 @@
+agent_ids:
+- '1'
+evaluators:
+- correctness
+- hallucination
+- conciseness
+generated_with_real_context: false
+id: mid_freq_stat_arbitrage_001
+initial_prompt: Can you help me develop a statistical arbitrage strategy using recent
+  intraday data?
+max_turns: 5
+metadata:
+  complexity: advanced
+  data_sources: intraday OHLCV data
+  difficulty: easy
+  overall_goal: Create a profitable statistical arbitrage strategy
+  quantitative_metrics: correlation_coefficient, sharpe_ratio, max_drawdown
+  scenario_type: strategy development
+  timeframes: last 20 trading days
+name: Medium-Frequency Statistical Arbitrage Strategy
+objective: Develop a statistical arbitrage strategy using intraday OHLCV data from
+  U.S. equities for the last 20 trading days (4 weeks).
+simulation_mode: false
+success_criteria: "- The strategy identifies at least 5 pairs of equities with a correlation\
+  \ coefficient \u2265 0.75 over the period.\n- Backtest results show a Sharpe ratio\
+  \ \u2265 1.2 and maximum drawdown \u2264 10%.\n- Generate a report detailing pair\
+  \ selection, correlation analysis, backtest results, and risk metrics.\n- Completion\
+  \ of the analysis within 5 minutes of request."
+test_cases: []
