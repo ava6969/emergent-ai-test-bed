@@ -1,0 +1,29 @@
+agent_ids:
+- '1'
+evaluators:
+- correctness
+- hallucination
+- conciseness
+generated_with_real_context: false
+id: momentum_analysis_001
+initial_prompt: Can you help me find the best performing sectors from yesterday?
+max_turns: 5
+metadata:
+  complexity: easy
+  data_sources: intraday OHLCV data
+  difficulty: easy
+  overall_goal: Identify top sectors based on momentum
+  quantitative_metrics: percentage_return, sector_composition, data_completeness
+  scenario_type: research
+  timeframes: last trading day (390 minutes)
+name: Intraday Sector Momentum Analysis
+objective: Identify the top 3 performing U.S. equity sectors based on intraday momentum
+  calculated from OHLCV data over the last trading day (390 minutes).
+simulation_mode: false
+success_criteria: "- Agent identifies 3 sectors with the highest average return during\
+  \ the last trading session.  - Provides a quantitative ranking of these sectors\
+  \ with percentage returns (\xB10.01% precision).  - Includes the number of stocks\
+  \ contributing to each sector's performance.  - Validates data completeness with\
+  \ at least 95% of the expected intraday ticks present.  - Delivers results within\
+  \ 2 minutes of the request."
+test_cases: []
