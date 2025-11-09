@@ -38,7 +38,7 @@ async def test_rewards():
     
     # 2. Start simulation
     print("\n2. Starting simulation...")
-    sim_resp = requests.post(f"{BACKEND_URL}/api/simulations/run", json={
+    sim_resp = requests.post(f"{BACKEND_URL}/api/simulations/run", params={
         "persona_id": persona['id'],
         "goal_id": goal['id'],
         "model": "gpt-4.1",
