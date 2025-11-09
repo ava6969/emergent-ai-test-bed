@@ -221,6 +221,7 @@ export function EvaluateTab({ threadId, messages }: EvaluateTabProps) {
       {results && results.results && (
         <Card className="p-6">
           <h3 className="text-lg font-semibold mb-4">Evaluation Results</h3>
+          {console.log('Rendering results:', results)}
 
           {/* Metadata */}
           <div className="bg-gray-50 rounded-lg p-4 mb-6">
