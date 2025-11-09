@@ -1552,6 +1552,8 @@ async def run_evaluation(request: EvaluationRequest, background_tasks: Backgroun
                             inputs=eval_context["goal"],
                             context=eval_context
                         )
+                # Debug log the result structure
+                logger.info(f"Evaluator {eval_name} result type: {type(result)}, keys: {list(result.keys()) if isinstance(result, dict) else 'not_dict'}")
                 eval_results.append(result)
             except Exception as e:
                 logger.error(f"Evaluator {eval_name} failed: {e}", exc_info=True)
