@@ -154,96 +154,15 @@ export function Goals() {
 
       {/* Content */}
       <div className="flex-1 overflow-auto p-6 space-y-6">
-        {/* AI Generation Section */}
-        <Card className="p-6">
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-primary" />
-              <h3 className="font-semibold">Generate Goal with AI</h3>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {/* Persona Selection */}
-              <div className="space-y-2">
-                <Label className="text-sm">Persona (Optional)</Label>
-                <select
-                  className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm"
-                  value={generationSettings.persona_ids[0] || ''}
-                  onChange={(e) => setGenerationSettings({
-                    ...generationSettings,
-                    persona_ids: e.target.value ? [e.target.value] : [],
-                  })}
-                >
-                  <option value="">Select persona...</option>
-                  {personas.map((p) => (
-                    <option key={p.id} value={p.id}>{p.name}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Product Selection */}
-              <div className="space-y-2">
-                <Label className="text-sm">Product (Optional)</Label>
-                <select
-                  className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm"
-                  value={generationSettings.product_id || ''}
-                  onChange={(e) => setGenerationSettings({
-                    ...generationSettings,
-                    product_id: e.target.value || null,
-                  })}
-                >
-                  <option value="">Select product...</option>
-                  {products.map((p) => (
-                    <option key={p.id} value={p.id}>{p.name}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Difficulty Level */}
-              <div className="space-y-2">
-                <Label className="text-sm">Difficulty Level</Label>
-                <select
-                  className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm"
-                  value={generationSettings.difficulty}
-                  onChange={(e) => setGenerationSettings({
-                    ...generationSettings,
-                    difficulty: e.target.value,
-                  })}
-                >
-                  <option value="easy">Easy</option>
-                  <option value="medium">Medium</option>
-                  <option value="hard">Hard</option>
-                  <option value="expert">Expert</option>
-                </select>
-              </div>
-
-              {/* Max Turns Override */}
-              <div className="space-y-2">
-                <Label className="text-sm">Max Turns (Override)</Label>
-                <Input
-                  type="number"
-                  placeholder="Auto"
-                  value={generationSettings.max_turns_override || ''}
-                  onChange={(e) => setGenerationSettings({
-                    ...generationSettings,
-                    max_turns_override: e.target.value ? parseInt(e.target.value) : null,
-                  })}
-                  min={1}
-                  max={50}
-                />
-              </div>
-            </div>
-
-            <Button
-              onClick={handleGenerate}
-              disabled={generateMutation.isPending}
-              className="w-full"
-            >
-              <Sparkles className="h-4 w-4 mr-2" />
-              {generateMutation.isPending ? 'Generating...' : 'Generate Goal'}
-            </Button>
-          </div>
-        </Card>
+        {/* AI Generation Button */}
+        <Button
+          onClick={() => setShowGenerateModal(true)}
+          className="w-full"
+          size="lg"
+        >
+          <Sparkles className="h-5 w-5 mr-2" />
+          Generate Goal with AI
+        </Button>
 
         {/* Goals Table */}
         {goals.length === 0 ? (
