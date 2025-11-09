@@ -76,6 +76,7 @@ export default function PersonasPage() {
       const startResponse = await apiClient.generatePersona(generateInput.trim(), {
         ...settings,
         max_tokens: maxTokens,
+        count: count,
       });
       
       const jobId = startResponse.job_id;
