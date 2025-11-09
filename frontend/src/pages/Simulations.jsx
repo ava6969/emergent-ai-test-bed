@@ -199,7 +199,7 @@ export function Simulations() {
             </div>
 
             {/* Max Turns Override */}
-            <div className="mb-6">
+            <div className="mb-4">
               <label className="block text-sm font-medium mb-2">
                 <Clock className="inline w-4 h-4 mr-1" />
                 Max Turns (optional)
@@ -213,6 +213,28 @@ export function Simulations() {
                 min="1"
                 className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
               />
+            </div>
+
+            {/* Reasoning Model Selector */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium mb-2">
+                <Sparkles className="inline w-4 h-4 mr-1" />
+                Reasoning Model
+              </label>
+              <select
+                value={reasoningModel}
+                onChange={(e) => setReasoningModel(e.target.value)}
+                disabled={isSimulating}
+                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+              >
+                <option value="gpt-4o">GPT-4o (Fast)</option>
+                <option value="gpt-4o-mini">GPT-4o Mini (Faster)</option>
+                <option value="o1-preview">o1 Preview (Deep Reasoning)</option>
+                <option value="o1-mini">o1 Mini (Reasoning)</option>
+              </select>
+              <p className="text-xs text-gray-500 mt-1">
+                Model used by the test persona to decide next actions
+              </p>
             </div>
 
             {/* Action Buttons */}
