@@ -178,7 +178,7 @@ Format your response as JSON:
         }
         
     except Exception as e:
-        logger.error(f"Error generating persona: {e}")
+        print(f"Error generating persona: {e}")
         return {
             "message": f"Sorry, I encountered an error generating the persona: {str(e)}",
             "actions": []
