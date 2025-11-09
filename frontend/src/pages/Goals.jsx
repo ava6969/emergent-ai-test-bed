@@ -62,27 +62,57 @@ export function Goals() {
     },
   });
 
-  // Generate goal with AI
+  // Generate goal with AI (with polling)
   const handleGenerate = async (settings) => {
     setIsGenerating(true);
+    setGenerationProgress(0);
+    setGenerationStage('Starting...');
     
     try {
-      const goal = await apiClient.generateGoal(settings);
+      // Start generation (returns job ID)
+      const startResponse = await apiClient.startGoalGeneration(settings);
+      const jobId = startResponse.job_id;
       
-      queryClient.invalidateQueries(['goals']);
-      toast({
-        title: 'Goal Generated',
-        description: `Successfully generated: ${goal.name}`,
-      });
-      setShowGenerateModal(false);
+      // Poll for progress
+      const pollingInterval = setInterval(async () => {
+        try {
+          const statusResponse = await apiClient.getJobStatus(jobId);
+          
+          setGenerationStage(statusResponse.stage || 'Processing...');
+          setGenerationProgress(statusResponse.progress || 0);
+          
+          if (statusResponse.status === 'completed') {
+            clearInterval(pollingInterval);
+            setIsGenerating(false);
+            setShowGenerateModal(false);
+            
+            queryClient.invalidateQueries(['goals']);
+            toast({
+              title: 'Goal Generated',
+              description: statusResponse.result?.message || 'Successfully generated goal',
+            });
+          } else if (statusResponse.status === 'failed') {
+            clearInterval(pollingInterval);
+            setIsGenerating(false);
+            
+            toast({
+              title: 'Generation Failed',
+              description: statusResponse.error || 'Unknown error',
+              variant: 'destructive',
+            });
+          }
+        } catch (pollError) {
+          console.error('Polling error:', pollError);
+        }
+      }, 1000); // Poll every second
+      
     } catch (error) {
+      setIsGenerating(false);
       toast({
         title: 'Generation Failed',
         description: error.response?.data?.detail || error.message,
         variant: 'destructive',
       });
-    } finally {
-      setIsGenerating(false);
     }
   };
 
