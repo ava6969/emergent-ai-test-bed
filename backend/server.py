@@ -134,6 +134,7 @@ class GeneratePersonaRequest(BaseModel):
     context: dict = {}
     
     # Generation settings
+    count: int = Field(default=1, ge=1, le=10, description="Number of personas to generate (1-10)")
     organization_id: Optional[str] = None
     use_exa_enrichment: bool = False
     metadata_schema: Optional[dict] = None
