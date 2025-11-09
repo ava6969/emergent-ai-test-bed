@@ -247,6 +247,17 @@ export function Goals() {
           onClose={handleFormClose}
         />
       )}
+
+      {/* Generation Modal */}
+      {showGenerateModal && (
+        <GoalGenerationModal
+          personas={personas}
+          products={products}
+          onGenerate={handleGenerate}
+          onClose={() => setShowGenerateModal(false)}
+          isGenerating={isGenerating}
+        />
+      )}
     </div>
   );
 }
