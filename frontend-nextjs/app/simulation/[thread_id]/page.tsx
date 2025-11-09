@@ -176,6 +176,9 @@ export default function SimulationPage() {
                     </div>
                   </div>
                 )}
+
+                {/* Scroll anchor */}
+                <div ref={messagesEndRef} />
               </div>
             </div>
 
