@@ -1426,7 +1426,9 @@ async def run_evaluation(request: EvaluationRequest, background_tasks: Backgroun
         }
         
         # Run evaluators
-        from testbed.src.evaluation.evaluator_factory import EvaluatorFactory
+        import sys
+        sys.path.insert(0, str(ROOT_DIR / 'testbed'))
+        from src.evaluation.evaluator_factory import EvaluatorFactory
         
         factory = EvaluatorFactory(default_model=request.model)
         evaluators = factory.create_evaluators(request.evaluators)
