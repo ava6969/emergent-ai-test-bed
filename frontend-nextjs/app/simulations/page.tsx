@@ -19,6 +19,8 @@ export default function SimulationsPage() {
   const [isSimulating, setIsSimulating] = useState(false);
   const [simulationId, setSimulationId] = useState<string | null>(null);
   const [simulationData, setSimulationData] = useState<any>(null);
+  const [selectedThread, setSelectedThread] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'new' | 'history'>('new');
 
   const isReasoningModel = (model: string) => {
     const modelLower = model.toLowerCase();
