@@ -1434,15 +1434,20 @@ async def run_evaluation(request: EvaluationRequest, background_tasks: Backgroun
         total_reward = 0
         positive_rewards = 0
         negative_penalties = 0
+        messages_with_rewards = 0
         
         for msg in messages:
             if isinstance(msg, dict):
                 reward = msg.get("additional_kwargs", {}).get("reward", 0)
+                if reward != 0:
+                    messages_with_rewards += 1
                 if reward > 0:
                     positive_rewards += reward
                 elif reward < 0:
                     negative_penalties += abs(reward)
                 total_reward += reward
+        
+        logger.info(f"Reward calculation: {messages_with_rewards} messages with rewards, total={total_reward}, positive={positive_rewards}, negative={negative_penalties}")
         
         # Convert trajectory to dataset format
         trajectory = []
