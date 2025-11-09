@@ -2,14 +2,13 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
 import { Badge } from '../components/ui/badge';
-import { Trash2, Edit, Settings, Plus, Sparkles } from 'lucide-react';
+import { Trash2, Edit, Plus, Sparkles } from 'lucide-react';
 import { apiClient } from '../lib/api/client';
 import { useToast } from '../hooks/use-toast';
 import GoalForm from '../components/goals/GoalForm';
+import GoalGenerationModal from '../components/goals/GoalGenerationModal';
 
 export function Goals() {
   const [showForm, setShowForm] = useState(false);
