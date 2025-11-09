@@ -78,7 +78,8 @@ export function Simulations() {
       const response = await apiClient.startSimulation(
         selectedPersona,
         selectedGoal,
-        maxTurns ? parseInt(maxTurns) : null
+        maxTurns ? parseInt(maxTurns) : null,
+        reasoningModel
       );
       setSimulationId(response.simulation_id);
       setSimulationData({
