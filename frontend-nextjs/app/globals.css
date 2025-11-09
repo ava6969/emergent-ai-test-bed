@@ -138,15 +138,15 @@ button:hover {
 
 /* Card styles */
 .dark-card {
-  background: var(--bg-secondary);
+  background: var(--card);
   border: 1px solid var(--border);
   transition: all 0.3s ease;
 }
 
 .dark-card:hover {
-  border-color: var(--border-light);
-  box-shadow: 0 0 30px var(--glow);
-  background: var(--bg-tertiary);
+  border-color: var(--ring);
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+  background: var(--muted);
 }
 
 @custom-variant dark (&:is(.dark *));
