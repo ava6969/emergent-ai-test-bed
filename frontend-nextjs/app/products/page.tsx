@@ -115,18 +115,88 @@ export default function ProductsPage() {
           <div className="grid gap-4">
             {products.map((product) => (
               <div key={product.id} className="bg-white rounded-lg border p-4">
-                <h3 className="font-medium">{product.name}</h3>
-                <p className="text-sm text-gray-600 mt-1">{product.description}</p>
-                {product.documents && product.documents.length > 0 && (
-                  <p className="text-xs text-gray-500 mt-2">
-                    {product.documents.length} document(s)
-                  </p>
-                )}
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <h3 className="font-medium">{product.name}</h3>
+                    <p className="text-sm text-gray-600 mt-1">{product.description}</p>
+                    {product.documents && product.documents.length > 0 && (
+                      <p className="text-xs text-gray-500 mt-2">
+                        {product.documents.length} document(s)
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleEdit(product)}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDelete(product.id)}
+                    >
+                      <Trash2 className="h-4 w-4 text-red-500" />
+                    </Button>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
         )}
       </div>
+
+      {/* Create/Edit Dialog */}
+      <Dialog open={isCreateOpen || !!editingProduct} onOpenChange={(open) => {
+        if (!open) {
+          setIsCreateOpen(false);
+          setEditingProduct(null);
+          setFormData({ name: '', description: '' });
+        }
+      }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{editingProduct ? 'Edit Product' : 'Create New Product'}</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">Product Name</label>
+              <Input
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder="Enter product name"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Description</label>
+              <Input
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                placeholder="Enter product description"
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setIsCreateOpen(false);
+                  setEditingProduct(null);
+                  setFormData({ name: '', description: '' });
+                }}
+              >
+                Cancel
+              </Button>
+              <Button type="submit">
+                {editingProduct ? 'Update' : 'Create'}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
