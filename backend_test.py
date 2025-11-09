@@ -379,15 +379,15 @@ def test_simulation_functionality():
                     print(f"❌ FAIL: Issues found: {missing_fields}")
                     test_results.append(("Model Factory Integration", "FAIL", f"Issues: {missing_fields}"))
             else:
-                print(f"❌ Could not verify data structure (status {final_response.status_code})")
-                test_results.append(("Simulation Data Structure", "FAIL", f"Could not retrieve data"))
+                print(f"❌ Could not verify model factory integration (status {final_response.status_code})")
+                test_results.append(("Model Factory Integration", "FAIL", f"Could not retrieve data"))
                 
         except Exception as e:
-            print(f"❌ Exception verifying data structure: {e}")
-            test_results.append(("Simulation Data Structure", "FAIL", f"Exception: {e}"))
+            print(f"❌ Exception verifying model factory integration: {e}")
+            test_results.append(("Model Factory Integration", "FAIL", f"Exception: {e}"))
     else:
         print("⚠️  No simulation data to verify (simulation didn't start)")
-        test_results.append(("Simulation Data Structure", "SKIP", "No simulation data available"))
+        test_results.append(("Model Factory Integration", "SKIP", "No simulation data available"))
     
     print("\n5. Testing POST /api/simulations/{simulation_id}/stop (if needed)...")
     print("-" * 50)
