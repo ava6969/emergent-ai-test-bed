@@ -126,26 +126,72 @@ async def ai_chat(request: ChatRequest):
         print(f"Error in AI chat: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+class GeneratePersonaRequest(BaseModel):
+    """Request model for persona generation"""
+    description: str
+    message: str = None  # Backwards compatibility
+    conversation_id: str = "api"
+    context: dict = {}
+    
+    # Generation settings
+    organization_id: str = None
+    use_exa_enrichment: bool = False
+    metadata_schema: dict = None
+    model: str = "gpt-4o-mini"
+    temperature: float = 0.7
+    max_tokens: int = 500
+
 @api_router.post("/ai/generate/persona")
-async def generate_persona_endpoint(request: ChatRequest):
-    """Generate persona from description"""
+async def generate_persona_endpoint(request: GeneratePersonaRequest):
+    """Generate persona using testbed PersonaManager with structured output"""
+    
+    if not persona_manager:
+        raise HTTPException(status_code=500, detail="Persona manager not initialized")
+    
     try:
-        result = await handle_persona_generation(request.message, request.conversation_id, request.context)
+        # Use description or message (backwards compatibility)
+        description = request.description or request.message
+        if not description:
+            raise HTTPException(status_code=400, detail="description or message required")
         
-        # If persona was generated, also save to DB
-        if result.get("generated_items") and result["generated_items"].get("persona"):
-            persona = result["generated_items"]["persona"].copy()
-            # Add default fields if not present
-            if "tags" not in persona:
-                persona["tags"] = []
-            if "organization_id" not in persona:
-                persona["organization_id"] = None
-            if "updated_at" not in persona:
-                persona["updated_at"] = persona.get("created_at", datetime.now(timezone.utc).isoformat())
-            
-            await db.personas.insert_one(persona)
+        # Update generator config if custom settings provided
+        if request.model != "gpt-4o-mini" or request.temperature != 0.7 or request.max_tokens != 500:
+            custom_config = create_generator_config(
+                model=request.model,
+                temperature=request.temperature,
+                max_tokens=request.max_tokens
+            )
+            persona_manager.generator = type(persona_manager.generator)(config=custom_config)
         
-        return result
+        # Generate persona using PersonaManager
+        personas = await persona_manager.generate(
+            count=1,
+            requirements=description,
+            organization_id=request.organization_id,
+            use_real_context=request.use_exa_enrichment,
+            metadata_schema=request.metadata_schema
+        )
+        
+        if not personas:
+            raise HTTPException(status_code=500, detail="No persona generated")
+        
+        persona = personas[0]
+        
+        # Convert to dict for response
+        persona_dict = persona.model_dump()
+        
+        return {
+            "message": f"✓ Created persona: {persona.name}",
+            "generated_items": {
+                "persona": persona_dict
+            },
+            "actions": [
+                {"label": "Create Goal", "action": "create_goal", "variant": "default"},
+                {"label": "View Details", "action": "view_details"},
+                {"label": "Regenerate", "action": "regenerate"}
+            ]
+        }
+        
     except Exception as e:
         print(f"Error generating persona: {e}")
         import traceback
