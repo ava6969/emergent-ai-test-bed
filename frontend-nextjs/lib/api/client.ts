@@ -208,6 +208,29 @@ class APIClient {
     const response = await this.client.get(`/api/threads/${thread_id}/messages`);
     return response.data;
   }
+
+  async getThreadStatus(thread_id: string): Promise<any> {
+    // Get thread status
+    const response = await this.client.get(`/api/threads/${thread_id}/status`);
+    return response.data;
+  }
+
+  // ==================== EVALUATION ENDPOINTS ====================
+
+  async runEvaluation(request: {
+    thread_id: string;
+    evaluators: string[];
+    model: string;
+    dataset_name?: string;
+  }): Promise<any> {
+    const response = await this.client.post('/api/evaluations/run', request);
+    return response.data;
+  }
+
+  async getEvaluation(eval_id: string): Promise<any> {
+    const response = await this.client.get(`/api/evaluations/${eval_id}`);
+    return response.data;
+  }
 }
 
 export const apiClient = new APIClient();
