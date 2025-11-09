@@ -69,6 +69,7 @@ export default function GoalsPage() {
       const startResponse = await apiClient.generateGoal({
         persona_ids: selectedPersona ? [selectedPersona] : [],
         difficulty: difficulty || 'medium',
+        count: count,
         organization_id: undefined, // TODO: Add organization context
         product_id: undefined, // TODO: Add product context
       });
