@@ -364,6 +364,21 @@ export function Personas() {
           type="persona"
         />
       )}
+
+      {/* Generation Progress Modal */}
+      <GenerationProgress
+        isOpen={isGenerating}
+        stage={generationStage}
+        progress={generationProgress}
+        error={generationError}
+        elapsedTime={elapsedTime}
+        onClose={() => {
+          setIsGenerating(false);
+          setGenerationError(null);
+          setGenerationStage('');
+          setGenerationProgress(0);
+        }}
+      />
     </div>
   );
 }
