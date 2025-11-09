@@ -136,6 +136,7 @@ class APIClient {
     difficulty?: string;
     max_turns_override?: number;
     organization_id?: string;
+    count?: number;
   }) {
     const response = await this.client.post('/api/ai/generate/goal/async', request);
     return response.data;
