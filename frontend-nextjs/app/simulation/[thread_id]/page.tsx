@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api/client';
-import { ThreadMessagesOnly } from '@/components/simulations/ThreadMessagesOnly';
+import { SimpleThreadMessages } from '@/components/simulations/SimpleThreadMessages';
 import { Card } from '@/components/ui/card';
 
 export default function SimulationPage() {
