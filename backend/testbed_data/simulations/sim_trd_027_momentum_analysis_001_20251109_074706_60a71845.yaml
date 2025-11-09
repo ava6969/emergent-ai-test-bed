@@ -1,0 +1,16 @@
+completed_at: '2025-11-09T07:47:21.474436+00:00'
+evaluation_model: gpt-4o-mini
+goal_achieved: false
+goal_id: momentum_analysis_001
+id: sim_trd_027_momentum_analysis_001_20251109_074706_60a71845
+max_turns: 3
+metadata: {}
+organization_id: Momentum Advisors
+persona_id: TRD-027
+simulation_model: gpt-4o-mini
+started_at: '2025-11-09T07:47:06.318061+00:00'
+status: completed
+thread_id: bb50fb1d-85d4-43ab-8b0e-cacfaf48085f
+trajectory_id: traj_trd_027_momentum_analysis_001_20251109_074706_087630b7
+turns_completed: 1
+use_persona_memory: false
