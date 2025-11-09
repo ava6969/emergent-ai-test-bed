@@ -135,11 +135,9 @@ export default function SimulationPage() {
                 >
                   {status}
                 </Badge>
-                {currentTurn > 0 && (
-                  <Badge variant="outline">
-                    Turn {currentTurn} / {maxTurns}
-                  </Badge>
-                )}
+                <Badge variant="outline">
+                  Turn {currentTurn} / {maxTurns}
+                </Badge>
               </div>
             </div>
 
