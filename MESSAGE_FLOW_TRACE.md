@@ -313,7 +313,7 @@ USER ACTION: Types message and presses Enter
 
 **Request:**
 ```http
-POST https://langvis.preview.emergentagent.com/api/ai/chat
+POST https://agent-arena-3.preview.emergentagent.com/api/ai/chat
 Content-Type: application/json
 
 {

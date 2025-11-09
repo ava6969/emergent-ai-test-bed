@@ -12,7 +12,7 @@ import time
 from datetime import datetime
 
 # Backend URL from environment
-BACKEND_URL = "https://langvis.preview.emergentagent.com/api"
+BACKEND_URL = "https://agent-arena-3.preview.emergentagent.com/api"
 
 def test_simulation_functionality():
     """Test updated simulation functionality with new model factory and reasoning effort parameter"""
