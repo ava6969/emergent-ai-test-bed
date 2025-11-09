@@ -41,6 +41,13 @@ export default function SimulationsPage() {
     queryFn: () => apiClient.getGoals(),
   });
 
+  // Fetch simulation threads (trajectories)
+  const { data: threads = [], refetch: refetchThreads } = useQuery({
+    queryKey: ['simulation-threads'],
+    queryFn: () => apiClient.getSimulationThreads(),
+    refetchInterval: viewMode === 'history' ? 5000 : false, // Auto-refresh when viewing history
+  });
+
   useEffect(() => {
     if (!simulationId || !isSimulating) return;
 
