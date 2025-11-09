@@ -102,7 +102,7 @@ async def ai_chat(request: ChatRequest):
                 "actions": []
             }
     except Exception as e:
-        logger.error(f"Error in AI chat: {e}")
+        print(f"Error in AI chat: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 async def handle_persona_generation(message: str, conversation_id: str, context: dict):
