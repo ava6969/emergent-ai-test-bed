@@ -102,10 +102,13 @@ class APIClient {
     return response.data;
   }
 
-  async generateGoal(request) {
-    const response = await this.client.post('/api/ai/generate/goal', request, {
-      timeout: 90000, // 90 seconds for AI generation
-    });
+  async startGoalGeneration(request) {
+    const response = await this.client.post('/api/ai/generate/goal/async', request);
+    return response.data;
+  }
+
+  async getJobStatus(jobId) {
+    const response = await this.client.get(`/api/ai/jobs/${jobId}`);
     return response.data;
   }
 
