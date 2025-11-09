@@ -83,8 +83,36 @@ User requested to:
 - ✅ Generation time: ~10 seconds
 - ✅ No more token limit errors in logs
 
+### Final Fix: Enforced Minimum max_tokens
+
+**Additional Issue**: User reported generation still not working after initial fix. The problem was that old settings with insufficient `max_tokens` were saved in localStorage.
+
+**Solution**: Enforced minimum `max_tokens` of 1500 everywhere:
+1. **GenerationSettings.jsx**: 
+   - Changed default from 1000 → 1500
+   - Added `MIN_MAX_TOKENS = 1500` constant
+   - Added validation in `useEffect` to upgrade old settings
+   - Changed input min from 100 → 1500
+   - Added auto-correction if user tries to set below 1500
+
+2. **Personas.jsx**:
+   - Added `useEffect` to clear old settings with `max_tokens < 1500`
+   - Added `Math.max()` to ensure at least 1500 tokens when calling API
+
+3. **Backend defaults** (already done):
+   - `GeneratePersonaRequest`: default 1500
+   - `testbed_bridge.py`: default 1500
+
+**Final Testing Results**:
+- ✅ Successfully generated 5 personas (Aisha Patel, Fatima Al-Mansoori, Marcus Chen, Sofia Rodriguez, Liam O'Brien)
+- ✅ All personas have detailed backgrounds (150-200 words)
+- ✅ Generation time: ~8-10 seconds consistently
+- ✅ Modal shows progress correctly
+- ✅ Delete All button works
+- ✅ No token limit errors in logs
+
 ### Next Steps
-User will test the complete flow (modal, generation, delete all), then proceed with Goals generation implementation.
+Ready for user to test. Once confirmed working, proceed with Goals generation implementation.
 
 ## Incorporate User Feedback
 - If user reports any issues, investigate and fix before proceeding
