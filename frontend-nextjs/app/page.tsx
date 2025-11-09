@@ -64,7 +64,7 @@ export default function Home() {
   const selectedGoalObj = goals.find((g) => g.id === selectedGoal);
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-8">
+    <div className="flex items-center justify-center min-h-screen p-8 relative z-0">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -72,8 +72,8 @@ export default function Home() {
         className="w-full max-w-2xl"
       >
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2 text-[#00FF41] matrix-glow">Create New Simulation</h1>
-          <p className="text-[#00FF41] opacity-60 text-sm">Configure and run agent evaluation simulations</p>
+          <h1 className="text-3xl font-bold mb-2 text-white luminance-glow">Create New Simulation</h1>
+          <p className="text-[#A0A0A0] text-sm">Configure and run agent evaluation simulations</p>
         </div>
 
         <div className="space-y-6">
