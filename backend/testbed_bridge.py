@@ -98,7 +98,15 @@ try:
     from src.orchestrator.epoch_client import EpochClient
 
     # Check if LangGraph credentials are available
-    if os.getenv("LANGGRAPH_API_URL") and os.getenv("LANGGRAPH_API_KEY"):
+    langgraph_url = os.getenv("LANGGRAPH_API_URL")
+    langgraph_key = os.getenv("LANGGRAPH_API_KEY")
+    assistant_id = os.getenv("EPOCH_ASSISTANT_ID") or os.getenv("EPOCH_AGENT_ID")
+    
+    print(f"Debug: LANGGRAPH_API_URL = {langgraph_url}")
+    print(f"Debug: LANGGRAPH_API_KEY = {'***' if langgraph_key else None}")
+    print(f"Debug: EPOCH_ASSISTANT_ID = {assistant_id}")
+    
+    if langgraph_url and langgraph_key and assistant_id:
         # Initialize EpochClient (LLM orchestrator)
         epoch_client = EpochClient()
         
@@ -111,9 +119,11 @@ try:
         print("✓ Initialized SimulationEngine with LangGraph Cloud")
     else:
         print("⚠ SimulationEngine not initialized (LangGraph Cloud credentials not configured)")
-        print("  To enable simulations, set LANGGRAPH_API_URL and LANGGRAPH_API_KEY")
+        print(f"  Missing: URL={not langgraph_url}, KEY={not langgraph_key}, ASSISTANT_ID={not assistant_id}")
 except Exception as e:
     print(f"⚠ Failed to initialize SimulationEngine: {e}")
+    import traceback
+    traceback.print_exc()
 
 # Export for use in server.py
 __all__ = [
