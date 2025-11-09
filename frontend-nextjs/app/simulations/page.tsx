@@ -116,8 +116,69 @@ export default function SimulationsPage() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Simulations</h1>
         <p className="text-gray-600">Run simulations to test how personas achieve goals</p>
+        
+        {/* View Mode Toggle */}
+        <div className="flex gap-2 mt-4">
+          <Button
+            variant={viewMode === 'new' ? 'default' : 'outline'}
+            onClick={() => setViewMode('new')}
+          >
+            New Simulation
+          </Button>
+          <Button
+            variant={viewMode === 'history' ? 'default' : 'outline'}
+            onClick={() => {
+              setViewMode('history');
+              refetchThreads();
+            }}
+          >
+            Trajectory History ({threads.length})
+          </Button>
+        </div>
       </div>
 
+      {/* Trajectory History View */}
+      {viewMode === 'history' && (
+        <Card className="p-6 mb-6">
+          <h2 className="text-xl font-semibold mb-4">Past Simulation Runs</h2>
+          <div className="space-y-2">
+            {threads.length === 0 ? (
+              <p className="text-gray-500 text-center py-8">
+                No simulation runs yet. Create a new simulation to get started.
+              </p>
+            ) : (
+              threads.map((thread: any) => (
+                <div
+                  key={thread.thread_id}
+                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 cursor-pointer"
+                  onClick={() => {
+                    setSelectedThread(thread.thread_id);
+                    setViewMode('new'); // Switch back to view the thread
+                  }}
+                >
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3">
+                      <span className="font-medium">{thread.metadata?.persona_name || 'Unknown Persona'}</span>
+                      <span className="text-gray-400">→</span>
+                      <span className="text-gray-700">{thread.metadata?.goal_name || 'Unknown Goal'}</span>
+                    </div>
+                    <div className="flex items-center gap-4 mt-1 text-sm text-gray-500">
+                      <span>{thread.metadata?.reasoning_model || 'gpt-5'}</span>
+                      <span>•</span>
+                      <span>{thread.metadata?.max_turns || 5} turns</span>
+                      <span>•</span>
+                      <span>{thread.metadata?.started_at ? new Date(thread.metadata.started_at).toLocaleString() : 'Unknown time'}</span>
+                    </div>
+                  </div>
+                  <Badge variant="secondary">View</Badge>
+                </div>
+              ))
+            )}
+          </div>
+        </Card>
+      )}
+
+      {/* Main Simulation View */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-1">
           <Card className="p-6">
