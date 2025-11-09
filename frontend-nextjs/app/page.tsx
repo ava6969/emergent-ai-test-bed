@@ -65,11 +65,16 @@ export default function Home() {
   const selectedGoalObj = goals.find((g) => g.id === selectedGoal);
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-8 bg-gray-50">
-      <Card className="w-full max-w-2xl p-8">
+    <div className="flex items-center justify-center min-h-screen p-8 bg-black">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-2xl p-8 matrix-card rounded-lg"
+      >
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Create New Simulation</h1>
-          <p className="text-gray-600">Configure and run agent evaluation simulations</p>
+          <h1 className="text-3xl font-bold mb-2 text-[#00FF41] matrix-glow">Create New Simulation</h1>
+          <p className="text-[#00FF41] opacity-60 text-sm">Configure and run agent evaluation simulations</p>
         </div>
 
         <div className="space-y-6">
