@@ -81,14 +81,120 @@ export default function SimulationPage() {
 
         <TabsContent value="trajectory" className="flex-1 mt-4">
           <Card className="h-full flex flex-col overflow-hidden">
-            <SimpleThreadMessages
-              messages={messages}
-              isLoading={stream.isLoading}
-              status={status}
-              currentTurn={currentTurn}
-              maxTurns={maxTurns}
-              goalAchieved={goalAchieved}
-            />
+            {/* Status Bar */}
+            <div className="flex items-center justify-between p-4 border-b bg-white">
+              <div className="flex items-center gap-2">
+                <Badge
+                  variant={
+                    status === 'running'
+                      ? 'default'
+                      : status === 'completed'
+                        ? 'secondary'
+                        : 'destructive'
+                  }
+                >
+                  {status}
+                </Badge>
+                {currentTurn > 0 && (
+                  <Badge variant="outline">
+                    Turn {currentTurn} / {maxTurns}
+                  </Badge>
+                )}
+              </div>
+            </div>
+
+            {/* Messages Area */}
+            <div className="flex-1 overflow-y-auto p-4">
+              <div className="max-w-4xl mx-auto space-y-4">
+                {messages.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-64 text-gray-500">
+                    <Bot className="w-16 h-16 mb-4 text-gray-300" />
+                    <p className="text-lg font-medium">Waiting for conversation to start...</p>
+                    <p className="text-sm">Messages will appear here once the simulation begins</p>
+                  </div>
+                ) : (
+                  messages.map((message, index) => {
+                    const reward = message.additional_kwargs?.reward;
+                    const isHuman = message.type === 'human';
+                    
+                    return (
+                      <div
+                        key={index}
+                        className={`flex gap-4 ${isHuman ? 'justify-start' : 'justify-start'}`}
+                      >
+                        {/* Avatar */}
+                        <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
+                          isHuman ? 'bg-blue-100' : 'bg-gray-200'
+                        }`}>
+                          {isHuman ? (
+                            <User className="w-5 h-5 text-blue-600" />
+                          ) : (
+                            <Bot className="w-5 h-5 text-gray-600" />
+                          )}
+                        </div>
+
+                        {/* Message Content */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-semibold text-sm">
+                              {isHuman ? 'Persona' : 'Assistant'}
+                            </span>
+                            {reward !== undefined && reward !== 0 && (
+                              <Badge
+                                variant={reward === 1 ? 'default' : 'destructive'}
+                                className="text-xs"
+                              >
+                                {reward === 1 ? '+1' : '-1'}
+                              </Badge>
+                            )}
+                          </div>
+                          <div className={`prose prose-sm max-w-none ${
+                            isHuman ? 'text-gray-900' : 'text-gray-700'
+                          }`}>
+                            <ReactMarkdown>
+                              {typeof message.content === 'string'
+                                ? message.content
+                                : JSON.stringify(message.content, null, 2)}
+                            </ReactMarkdown>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+
+                {/* Loading indicator */}
+                {stream.isLoading && messages.length > 0 && (
+                  <div className="flex gap-4">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-gray-200">
+                      <Bot className="w-5 h-5 text-gray-600 animate-pulse" />
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Goal Achievement Banner */}
+            {status === 'completed' && (
+              <div
+                className={`p-4 border-t ${
+                  goalAchieved ? 'bg-green-50 border-green-300' : 'bg-yellow-50 border-yellow-300'
+                }`}
+              >
+                <span
+                  className={`font-semibold ${
+                    goalAchieved ? 'text-green-900' : 'text-yellow-900'
+                  }`}
+                >
+                  {goalAchieved ? '✓ Goal Achieved!' : '⚠ Goal Not Achieved'}
+                </span>
+              </div>
+            )}
           </Card>
         </TabsContent>
 
