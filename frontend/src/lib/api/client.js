@@ -33,6 +33,24 @@ class APIClient {
     return response.data;
   }
 
+  async startPersonaGeneration(request) {
+    const response = await this.client.post('/api/ai/generate/persona/async', {
+      description: request.description,
+      organization_id: request.organization_id,
+      use_exa_enrichment: request.use_exa_enrichment,
+      metadata_schema: request.metadata_schema,
+      model: request.model,
+      temperature: request.temperature,
+      max_tokens: request.max_tokens,
+    });
+    return response.data;
+  }
+
+  async getGenerationStatus(jobId) {
+    const response = await this.client.get(`/api/ai/generate/status/${jobId}`);
+    return response.data;
+  }
+
   async generateGoal(request) {
     const response = await this.client.post('/api/ai/generate/goal', {
       message: request.description || request.message,
