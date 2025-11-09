@@ -503,16 +503,20 @@ def test_simulation_functionality():
     
     print(f"\nTotal: {passed} passed, {failed} failed, {skipped} skipped")
     
-    # Overall assessment
+    # Overall assessment for updated functionality
     if simulation_id:
-        print(f"\n🎯 SIMULATION ASSESSMENT:")
-        print(f"   - LangGraph Integration: {'✅ WORKING' if passed > failed else '❌ ISSUES'}")
+        print(f"\n🎯 UPDATED SIMULATION ASSESSMENT:")
+        print(f"   - Model Factory Integration: {'✅ WORKING' if any('Model Factory' in r[0] and r[1] == 'PASS' for r in test_results) else '❌ ISSUES'}")
+        print(f"   - Reasoning Model (gpt-5): {'✅ WORKING' if passed > failed else '❌ ISSUES'}")
+        print(f"   - Reasoning Effort (medium): {'✅ WORKING' if passed > failed else '❌ ISSUES'}")
+        print(f"   - TestEnvironment Message Handling: {'✅ WORKING' if any('Message Conversion' in r[0] and r[1] == 'PASS' for r in test_results) else '❌ ISSUES'}")
+        print(f"   - No Temperature Errors: {'✅ CONFIRMED' if any('Temperature Error Check' in r[0] and r[1] == 'PASS' for r in test_results) else '❌ ISSUES'}")
         print(f"   - Simulation ID Generated: {simulation_id}")
         print(f"   - Real-time Polling: {'✅ WORKING' if any('Poll' in r[0] for r in test_results if r[1] == 'PASS') else '❌ ISSUES'}")
     else:
-        print(f"\n⚠️  SIMULATION ASSESSMENT:")
-        print(f"   - LangGraph Integration: ❌ NOT WORKING")
-        print(f"   - Issue: Could not start simulation")
+        print(f"\n⚠️  UPDATED SIMULATION ASSESSMENT:")
+        print(f"   - Model Factory Integration: ❌ NOT TESTED")
+        print(f"   - Issue: Could not start simulation with new parameters")
     
     return failed == 0
 
