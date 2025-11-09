@@ -1470,20 +1470,33 @@ async def run_evaluation(request: EvaluationRequest, background_tasks: Backgroun
                 last_assistant_message = msg["content"]
                 break
         
-        # Prepare outputs for evaluators
-        # Trajectory evaluator needs full trajectory, others need just output
-        outputs_data = {
-            "response": last_assistant_message,  # For simple evaluators
-            "trajectory": trajectory  # For trajectory evaluators
-        }
+        # Run evaluators - split into trajectory and simple evaluators
+        eval_results = []
         
-        # Run all evaluators
-        eval_results = await factory.run_evaluators(
-            evaluators=evaluators,
-            outputs=outputs_data,  # Pass both trajectory and response
-            inputs=eval_context["goal"],  # Pass goal as string
-            context=eval_context
-        )
+        for evaluator, eval_name in zip(evaluators, request.evaluators):
+            try:
+                # Trajectory evaluator needs full trajectory
+                if eval_name == "trajectory_accuracy":
+                    result = await evaluator(
+                        outputs=trajectory,
+                        inputs=eval_context["goal"],
+                        context=eval_context
+                    )
+                else:
+                    # Simple evaluators need just the output text
+                    result = await evaluator(
+                        outputs=last_assistant_message,
+                        inputs=eval_context["goal"],
+                        context=eval_context
+                    )
+                eval_results.append(result)
+            except Exception as e:
+                logger.error(f"Evaluator {eval_name} failed: {e}", exc_info=True)
+                eval_results.append({
+                    "key": eval_name,
+                    "score": False,
+                    "comment": f"Evaluator failed: {str(e)}"
+                })
         
         # Store evaluation result
         result = EvaluationResult(
