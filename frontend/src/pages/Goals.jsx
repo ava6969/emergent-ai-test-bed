@@ -12,13 +12,9 @@ import GoalGenerationModal from '../components/goals/GoalGenerationModal';
 
 export function Goals() {
   const [showForm, setShowForm] = useState(false);
+  const [showGenerateModal, setShowGenerateModal] = useState(false);
   const [editingGoal, setEditingGoal] = useState(null);
-  const [generationSettings, setGenerationSettings] = useState({
-    persona_ids: [],
-    product_id: null,
-    difficulty: 'medium',
-    max_turns_override: null,
-  });
+  const [isGenerating, setIsGenerating] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
