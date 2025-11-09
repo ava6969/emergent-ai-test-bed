@@ -1,0 +1,21 @@
+{
+  "id": "traj_trd_027_momentum_analysis_001_20251109_080238_7fcc640b",
+  "persona_id": "TRD-027",
+  "goal_id": "momentum_analysis_001",
+  "organization_id": "Momentum Advisors",
+  "thread_id": "181636ac-b22c-4d86-b101-3a08f987d524",
+  "simulation_run_id": "sim_trd_027_momentum_analysis_001_20251109_080238_41339713",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Can you help me find the best performing sectors from September 29, 2023?"
+    }
+  ],
+  "timestamp": "2025-11-09T08:03:47.398898+00:00",
+  "turns": 0,
+  "completed": true,
+  "goal_achieved": false,
+  "learned_context": {},
+  "evaluation_scores": {},
+  "overall_score": 0.5
+}

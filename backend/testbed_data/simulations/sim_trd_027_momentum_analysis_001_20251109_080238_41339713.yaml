@@ -1,3 +1,4 @@
+completed_at: '2025-11-09T08:03:47.398898+00:00'
 evaluation_model: gpt-5-mini
 goal_achieved: false
 goal_id: momentum_analysis_001
@@ -8,8 +9,8 @@ organization_id: Momentum Advisors
 persona_id: TRD-027
 simulation_model: gpt-5
 started_at: '2025-11-09T08:02:38.111489+00:00'
-status: running
-thread_id: ''
+status: completed
+thread_id: 181636ac-b22c-4d86-b101-3a08f987d524
 trajectory_id: traj_trd_027_momentum_analysis_001_20251109_080238_7fcc640b
 turns_completed: 0
 use_persona_memory: false
