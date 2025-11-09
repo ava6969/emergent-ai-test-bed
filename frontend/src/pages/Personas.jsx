@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Pencil, Trash2, Settings, Plus, Sparkles } from 'lucide-react';
 import { PersonaForm } from '@/components/personas/PersonaForm';
 import { GenerationSettings } from '@/components/shared/GenerationSettings';
+import { GenerationProgress } from '@/components/shared/GenerationProgress';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
