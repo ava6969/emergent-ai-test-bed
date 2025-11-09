@@ -1247,9 +1247,13 @@ async def get_simulation_status(simulation_id: str):
         thread_info = await simulation_engine.epoch_client.client.threads.get(thread_id)
         metadata = thread_info.get("metadata", {})
         
-        # Calculate current turn (count human messages / 2)
-        human_count = sum(1 for m in messages if isinstance(m, dict) and m.get("type") == "human")
-        current_turn = human_count
+        # Calculate current turn (only count environment step messages, not initial message)
+        current_turn = sum(
+            1 for m in messages 
+            if isinstance(m, dict) 
+            and m.get("type") == "human" 
+            and m.get("additional_kwargs", {}).get("environment_step") is True
+        )
         
         return {
             "simulation_id": simulation_id,
