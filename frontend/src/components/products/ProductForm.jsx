@@ -321,33 +321,91 @@ export default function ProductForm({ product, onClose }) {
 
             {/* Documents */}
             <div className="space-y-2">
-              <Label>Documentation Files (.md)</Label>
-              <div className="border-2 border-dashed rounded-lg p-4">
-                <div className="flex items-center justify-center">
-                  <label className="cursor-pointer">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
-                      <Upload className="h-4 w-4" />
-                      <span>Click to upload .md files</span>
+              <Label>Documentation Files</Label>
+              <div
+                className={`border-2 border-dashed rounded-lg p-6 transition-colors ${
+                  isDragging ? 'border-primary bg-primary/5' : 'border-muted-foreground/25'
+                } ${isProcessing ? 'opacity-50 pointer-events-none' : ''}`}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+              >
+                <div className="text-center space-y-4">
+                  <div className="flex justify-center">
+                    <Upload className="h-10 w-10 text-muted-foreground" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">
+                      {isProcessing ? 'Processing files...' : 'Drag & Drop or Click to Upload'}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Folders, zip files, or documents
+                    </p>
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-2 justify-center text-xs text-muted-foreground">
+                    <span>Supports:</span>
+                    <span className="font-mono">.md .txt .json .xml .py</span>
+                    <span className="font-mono">.html .css .js .yaml</span>
+                    <span>and more...</span>
+                  </div>
+
+                  {!isProcessing && (
+                    <div className="flex gap-2 justify-center">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        <FileText className="h-4 w-4 mr-2" />
+                        Upload Files
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => folderInputRef.current?.click()}
+                      >
+                        <FolderOpen className="h-4 w-4 mr-2" />
+                        Upload Folder
+                      </Button>
                     </div>
-                    <input
-                      type="file"
-                      accept=".md"
-                      multiple
-                      onChange={handleFileUpload}
-                      className="hidden"
-                    />
-                  </label>
+                  )}
+
+                  {/* Hidden file inputs */}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    multiple
+                    onChange={handleFileInputChange}
+                    className="hidden"
+                  />
+                  <input
+                    ref={folderInputRef}
+                    type="file"
+                    webkitdirectory="true"
+                    directory="true"
+                    multiple
+                    onChange={handleFileInputChange}
+                    className="hidden"
+                  />
                 </div>
 
                 {/* Document List */}
                 {formData.documents.length > 0 && (
-                  <div className="mt-4 space-y-2">
+                  <div className="mt-6 space-y-2 max-h-60 overflow-y-auto">
+                    <p className="text-sm font-medium mb-2">
+                      {formData.documents.length} document(s)
+                    </p>
                     {formData.documents.map((doc, index) => (
                       <div
                         key={index}
-                        className="flex items-center justify-between p-2 bg-muted rounded"
+                        className="flex items-center justify-between p-2 bg-muted rounded text-sm"
                       >
-                        <span className="text-sm truncate">{doc.filename}</span>
+                        <span className="truncate flex-1 font-mono text-xs">
+                          {doc.filename}
+                        </span>
                         <Button
                           type="button"
                           variant="ghost"
@@ -362,7 +420,7 @@ export default function ProductForm({ product, onClose }) {
                 )}
               </div>
               <p className="text-xs text-muted-foreground">
-                Upload markdown files containing product documentation
+                {product ? 'New documents will be merged with existing ones' : 'Upload documentation about your product'}
               </p>
             </div>
 
