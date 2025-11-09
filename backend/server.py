@@ -1227,13 +1227,20 @@ async def get_simulation_status(simulation_id: str):
     try:
         history = await simulation_engine.epoch_client.get_thread_history(thread_id)
         
-        # Extract messages
-        if isinstance(history, dict):
+        # Extract messages from history
+        # History is a list of checkpoint states, each with a 'values' field containing messages
+        messages = []
+        if isinstance(history, list):
+            # Get the last checkpoint which has all messages
+            if history:
+                last_checkpoint = history[-1]
+                if isinstance(last_checkpoint, dict) and "values" in last_checkpoint:
+                    messages = last_checkpoint.get("values", {}).get("messages", [])
+        elif isinstance(history, dict):
+            # Single checkpoint
             messages = history.get("values", {}).get("messages", [])
-        elif isinstance(history, list):
-            messages = history
-        else:
-            messages = []
+        
+        logger.info(f"Extracted {len(messages)} messages from history")
         
         # Check if simulation should stop (last message has stop=True)
         should_stop = False
@@ -1403,13 +1410,20 @@ async def run_evaluation(request: EvaluationRequest, background_tasks: Backgroun
         # Fetch thread messages
         history = await simulation_engine.epoch_client.get_thread_history(request.thread_id)
         
-        # Extract messages
-        if isinstance(history, dict):
+        # Extract messages from history
+        # History is a list of checkpoint states, each with a 'values' field containing messages
+        messages = []
+        if isinstance(history, list):
+            # Get the last checkpoint which has all messages
+            if history:
+                last_checkpoint = history[-1]
+                if isinstance(last_checkpoint, dict) and "values" in last_checkpoint:
+                    messages = last_checkpoint.get("values", {}).get("messages", [])
+        elif isinstance(history, dict):
+            # Single checkpoint
             messages = history.get("values", {}).get("messages", [])
-        elif isinstance(history, list):
-            messages = history
-        else:
-            messages = []
+        
+        logger.info(f"Extracted {len(messages)} messages from history")
         
         if not messages:
             raise HTTPException(status_code=404, detail="No messages found in thread")
