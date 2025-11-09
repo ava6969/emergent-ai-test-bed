@@ -1,0 +1,17 @@
+completed_at: '2025-11-09T10:52:03.768557+00:00'
+error: '''list'' object has no attribute ''get'''
+evaluation_model: gpt-5
+goal_achieved: false
+goal_id: sector_analysis_001
+id: sim_trd_027_sector_analysis_001_20251109_105112_ab65f095
+max_turns: 5
+metadata: {}
+organization_id: Momentum Advisors
+persona_id: TRD-027
+simulation_model: gpt-5
+started_at: '2025-11-09T10:51:12.023912+00:00'
+status: failed
+thread_id: dcf3fe14-eb24-41f1-b387-7f5bad562544
+trajectory_id: traj_trd_027_sector_analysis_001_20251109_105112_82b1e098
+turns_completed: 0
+use_persona_memory: false
