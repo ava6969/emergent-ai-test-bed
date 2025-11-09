@@ -287,7 +287,7 @@ async def run_persona_generation(job_id: str, request: GeneratePersonaRequest):
         
         try:
             personas = await persona_manager.generate(
-                count=1,
+                count=request.count,
                 requirements=description,
                 organization_id=request.organization_id,
                 use_real_context=request.use_exa_enrichment,
@@ -299,7 +299,10 @@ async def run_persona_generation(job_id: str, request: GeneratePersonaRequest):
                 update_job(job_id, stage="✓ Exa enrichment complete, generating with AI...", progress=50)
             else:
                 # Stage 4: Calling AI model
-                update_job(job_id, stage=f"Calling AI model ({request.model})...", progress=40)
+                if request.count > 1:
+                    update_job(job_id, stage=f"Generating {request.count} personas with {request.model}...", progress=40)
+                else:
+                    update_job(job_id, stage=f"Calling AI model ({request.model})...", progress=40)
                 
         except ValueError as e:
             # Handle Exa errors specifically
@@ -318,7 +321,7 @@ async def run_persona_generation(job_id: str, request: GeneratePersonaRequest):
             update_job(job_id, status="failed", error="No persona generated")
             return
         
-        persona = personas[0]
+        persona = personas[0]  # Keep for backwards compatibility with single persona
         
         # Stage 6: Saving
         update_job(job_id, stage="Saving persona", progress=95)
