@@ -66,14 +66,67 @@ export function GenerationSettings({ open, onClose, type }) {
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="max-h-[300px]">
+                {/* OpenAI Models */}
+                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">
+                  OpenAI
+                </div>
+                <SelectItem value="gpt-5">GPT-5 (Latest)</SelectItem>
+                <SelectItem value="gpt-5-mini">GPT-5 Mini</SelectItem>
+                <SelectItem value="gpt-5-nano">GPT-5 Nano</SelectItem>
                 <SelectItem value="gpt-4o">GPT-4o</SelectItem>
-                <SelectItem value="gpt-4o-mini">GPT-4o Mini</SelectItem>
-                <SelectItem value="claude-3-5-sonnet-20241022">
-                  Claude 3.5 Sonnet
+                <SelectItem value="gpt-4o-mini">GPT-4o Mini (Default)</SelectItem>
+                <SelectItem value="gpt-4-turbo">GPT-4 Turbo</SelectItem>
+                <SelectItem value="o3">O3 (Reasoning)</SelectItem>
+                <SelectItem value="o1">O1 (Research)</SelectItem>
+                
+                {/* Anthropic Models */}
+                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground mt-2">
+                  Anthropic
+                </div>
+                <SelectItem value="claude-3-5-sonnet-latest">
+                  Claude 3.5 Sonnet (Latest)
                 </SelectItem>
-                <SelectItem value="claude-3-5-haiku-20241022">
-                  Claude 3.5 Haiku
+                <SelectItem value="claude-3-5-sonnet-20241022">
+                  Claude 3.5 Sonnet (Oct 2024)
+                </SelectItem>
+                <SelectItem value="claude-3-opus-latest">
+                  Claude 3 Opus
+                </SelectItem>
+                <SelectItem value="claude-3-opus-20240229">
+                  Claude 3 Opus (Feb 2024)
+                </SelectItem>
+                <SelectItem value="claude-3-haiku-latest">
+                  Claude 3 Haiku
+                </SelectItem>
+                <SelectItem value="claude-3-haiku-20240307">
+                  Claude 3 Haiku (Mar 2024)
+                </SelectItem>
+                <SelectItem value="claude-sonnet-4-5">
+                  Claude Sonnet 4.5
+                </SelectItem>
+                <SelectItem value="claude-opus-4-1">
+                  Claude Opus 4.1
+                </SelectItem>
+                
+                {/* Google Models */}
+                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground mt-2">
+                  Google
+                </div>
+                <SelectItem value="gemini-2.5-pro">
+                  Gemini 2.5 Pro (Latest)
+                </SelectItem>
+                <SelectItem value="gemini-2.5-flash">
+                  Gemini 2.5 Flash
+                </SelectItem>
+                <SelectItem value="gemini-2.5-flash-lite">
+                  Gemini 2.5 Flash Lite
+                </SelectItem>
+                <SelectItem value="gemini-2.0-flash">
+                  Gemini 2.0 Flash
+                </SelectItem>
+                <SelectItem value="gemini-2.0-flash-lite">
+                  Gemini 2.0 Flash Lite
                 </SelectItem>
               </SelectContent>
             </Select>
