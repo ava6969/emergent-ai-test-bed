@@ -326,7 +326,11 @@ export function Simulations() {
                                 Turn {Math.floor(idx / 2) + 1}
                               </span>
                             </div>
-                            <p className="text-sm text-gray-700">{message.content}</p>
+                            <p className="text-sm text-gray-700">
+                              {typeof message.content === 'string' 
+                                ? message.content 
+                                : JSON.stringify(message.content, null, 2)}
+                            </p>
                           </div>
                         </div>
                       </div>
