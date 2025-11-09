@@ -1150,23 +1150,25 @@ async def run_simulation(
         raise HTTPException(status_code=500, detail=str(e))
 
 async def run_simulation_background(thread_id: str, persona_id: str, goal_id: str, max_turns: int, reasoning_model: str, reasoning_effort: str):
-    """Background task for running simulation - creates thread and runs loop"""
+    """Background task for running simulation loop on existing thread"""
+    from thread_status import set_thread_status
+    
     try:
-        # Run simulation with TestEnvironment (RL-style loop)
-        # This creates the thread, runs the loop, and updates thread_status
-        result = await simulation_engine.run_with_test_environment(
+        # Run simulation loop with existing thread_id
+        result = await simulation_engine.run_simulation_loop(
+            thread_id=thread_id,
             persona_id=persona_id,
             goal_id=goal_id,
-            reasoning_model=reasoning_model or "gpt-5",
-            reasoning_effort=reasoning_effort or "medium",
+            reasoning_model=reasoning_model,
+            reasoning_effort=reasoning_effort,
             max_turns=max_turns
         )
         
-        # Result is now just {"thread_id": "..."}
-        logger.info(f"Simulation completed successfully - thread_id: {result['thread_id']}")
+        logger.info(f"Simulation completed successfully - thread_id: {thread_id}")
         
     except Exception as e:
-        logger.error(f"Error in simulation background: {e}")
+        logger.error(f"Error in simulation background for thread {thread_id}: {e}")
+        set_thread_status(thread_id, "failed", stopped_reason=f"error: {str(e)}")
         import traceback
         traceback.print_exc()
 
