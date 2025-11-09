@@ -1,0 +1,15 @@
+evaluation_model: gpt-5
+goal_achieved: false
+goal_id: sector_analysis_001
+id: sim_pm_456_sector_analysis_001_20251109_110924_eb04707a
+max_turns: 5
+metadata: {}
+organization_id: Goldman Sachs
+persona_id: PM-456
+simulation_model: gpt-5
+started_at: '2025-11-09T11:09:24.619191+00:00'
+status: running
+thread_id: 6d0b3371-5350-437b-ae27-88797438cb9a
+trajectory_id: traj_pm_456_sector_analysis_001_20251109_110924_98a2c203
+turns_completed: 0
+use_persona_memory: false
