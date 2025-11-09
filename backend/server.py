@@ -1273,13 +1273,37 @@ async def get_thread_messages(thread_id: str):
         # Fetch thread history from LangGraph
         history = await simulation_engine.epoch_client.get_thread_history(thread_id)
         
+        # Handle different response formats
+        if isinstance(history, dict):
+            messages = history.get("values", {}).get("messages", [])
+        elif isinstance(history, list):
+            messages = history
+        else:
+            messages = []
+        
         return {
             "thread_id": thread_id,
-            "messages": history.get("values", {}).get("messages", [])
+            "messages": messages
         }
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch thread messages: {str(e)}")
+
+@api_router.get("/threads/{thread_id}/status")
+async def get_thread_status_endpoint(thread_id: str):
+    """Get simulation status for a thread
+    
+    Returns:
+        {
+            "status": "running" | "completed" | "failed" | "unknown",
+            "stopped_reason": "max_turns_reached" | "should_stop_true" | "error: ...",
+            "current_turn": 3,
+            "max_turns": 5
+        }
+    """
+    from thread_status import get_thread_status
+    
+    return get_thread_status(thread_id)
 
 # Include the router in the main app
 app.include_router(api_router)
