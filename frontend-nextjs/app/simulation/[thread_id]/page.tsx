@@ -28,6 +28,7 @@ export default function SimulationPage() {
     assistantId: process.env.NEXT_PUBLIC_ASSISTANT_ID || 'epoch-ai',
     messagesKey: 'messages',
     threadId: thread_id,
+    streamMode: 'messages', // Stream messages as they arrive
     fetchStateHistory: true, // Fetch historical messages for completed threads
   });
 
