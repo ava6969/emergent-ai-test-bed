@@ -741,55 +741,115 @@ async def generate_goal_ai(request: GoalGenerateRequest):
 
 @api_router.get("/goals")
 async def list_goals():
-    """List all goals"""
-    goals = []
-    cursor = db.goals.find()
-    async for doc in cursor:
-        doc['_id'] = str(doc['_id'])
-        goals.append(doc)
-    return goals
+    """List all goals using GoalManager"""
+    if not storage:
+        raise HTTPException(status_code=500, detail="Storage not initialized")
+    
+    try:
+        goals = await storage.list_goals()
+        result = []
+        for g in goals:
+            goal_dict = g.model_dump()
+            # Extract difficulty and product_id from metadata
+            if "difficulty" in g.metadata:
+                goal_dict["difficulty"] = g.metadata["difficulty"]
+            if "product_id" in g.metadata:
+                goal_dict["product_id"] = g.metadata["product_id"]
+            result.append(goal_dict)
+        return result
+    except Exception as e:
+        print(f"Error listing goals: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.post("/goals")
 async def create_goal(data: GoalCreate):
-    """Create a new goal"""
-    goal = {
-        "id": str(uuid.uuid4()),
-        "name": data.name,
-        "objective": data.objective,
-        "success_criteria": data.success_criteria,
-        "initial_prompt": data.initial_prompt,
-        "max_turns": data.max_turns,
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat(),
-    }
-    await db.goals.insert_one(goal)
-    return goal
+    """Create a new goal manually"""
+    if not storage:
+        raise HTTPException(status_code=500, detail="Storage not initialized")
+    
+    try:
+        from testbed.src.models.goal_config import Goal
+        
+        goal = Goal(
+            id=str(uuid.uuid4()),
+            name=data.name,
+            objective=data.objective,
+            success_criteria=data.success_criteria,
+            agent_ids=data.agent_ids or [],
+            initial_prompt=data.initial_prompt,
+            max_turns=data.max_turns,
+            metadata={
+                "difficulty": data.difficulty,
+                "product_id": data.product_id,
+                "created_at": datetime.now(timezone.utc).isoformat()
+            }
+        )
+        await storage.save_goal(goal)
+        return goal.model_dump()
+    except Exception as e:
+        print(f"Error creating goal: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.put("/goals/{goal_id}")
 async def update_goal(goal_id: str, data: GoalUpdate):
     """Update a goal"""
-    update_data = {k: v for k, v in data.dict().items() if v is not None}
-    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    if not storage:
+        raise HTTPException(status_code=500, detail="Storage not initialized")
     
-    result = await db.goals.update_one(
-        {"id": goal_id},
-        {"$set": update_data}
-    )
-    
-    if result.matched_count == 0:
-        raise HTTPException(status_code=404, detail="Goal not found")
-    
-    goal = await db.goals.find_one({"id": goal_id})
-    goal['_id'] = str(goal['_id'])
-    return goal
+    try:
+        goal = await storage.get_goal(goal_id)
+        if not goal:
+            raise HTTPException(status_code=404, detail="Goal not found")
+        
+        # Update fields
+        if data.name is not None:
+            goal.name = data.name
+        if data.objective is not None:
+            goal.objective = data.objective
+        if data.success_criteria is not None:
+            goal.success_criteria = data.success_criteria
+        if data.initial_prompt is not None:
+            goal.initial_prompt = data.initial_prompt
+        if data.max_turns is not None:
+            goal.max_turns = data.max_turns
+        
+        await storage.save_goal(goal)
+        return goal.model_dump()
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error updating goal: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.delete("/goals/{goal_id}")
 async def delete_goal(goal_id: str):
     """Delete a goal"""
-    result = await db.goals.delete_one({"id": goal_id})
-    if result.deleted_count == 0:
-        raise HTTPException(status_code=404, detail="Goal not found")
-    return {"success": True}
+    if not storage:
+        raise HTTPException(status_code=500, detail="Storage not initialized")
+    
+    try:
+        await storage.delete_goal(goal_id)
+        return {"success": True}
+    except Exception as e:
+        print(f"Error deleting goal: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.delete("/goals")
+async def delete_all_goals():
+    """Delete all goals"""
+    if not storage:
+        raise HTTPException(status_code=500, detail="Storage not initialized")
+    
+    try:
+        goals = await storage.list_goals()
+        deleted_count = 0
+        for goal in goals:
+            await storage.delete_goal(goal.id)
+            deleted_count += 1
+        return {"success": True, "deleted_count": deleted_count}
+    except Exception as e:
+        print(f"Error deleting all goals: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 # Product Models
 class ProductCreate(BaseModel):
