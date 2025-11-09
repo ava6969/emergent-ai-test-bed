@@ -1428,7 +1428,8 @@ async def run_evaluation(request: EvaluationRequest, background_tasks: Backgroun
             for i in range(min(3, len(messages))):
                 msg = messages[i]
                 if isinstance(msg, dict):
-                    logger.info(f"Sample message {i}: keys={list(msg.keys())}, has_additional_kwargs={'additional_kwargs' in msg}")
+                    additional = msg.get("additional_kwargs", {})
+                    logger.info(f"Sample message {i}: type={msg.get('type')}, additional_kwargs_keys={list(additional.keys()) if additional else 'empty'}, reward={additional.get('reward', 'none')}")
         
         if not messages:
             raise HTTPException(status_code=404, detail="No messages found in thread")
