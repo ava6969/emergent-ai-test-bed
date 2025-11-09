@@ -177,7 +177,7 @@ export default function SimulationPage() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
                             <span className="font-semibold text-sm">
-                              {isHuman ? 'Persona' : 'Assistant'}
+                              {isHuman ? personaName : 'Assistant'}
                             </span>
                             {reward !== undefined && reward !== 0 && (
                               <Badge
