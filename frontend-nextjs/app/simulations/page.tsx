@@ -119,15 +119,15 @@ export default function SimulationsPage() {
   const selectedGoalObj = goals.find((g) => g.id === selectedGoal);
 
   return (
-    <div className=\"p-8 max-w-7xl mx-auto\">
-      <div className=\"mb-8\">
-        <h1 className=\"text-3xl font-bold mb-2\">Simulations</h1>
-        <p className=\"text-gray-600\">
+    <div className="p-8 max-w-7xl mx-auto">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold mb-2">Simulations</h1>
+        <p className="text-gray-600">
           Run simulations to test how personas achieve goals
         </p>
       </div>
 
-      <div className=\"grid grid-cols-1 lg:grid-cols-3 gap-6\">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Configuration Panel */}
         <div className=\"lg:col-span-1\">
           <Card className=\"p-6\">
