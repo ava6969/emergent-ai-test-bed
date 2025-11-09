@@ -117,7 +117,7 @@ export default function Home() {
               <option value="">Choose goal...</option>
               {goals.map((goal) => (
                 <option key={goal.id} value={goal.id}>
-                  {goal.name}
+                  {goal.name} - {goal.objective?.slice(0, 50)}...
                 </option>
               ))}
             </select>
