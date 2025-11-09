@@ -1129,14 +1129,15 @@ async def run_simulation(
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
-async def run_simulation_background(sim_id: str, persona_id: str, goal_id: str, max_turns: Optional[int], reasoning_model: Optional[str]):
+async def run_simulation_background(sim_id: str, persona_id: str, goal_id: str, max_turns: Optional[int], reasoning_model: Optional[str], reasoning_effort: Optional[str]):
     """Background task for running simulation with real-time updates"""
     try:
         # Run simulation with TestEnvironment (RL-style loop)
         result = await simulation_engine.run_with_test_environment(
             persona_id=persona_id,
             goal_id=goal_id,
-            reasoning_model=reasoning_model or "gpt-4o",
+            reasoning_model=reasoning_model or "gpt-5",
+            reasoning_effort=reasoning_effort or "medium",
             max_turns=max_turns
         )
         
