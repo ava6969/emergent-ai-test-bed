@@ -88,7 +88,7 @@ export default function Home() {
               <option value="">Choose persona...</option>
               {personas.map((persona) => (
                 <option key={persona.id} value={persona.id}>
-                  {persona.name}
+                  {persona.name} - {persona.background?.slice(0, 50)}...
                 </option>
               ))}
             </select>
