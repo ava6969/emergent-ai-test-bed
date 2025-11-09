@@ -153,7 +153,7 @@ async def generate_persona_endpoint(request: GeneratePersonaRequest):
             raise HTTPException(status_code=400, detail="description or message required")
         
         # Update generator config if custom settings provided
-        if request.model != "gpt-4o-mini" or request.temperature != 0.7 or request.max_tokens != 500:
+        if request.model != "gpt-4o-mini" or request.temperature != 0.7 or request.max_tokens != 1500:
             custom_config = create_generator_config(
                 model=request.model,
                 temperature=request.temperature,
@@ -251,7 +251,7 @@ async def run_persona_generation(job_id: str, request: GeneratePersonaRequest):
         await asyncio.sleep(0.2)
         
         # Update generator config if custom settings provided
-        if request.model != "gpt-4o-mini" or request.temperature != 0.7 or request.max_tokens != 500:
+        if request.model != "gpt-4o-mini" or request.temperature != 0.7 or request.max_tokens != 1500:
             update_job(job_id, stage=f"Configuring {request.model}", progress=15)
             custom_config = create_generator_config(
                 model=request.model,
