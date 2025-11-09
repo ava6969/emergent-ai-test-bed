@@ -183,6 +183,27 @@ class APIClient {
     await this.client.delete(`/api/products/${id}`);
   }
 
+  // ==================== ORGANIZATION ENDPOINTS ====================
+
+  async getOrganizations(): Promise<Organization[]> {
+    const response = await this.client.get('/api/organizations');
+    return response.data;
+  }
+
+  async createOrganization(data: { name: string; description: string }): Promise<Organization> {
+    const response = await this.client.post('/api/organizations', data);
+    return response.data;
+  }
+
+  async updateOrganization(id: string, data: { name: string; description: string }): Promise<Organization> {
+    const response = await this.client.put(`/api/organizations/${id}`, data);
+    return response.data;
+  }
+
+  async deleteOrganization(id: string): Promise<void> {
+    await this.client.delete(`/api/organizations/${id}`);
+  }
+
   // ==================== SIMULATION ENDPOINTS ====================
 
   async startSimulation(
