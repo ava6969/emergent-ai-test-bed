@@ -79,7 +79,7 @@ export default function PersonasPage() {
         model: 'gpt-5',
         temperature: 0.7,
         reasoning_effort: 'medium',
-        max_tokens: 1500,
+        max_tokens: 8000,
       };
 
       // Synchronous generation - no polling needed
