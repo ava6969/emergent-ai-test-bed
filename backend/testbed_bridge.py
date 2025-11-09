@@ -47,7 +47,7 @@ else:
 def create_generator_config(
     model: str = "gpt-4o-mini",
     temperature: float = 0.7,
-    max_tokens: int = 500,
+    max_tokens: int = 1500,
     api_key: str = None
 ) -> GeneratorConfig:
     """Create a GeneratorConfig with specified parameters"""
