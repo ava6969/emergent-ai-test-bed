@@ -147,22 +147,6 @@ async def generate_goal_endpoint(request: ChatRequest):
         print(f"Error generating goal: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@api_router.post("/ai/generate/persona")
-async def generate_persona_endpoint(request: ChatRequest):
-    """Generate persona from description"""
-    try:
-        result = await handle_persona_generation(request.message, request.conversation_id, request.context)
-        
-        # If persona was generated, also save to DB
-        if result.get("generated_items") and result["generated_items"].get("persona"):
-            persona = result["generated_items"]["persona"]
-            await db.personas.insert_one(persona)
-        
-        return result
-    except Exception as e:
-        print(f"Error generating persona: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
 @api_router.post("/ai/generate/goal")
 async def generate_goal_endpoint(request: ChatRequest):
     """Generate goal from description"""
