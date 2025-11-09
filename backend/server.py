@@ -1116,21 +1116,40 @@ async def list_organizations():
         orgs.append(doc)
     return orgs
 
+@api_router.get("/organizations/{organization_id}")
+async def get_organization(organization_id: str):
+    """Get a single organization by ID"""
+    try:
+        org = await db.organizations.find_one({"id": organization_id}, {"_id": 0})
+        if not org:
+            raise HTTPException(status_code=404, detail="Organization not found")
+        return org
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error getting organization: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.post("/organizations")
 async def create_organization(data: OrganizationCreate):
     """Create a new organization"""
-    org = {
-        "id": str(uuid.uuid4()),
-        "name": data.name,
-        "description": data.description,
-        "type": data.type,
-        "industry": data.industry,
-        "created_from_real_company": data.created_from_real_company,
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat(),
-    }
-    await db.organizations.insert_one(org)
-    return org
+    try:
+        org = {
+            "id": str(uuid.uuid4()),
+            "name": data.name,
+            "description": data.description,
+            "type": data.type,
+            "industry": data.industry,
+            "created_from_real_company": data.created_from_real_company,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+        }
+        await db.organizations.insert_one(org)
+        # Return without _id to avoid serialization issues
+        return {k: v for k, v in org.items() if k != "_id"}
+    except Exception as e:
+        print(f"Error creating organization: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.put("/organizations/{org_id}")
 async def update_organization(org_id: str, data: OrganizationUpdate):
