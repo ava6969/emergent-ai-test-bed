@@ -73,16 +73,32 @@ export function Goals() {
       const startResponse = await apiClient.startGoalGeneration(settings);
       const jobId = startResponse.job_id;
       
-      // Poll for progress
+      // Smooth progress simulation while waiting for LLM calls
+      let simulatedProgress = 0;
+      const progressSimulator = setInterval(() => {
+        if (simulatedProgress < 85) {
+          simulatedProgress += 1;
+          setGenerationProgress(simulatedProgress);
+        }
+      }, 1000); // Increment by 1% every second up to 85%
+      
+      // Poll for actual status
       const pollingInterval = setInterval(async () => {
         try {
           const statusResponse = await apiClient.getJobStatus(jobId);
           
           setGenerationStage(statusResponse.stage || 'Processing...');
-          setGenerationProgress(statusResponse.progress || 0);
+          
+          // Use actual progress if higher than simulated
+          if (statusResponse.progress > simulatedProgress) {
+            setGenerationProgress(statusResponse.progress);
+            simulatedProgress = statusResponse.progress;
+          }
           
           if (statusResponse.status === 'completed') {
             clearInterval(pollingInterval);
+            clearInterval(progressSimulator);
+            setGenerationProgress(100);
             setIsGenerating(false);
             setShowGenerateModal(false);
             
@@ -93,6 +109,7 @@ export function Goals() {
             });
           } else if (statusResponse.status === 'failed') {
             clearInterval(pollingInterval);
+            clearInterval(progressSimulator);
             setIsGenerating(false);
             
             toast({
@@ -104,7 +121,7 @@ export function Goals() {
         } catch (pollError) {
           console.error('Polling error:', pollError);
         }
-      }, 1000); // Poll every second
+      }, 2000); // Poll every 2 seconds
       
     } catch (error) {
       setIsGenerating(false);
