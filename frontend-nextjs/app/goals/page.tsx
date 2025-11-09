@@ -145,6 +145,10 @@ export default function GoalsPage() {
             <h1 className="text-2xl font-bold">Goals</h1>
             <p className="text-gray-600">Manage test goals and scenarios</p>
           </div>
+          <Button onClick={() => setCreateModalOpen(true)}>
+            <Sparkles className="h-4 w-4 mr-2" />
+            Create Goal
+          </Button>
         </div>
       </div>
 
