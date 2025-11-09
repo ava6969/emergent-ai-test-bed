@@ -37,7 +37,7 @@ async def test_parallel_generation():
     sig = inspect.signature(generator.generate)
     params = list(sig.parameters.keys())
     
-    expected_params = ['self', 'count', 'requirements', 'organization_id', 'use_real_context', 'metadata_schema']
+    expected_params = ['count', 'requirements', 'organization_id', 'use_real_context', 'metadata_schema']
     
     if params == expected_params:
         print("✓ Method signature is correct")
