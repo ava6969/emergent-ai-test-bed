@@ -182,11 +182,20 @@ export function GenerationSettings({ open, onClose, type }) {
           </div>
         </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={handleReset}>
+        <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
+          <Button 
+            variant="outline" 
+            onClick={handleReset}
+            className="w-full sm:w-auto"
+          >
             Reset to Defaults
           </Button>
-          <Button onClick={handleSave}>Save Settings</Button>
+          <Button 
+            onClick={handleSave}
+            className="w-full sm:w-auto"
+          >
+            Save Settings
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
