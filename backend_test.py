@@ -198,12 +198,28 @@ def test_simulation_functionality():
                             print(f"   ✅ No temperature-related errors")
                     
                     if status == "completed":
-                        print(f"✅ SIMULATION COMPLETED!")
+                        print(f"✅ SIMULATION COMPLETED WITH NEW MODEL FACTORY!")
                         print(f"   Final Status: {status}")
                         print(f"   Total Turns: {current_turn}")
                         print(f"   Goal Achieved: {goal_achieved}")
                         print(f"   Total Messages: {len(trajectory)}")
-                        test_results.append(("Simulation Completion", "PASS", f"Completed in {current_turn} turns, goal_achieved={goal_achieved}"))
+                        
+                        # Verify realistic conversation occurred
+                        if len(trajectory) >= 2:  # Should have at least user + assistant messages
+                            print(f"   ✅ Realistic conversation generated ({len(trajectory)} messages)")
+                            
+                            # Check for Elena Marquez persona context
+                            conversation_text = " ".join([msg.get("content", "") for msg in trajectory])
+                            if any(term in conversation_text.lower() for term in ["momentum", "sector", "analysis", "investment"]):
+                                print(f"   ✅ Conversation contains relevant financial/momentum analysis content")
+                                test_results.append(("Realistic Conversation", "PASS", "Conversation relevant to persona/goal"))
+                            else:
+                                print(f"   ⚠️  Conversation may not be fully relevant to goal")
+                                test_results.append(("Realistic Conversation", "PARTIAL", "Conversation generated but relevance unclear"))
+                        else:
+                            print(f"   ⚠️  Short conversation ({len(trajectory)} messages)")
+                        
+                        test_results.append(("Simulation Completion", "PASS", f"Completed in {current_turn} turns with gpt-5/medium"))
                         break
                     elif status == "failed":
                         error = sim_data.get("error", "Unknown error")
