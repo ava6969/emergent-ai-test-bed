@@ -81,9 +81,11 @@ export default function GoalsPage() {
         max_tokens: 1500,
       };
 
-      const startResponse = await apiClient.generateGoal(generateInput.trim(), {
-        ...settings,
-        count: count,
+      const startResponse = await apiClient.generateGoal({
+        persona_ids: selectedPersona ? [selectedPersona] : [],
+        difficulty: difficulty || 'medium',
+        organization_id: undefined, // TODO: Add organization context
+        product_id: undefined, // TODO: Add product context
       });
 
       const jobId = startResponse.job_id;
