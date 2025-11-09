@@ -138,9 +138,9 @@ class GeneratePersonaRequest(BaseModel):
     organization_id: Optional[str] = None
     use_exa_enrichment: bool = False
     metadata_schema: Optional[dict] = None
-    model: str = "gpt-4o-mini"
+    model: str = "gpt-5"
     temperature: float = 0.7
-    max_tokens: int = 1500
+    max_tokens: int = 8000  # Higher for reasoning models (gpt-5 uses this for completion)
 
 @api_router.post("/ai/generate/persona")
 async def generate_persona_endpoint(request: GeneratePersonaRequest):
