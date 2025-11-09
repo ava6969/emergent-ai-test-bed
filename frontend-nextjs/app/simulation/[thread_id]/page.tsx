@@ -5,6 +5,7 @@ import { useStream } from '@langchain/langgraph-sdk/react';
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api/client';
 import { SimpleThreadMessages } from '@/components/simulations/SimpleThreadMessages';
+import { EvaluateTab } from '@/components/simulations/EvaluateTab';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { Message } from '@langchain/langgraph-sdk';
