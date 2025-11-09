@@ -400,55 +400,74 @@ class PersonaUpdate(BaseModel):
     tags: list[str] = None
 
 @api_router.get("/personas")
-async def list_personas():
-    """List all personas"""
-    personas = []
-    cursor = db.personas.find()
-    async for doc in cursor:
-        doc['_id'] = str(doc['_id'])
-        personas.append(doc)
-    return personas
+async def list_personas(organization_id: str = None):
+    """List all personas using PersonaManager"""
+    if not persona_manager:
+        raise HTTPException(status_code=500, detail="Persona manager not initialized")
+    
+    try:
+        personas = await persona_manager.list(organization_id=organization_id)
+        return [p.model_dump() for p in personas]
+    except Exception as e:
+        print(f"Error listing personas: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.post("/personas")
 async def create_persona(data: PersonaCreate):
-    """Create a new persona"""
-    persona = {
-        "id": str(uuid.uuid4()),
-        "name": data.name,
-        "background": data.background,
-        "organization_id": data.organization_id,
-        "tags": data.tags,
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat(),
-    }
-    await db.personas.insert_one(persona)
-    return persona
+    """Create a new persona manually using PersonaManager"""
+    if not persona_manager:
+        raise HTTPException(status_code=500, detail="Persona manager not initialized")
+    
+    try:
+        persona = await persona_manager.create(
+            name=data.name,
+            background=data.background,
+            organization_id=data.organization_id,
+            metadata={"tags": data.tags} if data.tags else {}
+        )
+        return persona.model_dump()
+    except Exception as e:
+        print(f"Error creating persona: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.put("/personas/{persona_id}")
 async def update_persona(persona_id: str, data: PersonaUpdate):
-    """Update a persona"""
-    update_data = {k: v for k, v in data.dict().items() if v is not None}
-    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    """Update a persona using PersonaManager"""
+    if not persona_manager:
+        raise HTTPException(status_code=500, detail="Persona manager not initialized")
     
-    result = await db.personas.update_one(
-        {"id": persona_id},
-        {"$set": update_data}
-    )
-    
-    if result.matched_count == 0:
-        raise HTTPException(status_code=404, detail="Persona not found")
-    
-    persona = await db.personas.find_one({"id": persona_id})
-    persona['_id'] = str(persona['_id'])
-    return persona
+    try:
+        # Build update kwargs
+        updates = {}
+        if data.name is not None:
+            updates["name"] = data.name
+        if data.background is not None:
+            updates["background"] = data.background
+        if data.organization_id is not None:
+            updates["organization_id"] = data.organization_id
+        if data.tags is not None:
+            updates["metadata"] = {"tags": data.tags}
+        
+        persona = await persona_manager.update(persona_id, **updates)
+        return persona.model_dump()
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        print(f"Error updating persona: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.delete("/personas/{persona_id}")
-async def delete_persona(persona_id: str):
-    """Delete a persona"""
-    result = await db.personas.delete_one({"id": persona_id})
-    if result.deleted_count == 0:
-        raise HTTPException(status_code=404, detail="Persona not found")
-    return {"success": True}
+async def delete_persona(persona_id: str, delete_trajectories: bool = False):
+    """Delete a persona using PersonaManager"""
+    if not persona_manager:
+        raise HTTPException(status_code=500, detail="Persona manager not initialized")
+    
+    try:
+        await persona_manager.delete(persona_id, delete_trajectories=delete_trajectories)
+        return {"success": True}
+    except Exception as e:
+        print(f"Error deleting persona: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 # Goal Models
 class GoalCreate(BaseModel):
