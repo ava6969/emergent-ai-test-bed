@@ -162,16 +162,26 @@ export default function GoalGenerationModal({ personas, products, onGenerate, on
 
             {/* Progress Indicator */}
             {isGenerating && (
-              <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg">
-                <div className="flex items-center gap-3">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
-                  <div>
-                    <p className="font-medium text-sm">Generating goal with AI...</p>
-                    <p className="text-xs text-muted-foreground">
-                      AI is analyzing persona context, product documentation, and difficulty level. This may take 30-60 seconds.
-                    </p>
+              <div className="space-y-3 p-4 bg-primary/5 border border-primary/20 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                    <p className="font-medium text-sm">{generationStage || 'Generating...'}</p>
                   </div>
+                  <span className="text-xs font-medium text-muted-foreground">
+                    {generationProgress || 0}%
+                  </span>
                 </div>
+                {/* Progress Bar */}
+                <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
+                  <div
+                    className="bg-primary h-full transition-all duration-500"
+                    style={{ width: `${generationProgress || 0}%` }}
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  This may take 30-90 seconds as AI analyzes context through multiple steps
+                </p>
               </div>
             )}
 
