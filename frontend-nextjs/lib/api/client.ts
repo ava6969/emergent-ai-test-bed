@@ -169,7 +169,7 @@ class APIClient {
     max_turns: number | null = null,
     reasoning_model: string | null = null,
     reasoning_effort: string | null = null
-  ): Promise<{ simulation_id: string; status: string }> {
+  ): Promise<{ message: string; persona_id: string; goal_id: string }> {
     const params: any = { persona_id, goal_id };
     if (max_turns) params.max_turns = max_turns;
     if (reasoning_model) params.reasoning_model = reasoning_model;
@@ -179,13 +179,14 @@ class APIClient {
     return response.data;
   }
 
-  async getSimulationStatus(simulation_id: string): Promise<SimulationStatus> {
-    const response = await this.client.get(`/api/simulations/${simulation_id}`);
+  async getThreadStatus(thread_id: string): Promise<{
+    status: string;
+    stopped_reason?: string;
+    current_turn?: number;
+    max_turns?: number;
+  }> {
+    const response = await this.client.get(`/api/threads/${thread_id}/status`);
     return response.data;
-  }
-
-  async stopSimulation(simulation_id: string): Promise<void> {
-    await this.client.post(`/api/simulations/${simulation_id}/stop`);
   }
 
   // ==================== THREAD/TRAJECTORY ENDPOINTS ====================
