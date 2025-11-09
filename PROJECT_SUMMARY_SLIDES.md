@@ -33,7 +33,7 @@
 - **AI-Generated Test Scenarios**
   - Automatically create diverse personas with realistic profiles
   - Generate complex goals with success criteria
-  - Enrich with real-world context via Exa.ai integration
+  - Enrich with real-world context via Exaa.ai integration
 
 - **Real-Time Simulation & Monitoring**
   - Run agents against test scenarios with live streaming
