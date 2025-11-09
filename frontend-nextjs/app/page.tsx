@@ -4,9 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api/client';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { User, Target, Clock, Sparkles } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { User, Target, Clock, Sparkles, Play } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function Home() {
