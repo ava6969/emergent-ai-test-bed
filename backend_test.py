@@ -1212,15 +1212,93 @@ if __name__ == "__main__":
     print(f"Testing backend at: {BACKEND_URL}")
     print(f"Test started at: {datetime.now()}")
     
-    success = test_simulation_functionality()
+    all_test_results = []
     
-    if success:
-        print("\n🎉 All updated simulation functionality tests passed!")
-        print("✅ Model factory integration with reasoning effort parameter is working correctly")
-        print("✅ TestEnvironment message handling refactor is working correctly")
-        print("✅ gpt-5 reasoning model with medium effort is working correctly")
+    # Run Products CRUD tests
+    print("\n" + "🔧 PRODUCTS API TESTING" + "\n")
+    products_results = test_products_crud()
+    all_test_results.extend(products_results)
+    
+    # Run Organizations CRUD tests  
+    print("\n" + "🏢 ORGANIZATIONS API TESTING" + "\n")
+    organizations_results = test_organizations_crud()
+    all_test_results.extend(organizations_results)
+    
+    # Run regression tests
+    print("\n" + "🔄 REGRESSION TESTING" + "\n")
+    regression_results = test_regression_endpoints()
+    all_test_results.extend(regression_results)
+    
+    # Summary of all tests
+    print("\n" + "=" * 80)
+    print("COMPREHENSIVE BACKEND API TEST RESULTS")
+    print("=" * 80)
+    
+    passed = 0
+    failed = 0
+    
+    # Group results by category
+    products_tests = [r for r in all_test_results if "products" in r[0]]
+    orgs_tests = [r for r in all_test_results if "organizations" in r[0]]
+    regression_tests = [r for r in all_test_results if r[0] in ["GET /api/personas", "GET /api/goals", "POST /api/simulations/run"]]
+    
+    def print_category_results(category_name, tests):
+        print(f"\n{category_name}:")
+        category_passed = 0
+        category_failed = 0
+        
+        for endpoint, status, details in tests:
+            if status == "PASS":
+                status_icon = "✅"
+                category_passed += 1
+            else:
+                status_icon = "❌"
+                category_failed += 1
+                
+            print(f"  {status_icon} {endpoint}: {status}")
+            print(f"     {details}")
+        
+        return category_passed, category_failed
+    
+    # Print results by category
+    p_passed, p_failed = print_category_results("PRODUCTS API", products_tests)
+    o_passed, o_failed = print_category_results("ORGANIZATIONS API", orgs_tests)
+    r_passed, r_failed = print_category_results("REGRESSION TESTS", regression_tests)
+    
+    passed = p_passed + o_passed + r_passed
+    failed = p_failed + o_failed + r_failed
+    
+    print(f"\n" + "=" * 80)
+    print(f"FINAL SUMMARY:")
+    print(f"✅ PASSED: {passed}")
+    print(f"❌ FAILED: {failed}")
+    print(f"📊 TOTAL: {passed + failed}")
+    
+    # Detailed assessment
+    print(f"\n🎯 DETAILED ASSESSMENT:")
+    
+    products_success = p_failed == 0
+    orgs_success = o_failed == 0
+    regression_success = r_failed == 0
+    
+    print(f"   Products CRUD: {'✅ ALL WORKING' if products_success else '❌ ISSUES FOUND'}")
+    print(f"   Organizations CRUD: {'✅ ALL WORKING' if orgs_success else '❌ ISSUES FOUND'}")
+    print(f"   Regression Tests: {'✅ NO REGRESSIONS' if regression_success else '❌ REGRESSIONS DETECTED'}")
+    
+    if products_success and orgs_success and regression_success:
+        print(f"\n🎉 ALL BACKEND API TESTS PASSED!")
+        print(f"✅ Products API: Full CRUD operations working correctly")
+        print(f"✅ Organizations API: Full CRUD operations working correctly") 
+        print(f"✅ Existing functionality: No regressions detected")
+        print(f"✅ Data validation: Proper error handling for invalid requests")
+        print(f"✅ UUID generation: All entities use UUID-based IDs")
         sys.exit(0)
     else:
-        print("\n💥 Some updated simulation tests failed!")
-        print("❌ Check model factory integration or TestEnvironment message handling")
+        print(f"\n💥 SOME BACKEND API TESTS FAILED!")
+        if not products_success:
+            print(f"❌ Products API: Issues with CRUD operations")
+        if not orgs_success:
+            print(f"❌ Organizations API: Issues with CRUD operations")
+        if not regression_success:
+            print(f"❌ Regression: Existing functionality broken")
         sys.exit(1)
