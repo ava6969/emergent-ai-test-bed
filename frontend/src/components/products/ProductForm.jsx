@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Textarea } from '../ui/textarea';
 import { Card } from '../ui/card';
-import { X, Upload, Trash2 } from 'lucide-react';
+import { X, Upload, Trash2, FolderOpen, FileText } from 'lucide-react';
 import { apiClient } from '../../lib/api/client';
 import { useToast } from '../../hooks/use-toast';
+import JSZip from 'jszip';
 
 export default function ProductForm({ product, onClose }) {
   const [formData, setFormData] = useState({
