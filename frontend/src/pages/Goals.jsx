@@ -15,6 +15,8 @@ export function Goals() {
   const [showGenerateModal, setShowGenerateModal] = useState(false);
   const [editingGoal, setEditingGoal] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [generationStage, setGenerationStage] = useState('');
+  const [generationProgress, setGenerationProgress] = useState(0);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
