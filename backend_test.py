@@ -71,16 +71,22 @@ def test_simulation_functionality():
     print("\n2. Testing POST /api/simulations/run (Start Real Simulation)...")
     print("-" * 50)
     
-    # Test 1: POST /api/simulations/run - Should start a real simulation now
+    # Test 1: POST /api/simulations/run - Test with new model factory parameters
     try:
         run_payload = {
             "persona_id": persona_id,
-            "goal_id": goal_id
+            "goal_id": goal_id,
+            "reasoning_model": reasoning_model,
+            "reasoning_effort": reasoning_effort,
+            "max_turns": max_turns
         }
         
-        print(f"Starting simulation with:")
+        print(f"Starting simulation with new parameters:")
         print(f"  - Persona: {persona_id} (Elena Marquez)")
         print(f"  - Goal: {goal_id} (Sector Momentum Analysis)")
+        print(f"  - Reasoning Model: {reasoning_model}")
+        print(f"  - Reasoning Effort: {reasoning_effort}")
+        print(f"  - Max Turns: {max_turns}")
         
         run_response = requests.post(
             f"{BACKEND_URL}/simulations/run",
