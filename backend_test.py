@@ -411,11 +411,13 @@ if __name__ == "__main__":
     print(f"Testing backend at: {BACKEND_URL}")
     print(f"Test started at: {datetime.now()}")
     
-    success = test_simulation_endpoints()
+    success = test_simulation_functionality()
     
     if success:
-        print("\n🎉 All simulation endpoint tests passed!")
+        print("\n🎉 All simulation functionality tests passed!")
+        print("✅ LangGraph integration is working correctly")
         sys.exit(0)
     else:
-        print("\n💥 Some tests failed!")
+        print("\n💥 Some simulation tests failed!")
+        print("❌ Check LangGraph credentials or simulation engine setup")
         sys.exit(1)
