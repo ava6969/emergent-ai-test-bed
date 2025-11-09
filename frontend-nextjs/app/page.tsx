@@ -234,13 +234,13 @@ export default function Home() {
             <div className="absolute inset-0 animate-shimmer"></div>
             {isStarting ? (
               <>
-                <Loader2 className="w-5 h-5 animate-spin" />
-                Starting Simulation...
+                <Loader2 className="w-5 h-5 animate-spin relative z-10" />
+                <span className="relative z-10">Starting Simulation...</span>
               </>
             ) : (
               <>
-                <Play className="w-5 h-5" />
-                Start Simulation
+                <Play className="w-5 h-5 relative z-10" />
+                <span className="relative z-10">Start Simulation</span>
               </>
             )}
           </motion.button>
