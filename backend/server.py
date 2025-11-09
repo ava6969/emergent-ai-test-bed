@@ -711,15 +711,13 @@ async def generate_goal_background(job_id: str, request: GoalGenerateRequest):
         if product_context:
             requirements += product_context
         
-        # Stage 3: AI Generation (this will make multiple LLM calls)
-        update_job(job_id, stage="AI analyzing context (Step 1/3)...", progress=30)
+        # Stage 3: AI Generation (this will make 10+ LLM calls and take 60-90 seconds)
+        update_job(job_id, stage="🤖 AI generating goal (analyzing context, defining objectives)...", progress=30)
         
-        # We'll track progress through the generation
-        # AgentGoalGenerator makes ~3 LLM calls, so we'll update at 30%, 60%, 90%
         import time
         start_time = time.time()
         
-        # Wrap generation with progress updates
+        # This is a blocking call that makes multiple LLM requests internally
         goals = await goal_manager.generate(
             count=1,
             persona_ids=request.persona_ids or [],
@@ -729,15 +727,9 @@ async def generate_goal_background(job_id: str, request: GoalGenerateRequest):
             complexity=request.difficulty
         )
         
-        # Check progress periodically (simplified - in reality AgentGoalGenerator would need callbacks)
-        # For now, we'll just show stages
-        update_job(job_id, stage="AI analyzing context (Step 2/3)...", progress=60)
-        
         if not goals:
             update_job(job_id, status="failed", error="Goal generation failed - no goals returned")
             return
-        
-        update_job(job_id, stage="AI analyzing context (Step 3/3)...", progress=90)
         
         goal = goals[0]
         
