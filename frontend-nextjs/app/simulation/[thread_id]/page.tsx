@@ -1,13 +1,15 @@
 'use client';
 
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useStream } from '@langchain/langgraph-sdk/react';
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api/client';
 import { SimpleThreadMessages } from '@/components/simulations/SimpleThreadMessages';
 import { EvaluateTab } from '@/components/simulations/EvaluateTab';
 import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Plus } from 'lucide-react';
 import type { Message } from '@langchain/langgraph-sdk';
 
 export default function SimulationPage() {
