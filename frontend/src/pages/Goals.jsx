@@ -60,24 +60,29 @@ export function Goals() {
     },
   });
 
-  // Generate mutation
-  const generateMutation = useMutation({
-    mutationFn: (request) => apiClient.generateGoal(request),
-    onSuccess: () => {
+  // Generate goal with AI
+  const handleGenerate = async (settings) => {
+    setIsGenerating(true);
+    
+    try {
+      const goal = await apiClient.generateGoal(settings);
+      
       queryClient.invalidateQueries(['goals']);
       toast({
         title: 'Goal Generated',
-        description: 'Successfully generated goal with AI',
+        description: `Successfully generated: ${goal.name}`,
       });
-    },
-    onError: (error) => {
+      setShowGenerateModal(false);
+    } catch (error) {
       toast({
         title: 'Generation Failed',
         description: error.response?.data?.detail || error.message,
         variant: 'destructive',
       });
-    },
-  });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   const handleDelete = (id) => {
     if (window.confirm('Are you sure you want to delete this goal?')) {
