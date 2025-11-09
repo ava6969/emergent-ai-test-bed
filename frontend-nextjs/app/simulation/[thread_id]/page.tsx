@@ -3,6 +3,7 @@
 import { useParams, useRouter } from 'next/navigation';
 import { useStream } from '@langchain/langgraph-sdk/react';
 import { useQuery } from '@tanstack/react-query';
+import { useEffect, useRef } from 'react';
 import { apiClient } from '@/lib/api/client';
 import { EvaluateTab } from '@/components/simulations/EvaluateTab';
 import { MessageRenderer } from '@/components/simulations/MessageRenderer';
@@ -17,6 +18,7 @@ export default function SimulationPage() {
   const params = useParams();
   const router = useRouter();
   const thread_id = params.thread_id as string;
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Get LangGraph API key from env (should be set server-side for security)
   const langGraphApiKey = process.env.NEXT_PUBLIC_LANGGRAPH_API_KEY;
