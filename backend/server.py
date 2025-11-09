@@ -285,7 +285,6 @@ async def run_persona_generation(job_id: str, request: GeneratePersonaRequest):
             # If Exa was used, show completion
             if request.use_exa_enrichment:
                 update_job(job_id, stage="✓ Exa enrichment complete, generating with AI...", progress=50)
-                await asyncio.sleep(0.2)
             else:
                 # Stage 4: Calling AI model
                 update_job(job_id, stage=f"Calling AI model ({request.model})...", progress=40)
@@ -302,7 +301,6 @@ async def run_persona_generation(job_id: str, request: GeneratePersonaRequest):
         
         # Stage 5: Processing response
         update_job(job_id, stage="Processing AI response", progress=85)
-        await asyncio.sleep(0.2)
         
         if not personas:
             update_job(job_id, status="failed", error="No persona generated")
@@ -312,7 +310,6 @@ async def run_persona_generation(job_id: str, request: GeneratePersonaRequest):
         
         # Stage 6: Saving
         update_job(job_id, stage="Saving persona", progress=95)
-        await asyncio.sleep(0.1)
         
         # Stage 7: Complete
         persona_dict = persona.model_dump()
