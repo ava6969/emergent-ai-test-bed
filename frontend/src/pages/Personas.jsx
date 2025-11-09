@@ -45,6 +45,18 @@ export function Personas() {
     },
   });
 
+  // Delete all mutation
+  const deleteAllMutation = useMutation({
+    mutationFn: () => apiClient.deleteAllPersonas(),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries(['personas']);
+      toast({
+        title: 'All Personas Deleted',
+        description: `Successfully deleted ${data.deleted_count} persona(s)`,
+      });
+    },
+  });
+
   const handleGenerate = async () => {
     if (!generateInput.trim()) return;
     
