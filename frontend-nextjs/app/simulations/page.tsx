@@ -254,7 +254,7 @@ export default function SimulationsPage() {
               )}
             </div>
             
-            <ChatOnlyThread
+            <SimpleMessageView
               messages={simulationData.trajectory || []}
               isLoading={isSimulating}
               status={simulationData.status}
