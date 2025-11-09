@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import "@/App.css";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AppShell } from '@/components/layouts/AppShell';
-import { ChatInterface } from '@/components/chat/ChatInterface';
+import { Personas } from '@/pages/Personas';
+import { Goals } from '@/pages/Goals';
+import { Organizations } from '@/pages/Organizations';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -15,10 +17,25 @@ const queryClient = new QueryClient({
 });
 
 function App() {
+  const [currentPage, setCurrentPage] = useState('personas');
+
+  const renderPage = () => {
+    switch (currentPage) {
+      case 'personas':
+        return <Personas />;
+      case 'goals':
+        return <Goals />;
+      case 'organizations':
+        return <Organizations />;
+      default:
+        return <Personas />;
+    }
+  };
+
   return (
     <QueryClientProvider client={queryClient}>
-      <AppShell>
-        <ChatInterface />
+      <AppShell currentPage={currentPage} onNavigate={setCurrentPage}>
+        {renderPage()}
       </AppShell>
     </QueryClientProvider>
   );
