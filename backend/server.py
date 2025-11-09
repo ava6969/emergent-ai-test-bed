@@ -1448,8 +1448,9 @@ async def run_evaluation(request: EvaluationRequest, background_tasks: Backgroun
                 role = role_mapping.get(msg_type, msg_type)
                 
                 # Debug log first few messages to see structure
-                if len(trajectory) < 3:
-                    logger.info(f"Message {len(trajectory)}: type={msg_type}, content_length={len(str(msg.get('content', '')))}")
+                if len(trajectory) < 2:
+                    logger.info(f"Message {len(trajectory)} keys: {list(msg.keys())}")
+                    logger.info(f"Message {len(trajectory)}: type={msg_type}, content={str(msg.get('content', ''))[:100]}")
                 
                 trajectory.append({
                     "role": role,
