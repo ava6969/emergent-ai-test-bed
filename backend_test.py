@@ -145,10 +145,11 @@ def test_simulation_functionality():
     # Test 2: Poll simulation status if we have a simulation_id
     if simulation_id:
         print(f"Polling simulation status for: {simulation_id}")
-        print("Will poll up to 15 times with 3-second intervals (45 seconds max)")
+        print("Will poll up to 10 times with 3-second intervals (30 seconds max)")
+        print("Testing: TestEnvironment message handling and trajectory conversion")
         
         poll_count = 0
-        max_polls = 15
+        max_polls = 10  # Reduced since max_turns=2 should complete faster
         poll_interval = 3
         
         while poll_count < max_polls:
