@@ -13,6 +13,7 @@ import { toast } from 'sonner';
 
 export default function PersonasPage() {
   const [generateInput, setGenerateInput] = useState('');
+  const [count, setCount] = useState(1);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationStage, setGenerationStage] = useState('');
   const [generationProgress, setGenerationProgress] = useState(0);
