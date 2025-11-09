@@ -25,12 +25,20 @@ class APIClient {
   }
 
   async generatePersona(request) {
-    const response = await this.client.post('/api/ai/generate/persona', request);
+    const response = await this.client.post('/api/ai/generate/persona', {
+      message: request.description || request.message,
+      conversation_id: request.conversation_id,
+      context: request.context || {},
+    });
     return response.data;
   }
 
   async generateGoal(request) {
-    const response = await this.client.post('/api/ai/generate/goal', request);
+    const response = await this.client.post('/api/ai/generate/goal', {
+      message: request.description || request.message,
+      conversation_id: request.conversation_id,
+      context: request.context || {},
+    });
     return response.data;
   }
 
