@@ -48,6 +48,7 @@ export default function SimulationsPage() {
     refetchInterval: viewMode === 'history' ? 5000 : false, // Auto-refresh when viewing history
   });
 
+  // Poll simulation status - check should_continue_polling from backend
   useEffect(() => {
     if (!simulationId || !isSimulating) return;
 
@@ -56,19 +57,28 @@ export default function SimulationsPage() {
         const status = await apiClient.getSimulationStatus(simulationId);
         setSimulationData(status);
 
-        if (status.status === 'completed') {
+        // Stop polling if backend says we should stop
+        if (!status.should_continue_polling) {
           setIsSimulating(false);
           clearInterval(pollInterval);
-          toast.success('Simulation complete!');
-        } else if (status.status === 'failed') {
-          setIsSimulating(false);
-          clearInterval(pollInterval);
-          toast.error(status.error || 'Simulation failed');
+          
+          // Check if goal achieved based on last message reward
+          const lastMsg = status.trajectory?.[status.trajectory.length - 1];
+          const reward = lastMsg?.additional_kwargs?.reward;
+          const goalAchieved = reward === 1;
+          
+          toast.success(
+            `Simulation complete! ${status.current_turn} turns. Goal ${
+              goalAchieved ? 'achieved ✓' : 'not achieved'
+            }`
+          );
         }
       } catch (error) {
         console.error('Error polling simulation:', error);
+        setIsSimulating(false);
+        clearInterval(pollInterval);
       }
-    }, 2000);
+    }, 1000); // Poll every 1 second (configurable)
 
     return () => clearInterval(pollInterval);
   }, [simulationId, isSimulating]);
