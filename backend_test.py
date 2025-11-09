@@ -173,12 +173,29 @@ def test_simulation_functionality():
                     print(f"   Goal Achieved: {goal_achieved}")
                     print(f"   Trajectory Messages: {len(trajectory)}")
                     
-                    # Show latest trajectory message if available
+                    # Verify trajectory message format (LangGraph to LangChain conversion)
                     if trajectory:
                         latest_msg = trajectory[-1]
                         role = latest_msg.get("role", "unknown")
-                        content = latest_msg.get("content", "")[:100] + "..." if len(latest_msg.get("content", "")) > 100 else latest_msg.get("content", "")
-                        print(f"   Latest Message ({role}): {content}")
+                        content = latest_msg.get("content", "")
+                        
+                        # Check for proper message structure
+                        if role in ["user", "assistant", "system"] and content:
+                            print(f"   ✅ Message format valid: {role} message with {len(content)} chars")
+                            content_preview = content[:100] + "..." if len(content) > 100 else content
+                            print(f"   Latest Message ({role}): {content_preview}")
+                        else:
+                            print(f"   ❌ Invalid message format: role='{role}', content_length={len(content)}")
+                    
+                    # Check for temperature-related errors (should not occur with reasoning models)
+                    if "temperature" in str(sim_data).lower():
+                        print(f"   ⚠️  Temperature mentioned in response - checking for errors...")
+                        error = sim_data.get("error", "")
+                        if "temperature" in error.lower():
+                            print(f"   ❌ Temperature error detected: {error}")
+                            test_results.append(("Temperature Error Check", "FAIL", f"Temperature error: {error}"))
+                        else:
+                            print(f"   ✅ No temperature-related errors")
                     
                     if status == "completed":
                         print(f"✅ SIMULATION COMPLETED!")
