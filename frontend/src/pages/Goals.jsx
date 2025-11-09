@@ -160,17 +160,7 @@ export function Goals() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto p-6 space-y-6">
-        {/* AI Generation Button */}
-        <Button
-          onClick={() => setShowGenerateModal(true)}
-          className="w-full"
-          size="lg"
-        >
-          <Sparkles className="h-5 w-5 mr-2" />
-          Generate Goal with AI
-        </Button>
-
+      <div className="flex-1 overflow-auto p-6">
         {/* Goals Table */}
         {goals.length === 0 ? (
           <Card className="p-8 text-center">
