@@ -219,67 +219,94 @@ export default function GoalsPage() {
         )}
       </div>
 
-      {/* Generation Input */}
-      <div className="border-t p-6 bg-white space-y-4">
-        {/* Description Input */}
-        <div>
-          <Input
-            placeholder="Describe the goal to generate... (e.g., 'Create a trading strategy backtest goal')"
-            value={generateInput}
-            onChange={(e) => setGenerateInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !isGenerating) {
-                handleGenerate();
-              }
-            }}
-            disabled={isGenerating}
-            className="w-full"
-          />
-        </div>
+      {/* Create Goal Modal */}
+      <Dialog open={createModalOpen} onOpenChange={setCreateModalOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Create Goal</DialogTitle>
+            <DialogDescription>
+              Generate AI-powered test goals for your personas
+            </DialogDescription>
+          </DialogHeader>
 
-        {/* Options Row */}
-        <div className="flex gap-4">
-          {/* Persona Dropdown */}
-          <div className="flex-1">
-            <label className="text-sm text-gray-600 mb-1 block">For Persona (Optional)</label>
-            <select
-              className="w-full px-3 py-2 border rounded-lg"
-              disabled={isGenerating}
-            >
-              <option value="">All Personas</option>
-              {/* TODO: Load personas from API */}
-            </select>
-          </div>
+          <div className="space-y-4 py-4">
+            {/* Description Input */}
+            <div>
+              <label className="text-sm font-medium mb-2 block">Description</label>
+              <Input
+                placeholder="Describe the goal... (e.g., 'Create a trading strategy backtest goal')"
+                value={generateInput}
+                onChange={(e) => setGenerateInput(e.target.value)}
+                disabled={isGenerating}
+              />
+            </div>
 
-          {/* Difficulty Selector */}
-          <div className="flex-1">
-            <label className="text-sm text-gray-600 mb-1 block">Difficulty (Optional)</label>
-            <select
-              className="w-full px-3 py-2 border rounded-lg"
-              disabled={isGenerating}
-            >
-              <option value="">Any</option>
-              <option value="easy">Easy</option>
-              <option value="medium">Medium</option>
-              <option value="hard">Hard</option>
-            </select>
-          </div>
+            {/* Persona Dropdown */}
+            <div>
+              <label className="text-sm font-medium mb-2 block">For Persona (Optional)</label>
+              <select
+                value={selectedPersona}
+                onChange={(e) => setSelectedPersona(e.target.value)}
+                className="w-full px-3 py-2 border rounded-lg"
+                disabled={isGenerating}
+              >
+                <option value="">All Personas</option>
+                {personas.map((persona: any) => (
+                  <option key={persona.id} value={persona.id}>
+                    {persona.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          {/* Count */}
-          <div className="w-32">
-            <label className="text-sm text-gray-600 mb-1 block">Count</label>
-            <Input
-              type="number"
-              min="1"
-              max="10"
-              value={count}
-              onChange={(e) => setCount(Math.min(10, Math.max(1, parseInt(e.target.value) || 1)))}
-              disabled={isGenerating}
-            />
+            {/* Difficulty Selector */}
+            <div>
+              <label className="text-sm font-medium mb-2 block">Difficulty (Optional)</label>
+              <select
+                value={difficulty}
+                onChange={(e) => setDifficulty(e.target.value)}
+                className="w-full px-3 py-2 border rounded-lg"
+                disabled={isGenerating}
+              >
+                <option value="">Any</option>
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+              </select>
+            </div>
+
+            {/* Count */}
+            <div>
+              <label className="text-sm font-medium mb-2 block">Count</label>
+              <Input
+                type="number"
+                min="1"
+                max="10"
+                value={count}
+                onChange={(e) => setCount(Math.min(10, Math.max(1, parseInt(e.target.value) || 1)))}
+                disabled={isGenerating}
+              />
+            </div>
+
+            {/* Progress Bar */}
+            {isGenerating && (
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">{generationStage}</span>
+                  <span className="text-gray-600">{generationProgress}%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div
+                    className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${generationProgress}%` }}
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Actions */}
-          <div className="flex items-end gap-2">
+          <div className="flex justify-between">
             <Button
               variant="ghost"
               size="icon"
@@ -288,32 +315,25 @@ export default function GoalsPage() {
             >
               <Settings className="h-5 w-5" />
             </Button>
-            <Button
-              onClick={handleGenerate}
-              disabled={isGenerating || !generateInput.trim()}
-            >
-              <Sparkles className="h-4 w-4 mr-2" />
-              {isGenerating ? 'Generating...' : 'Generate'}
-            </Button>
-          </div>
-        </div>
-        
-        {/* Progress Bar */}
-        {isGenerating && (
-          <div className="mt-4">
-            <div className="flex justify-between text-sm mb-1">
-              <span className="text-gray-600">{generationStage}</span>
-              <span className="text-gray-600">{generationProgress}%</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div
-                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${generationProgress}%` }}
-              />
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setCreateModalOpen(false)}
+                disabled={isGenerating}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleGenerate}
+                disabled={isGenerating || !generateInput.trim()}
+              >
+                <Sparkles className="h-4 w-4 mr-2" />
+                {isGenerating ? 'Generating...' : 'Generate'}
+              </Button>
             </div>
           </div>
-        )}
-      </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Generation Settings Modal */}
       <GenerationSettingsModal
