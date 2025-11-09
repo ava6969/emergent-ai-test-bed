@@ -1,0 +1,15 @@
+evaluation_model: gpt-5
+goal_achieved: false
+goal_id: sector_analysis_001
+id: sim_trd_027_sector_analysis_001_20251109_104540_a2ee41e7
+max_turns: 5
+metadata: {}
+organization_id: Momentum Advisors
+persona_id: TRD-027
+simulation_model: gpt-5
+started_at: '2025-11-09T10:45:40.386007+00:00'
+status: running
+thread_id: 0a20e69d-8322-4341-8142-aefd80b8386a
+trajectory_id: traj_trd_027_sector_analysis_001_20251109_104540_c431d137
+turns_completed: 0
+use_persona_memory: false
