@@ -661,15 +661,35 @@ class GoalUpdate(BaseModel):
     initial_prompt: Optional[str] = None
     max_turns: Optional[int] = None
 
-# AI Goal Generation
-@api_router.post("/ai/generate/goal")
-async def generate_goal_ai(request: GoalGenerateRequest):
-    """Generate goal using AI with difficulty-based complexity tuning"""
+# AI Goal Generation (Async with polling)
+@api_router.post("/ai/generate/goal/async")
+async def generate_goal_async(request: GoalGenerateRequest, background_tasks: BackgroundTasks):
+    """Start async goal generation with polling support"""
     if not goal_manager:
         raise HTTPException(status_code=500, detail="Goal manager not initialized")
     
+    # Create job
+    job_id = str(uuid.uuid4())
+    create_job(job_id, "queued", "Initializing goal generation", 0)
+    
+    # Start background task
+    background_tasks.add_task(generate_goal_background, job_id, request)
+    
+    return {
+        "job_id": job_id,
+        "status": "queued",
+        "message": "Goal generation started. Poll /api/ai/jobs/{job_id} for progress"
+    }
+
+async def generate_goal_background(job_id: str, request: GoalGenerateRequest):
+    """Background task for goal generation with progress tracking"""
+    import asyncio
+    
     try:
-        # Get product documentation if provided
+        # Stage 1: Load context
+        update_job(job_id, stage="Loading product documentation...", progress=10)
+        await asyncio.sleep(0.2)
+        
         product_context = ""
         if request.product_id and storage:
             product = await storage.get_product(request.product_id)
@@ -678,27 +698,46 @@ async def generate_goal_ai(request: GoalGenerateRequest):
                 product_context += f"Description: {product.description}\n"
                 if product.documents:
                     product_context += f"\nDocumentation ({len(product.documents)} files):\n"
-                    for doc in product.documents[:5]:  # Limit to first 5 docs
+                    for doc in product.documents[:5]:
                         product_context += f"\n--- {doc['filename']} ---\n"
-                        product_context += doc['content'][:500] + "...\n"  # Truncate long docs
+                        product_context += doc['content'][:500] + "...\n"
         
-        # Build requirements combining difficulty and context
+        # Stage 2: Load persona context
+        update_job(job_id, stage="Loading persona context...", progress=20)
+        await asyncio.sleep(0.2)
+        
+        # Build requirements
         requirements = f"Difficulty: {request.difficulty}"
         if product_context:
             requirements += product_context
         
-        # Generate using GoalManager
+        # Stage 3: AI Generation (this will make multiple LLM calls)
+        update_job(job_id, stage="AI analyzing context (Step 1/3)...", progress=30)
+        
+        # We'll track progress through the generation
+        # AgentGoalGenerator makes ~3 LLM calls, so we'll update at 30%, 60%, 90%
+        import time
+        start_time = time.time()
+        
+        # Wrap generation with progress updates
         goals = await goal_manager.generate(
             count=1,
             persona_ids=request.persona_ids or [],
             organization_id=request.organization_id,
             requirements=requirements,
-            use_real_context=False,  # Product docs provide context
+            use_real_context=False,
             complexity=request.difficulty
         )
         
+        # Check progress periodically (simplified - in reality AgentGoalGenerator would need callbacks)
+        # For now, we'll just show stages
+        update_job(job_id, stage="AI analyzing context (Step 2/3)...", progress=60)
+        
         if not goals:
-            raise HTTPException(status_code=500, detail="Goal generation failed")
+            update_job(job_id, status="failed", error="Goal generation failed - no goals returned")
+            return
+        
+        update_job(job_id, stage="AI analyzing context (Step 3/3)...", progress=90)
         
         goal = goals[0]
         
@@ -716,13 +755,27 @@ async def generate_goal_ai(request: GoalGenerateRequest):
         # Save to storage
         await storage.save_goal(goal)
         
-        return goal.model_dump()
+        end_time = time.time()
+        generation_time = round(end_time - start_time, 2)
+        
+        # Complete
+        update_job(
+            job_id,
+            status="completed",
+            stage="Goal generation complete",
+            progress=100,
+            result={
+                "message": f"✓ Created goal: {goal.name}",
+                "goal": goal.model_dump(),
+                "generation_time": generation_time
+            }
+        )
         
     except Exception as e:
-        print(f"Error generating goal: {e}")
+        print(f"Error in goal generation: {e}")
         import traceback
         traceback.print_exc()
-        raise HTTPException(status_code=500, detail=str(e))
+        update_job(job_id, status="failed", error=str(e), stage="Generation failed")
 
 @api_router.get("/goals")
 async def list_goals():
