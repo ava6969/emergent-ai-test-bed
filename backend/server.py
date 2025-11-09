@@ -1360,7 +1360,54 @@ async def get_thread_status_endpoint(thread_id: str):
     """
     from thread_status import get_thread_status
     
-    return get_thread_status(thread_id)
+    # Try in-memory status first
+    status_data = get_thread_status(thread_id)
+    
+    # If status is unknown, check actual thread state
+    if status_data.get("status") == "unknown":
+        try:
+            # Get thread state from LangGraph
+            state = await simulation_engine.epoch_client.client.threads.get_state(thread_id)
+            messages = state.get("values", {}).get("messages", []) if isinstance(state, dict) else []
+            
+            # Get thread metadata for max_turns
+            thread_info = await simulation_engine.epoch_client.client.threads.get(thread_id)
+            metadata = thread_info.get("metadata", {})
+            max_turns = metadata.get("max_turns", 5)
+            
+            # Calculate current turn
+            human_count = sum(1 for m in messages if isinstance(m, dict) and m.get("type") == "human")
+            current_turn = human_count
+            
+            # Determine status from messages
+            # Check if last human message has stop=True or if max turns reached
+            should_stop = False
+            if messages:
+                # Check last few messages for stop flag
+                for msg in reversed(messages):
+                    if isinstance(msg, dict) and msg.get("type") == "human":
+                        should_stop = msg.get("additional_kwargs", {}).get("stop", False)
+                        break
+            
+            # Determine final status
+            if should_stop or current_turn >= max_turns:
+                determined_status = "completed"
+            elif messages:
+                determined_status = "running"
+            else:
+                determined_status = "unknown"
+            
+            return {
+                "status": determined_status,
+                "current_turn": current_turn,
+                "max_turns": max_turns,
+                "stopped_reason": "should_stop_true" if should_stop else ("max_turns_reached" if current_turn >= max_turns else None)
+            }
+        except Exception as e:
+            logger.error(f"Failed to get thread state for {thread_id}: {e}")
+            return status_data
+    
+    return status_data
 
 # ==================== EVALUATION ENDPOINTS ====================
 
