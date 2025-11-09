@@ -5,13 +5,13 @@ import { useStream } from '@langchain/langgraph-sdk/react';
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api/client';
 import { EvaluateTab } from '@/components/simulations/EvaluateTab';
+import { MessageRenderer } from '@/components/simulations/MessageRenderer';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Plus, User, Bot } from 'lucide-react';
 import type { Message } from '@langchain/langgraph-sdk';
-import ReactMarkdown from 'react-markdown';
 
 export default function SimulationPage() {
   const params = useParams();
