@@ -44,6 +44,19 @@ export default function SimulationPage() {
 
   const status = statusData?.status || 'running';
 
+  // Get thread metadata for persona name
+  const { data: threadData } = useQuery({
+    queryKey: ['thread', thread_id],
+    queryFn: async () => {
+      const response = await apiClient.getThreads();
+      return response.find((t: any) => t.thread_id === thread_id);
+    },
+    enabled: !!thread_id,
+  });
+
+  const personaName = threadData?.metadata?.persona_name || 'Persona';
+  const goalName = threadData?.metadata?.goal_name || 'Unknown Goal';
+
   // Also poll thread state for live updates (workaround for stream limitations)
   const { data: threadState } = useQuery({
     queryKey: ['thread-messages', thread_id],
