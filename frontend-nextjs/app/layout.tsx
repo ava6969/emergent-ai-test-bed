@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Sidebar } from "@/components/layouts/Sidebar";
 import { Header } from "@/components/layouts/Header";
-import { Toaster } from "@/components/ui/sonner";
+import { ToasterClient } from "@/components/ToasterClient";
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
