@@ -1463,11 +1463,18 @@ async def run_evaluation(request: EvaluationRequest, background_tasks: Backgroun
         if not evaluators:
             raise HTTPException(status_code=400, detail="No valid evaluators configured")
         
+        # Extract the last assistant response as the output
+        last_assistant_message = ""
+        for msg in reversed(trajectory):
+            if msg["role"] == "ai" and msg.get("content"):
+                last_assistant_message = msg["content"]
+                break
+        
         # Run all evaluators
         eval_results = await factory.run_evaluators(
             evaluators=evaluators,
-            outputs={"trajectory": trajectory},
-            inputs={"goal": eval_context["goal"]},
+            outputs=last_assistant_message,  # Pass the actual response text
+            inputs=eval_context["goal"],  # Pass goal as string
             context=eval_context
         )
         
