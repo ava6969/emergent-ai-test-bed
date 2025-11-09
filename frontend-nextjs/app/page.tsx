@@ -83,7 +83,7 @@ export default function Home() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <label className="block text-sm font-medium mb-3 text-[#00FF41] opacity-80">
+            <label className="block text-sm font-medium mb-3 text-[#E5E5E5]">
               <User className="inline w-4 h-4 mr-2" />
               Select Persona
             </label>
@@ -91,11 +91,11 @@ export default function Home() {
               value={selectedPersona}
               onChange={(e) => setSelectedPersona(e.target.value)}
               disabled={isStarting}
-              className="w-full px-4 py-3 bg-transparent border border-[#00FF41] border-opacity-20 rounded text-[#00FF41] focus:border-opacity-60 focus:outline-none transition-all"
+              className="w-full px-4 py-3 bg-[#141414] border border-[#2A2A2A] rounded text-[#E5E5E5] focus:border-[#3A3A3A] focus:bg-[#1E1E1E] focus:outline-none transition-all"
             >
-              <option value="" className="bg-black">Choose persona...</option>
+              <option value="" className="bg-[#0A0A0A]">Choose persona...</option>
               {personas.map((persona) => (
-                <option key={persona.id} value={persona.id} className="bg-black">
+                <option key={persona.id} value={persona.id} className="bg-[#0A0A0A]">
                   {persona.name}
                 </option>
               ))}
@@ -104,10 +104,10 @@ export default function Home() {
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
-                className="mt-3 p-4 bg-[#00FF41] bg-opacity-5 border border-[#00FF41] border-opacity-20 rounded"
+                className="mt-3 p-4 bg-[#141414] border border-[#2A2A2A] rounded dark-card"
               >
-                <p className="font-medium text-[#00FF41]">{selectedPersonaObj.name}</p>
-                <p className="text-[#00FF41] opacity-60 text-xs mt-1 line-clamp-2">
+                <p className="font-medium text-white">{selectedPersonaObj.name}</p>
+                <p className="text-[#A0A0A0] text-xs mt-1 line-clamp-2">
                   {selectedPersonaObj.background}
                 </p>
               </motion.div>
