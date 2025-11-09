@@ -1,5 +1,6 @@
+completed_at: '2025-11-09T10:26:34.718455+00:00'
 evaluation_model: gpt-5
-goal_achieved: false
+goal_achieved: true
 goal_id: momentum_analysis_001
 id: sim_trd_027_momentum_analysis_001_20251109_101807_51110152
 max_turns: 5
@@ -8,8 +9,8 @@ organization_id: Momentum Advisors
 persona_id: TRD-027
 simulation_model: gpt-5
 started_at: '2025-11-09T10:18:07.960455+00:00'
-status: running
+status: completed
 thread_id: 95bd49a2-7d67-4e79-8462-ffa4e029b16c
 trajectory_id: traj_trd_027_momentum_analysis_001_20251109_101807_a2d678df
-turns_completed: 0
+turns_completed: 5
 use_persona_memory: false
