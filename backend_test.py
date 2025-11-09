@@ -339,46 +339,71 @@ def test_simulation_functionality():
             print(f"❌ Exception: {e}")
             test_results.append(("POST /api/simulations/{id}/stop", "FAIL", f"Exception: {e}"))
     
-    # Summary
-    print("\n" + "=" * 60)
-    print("TEST RESULTS SUMMARY")
-    print("=" * 60)
-    
-    passed = 0
-    failed = 0
-    
-    for endpoint, status, details in test_results:
-        status_icon = "✅" if status == "PASS" else "❌"
-        print(f"{status_icon} {endpoint}: {status}")
-        print(f"   {details}")
-        
-        if status == "PASS":
-            passed += 1
-        else:
-            failed += 1
-    
-    print(f"\nTotal: {passed} passed, {failed} failed")
-    
-    # Test additional endpoint - GET /api/simulations (list all)
-    print("\n5. Testing GET /api/simulations (list all)...")
-    print("-" * 40)
+    print("\n6. Testing GET /api/simulations (List All)...")
+    print("-" * 50)
     
     try:
         list_response = requests.get(f"{BACKEND_URL}/simulations")
         print(f"Response status: {list_response.status_code}")
-        print(f"Response body: {list_response.text}")
         
         if list_response.status_code == 200:
             simulations = list_response.json()
             print(f"✅ PASS: Successfully retrieved {len(simulations)} simulations")
+            
+            # Show details of our simulation if it's in the list
+            if simulation_id:
+                our_sim = next((s for s in simulations if s.get("simulation_id") == simulation_id), None)
+                if our_sim:
+                    print(f"   Our simulation found in list:")
+                    print(f"   - ID: {our_sim.get('simulation_id')}")
+                    print(f"   - Status: {our_sim.get('status')}")
+                    print(f"   - Turns: {our_sim.get('current_turn')}/{our_sim.get('max_turns')}")
+            
             test_results.append(("GET /api/simulations", "PASS", f"Retrieved {len(simulations)} simulations"))
         else:
             print(f"❌ FAIL: Expected 200, got {list_response.status_code}")
-            test_results.append(("GET /api/simulations", "FAIL", f"Expected 200, got {list_response.status_code}"))
+            print(f"Response: {list_response.text}")
+            test_results.append(("GET /api/simulations", "FAIL", f"Status {list_response.status_code}"))
             
     except Exception as e:
-        print(f"❌ FAIL: Exception during list simulations test: {e}")
+        print(f"❌ Exception during list test: {e}")
         test_results.append(("GET /api/simulations", "FAIL", f"Exception: {e}"))
+    
+    # Summary
+    print("\n" + "=" * 60)
+    print("SIMULATION FUNCTIONALITY TEST RESULTS")
+    print("=" * 60)
+    
+    passed = 0
+    failed = 0
+    skipped = 0
+    
+    for endpoint, status, details in test_results:
+        if status == "PASS":
+            status_icon = "✅"
+            passed += 1
+        elif status == "SKIP":
+            status_icon = "⏭️ "
+            skipped += 1
+        else:
+            status_icon = "❌"
+            failed += 1
+            
+        print(f"{status_icon} {endpoint}: {status}")
+        print(f"   {details}")
+    
+    print(f"\nTotal: {passed} passed, {failed} failed, {skipped} skipped")
+    
+    # Overall assessment
+    if simulation_id:
+        print(f"\n🎯 SIMULATION ASSESSMENT:")
+        print(f"   - LangGraph Integration: {'✅ WORKING' if passed > failed else '❌ ISSUES'}")
+        print(f"   - Simulation ID Generated: {simulation_id}")
+        print(f"   - Real-time Polling: {'✅ WORKING' if any('Poll' in r[0] for r in test_results if r[1] == 'PASS') else '❌ ISSUES'}")
+    else:
+        print(f"\n⚠️  SIMULATION ASSESSMENT:")
+        print(f"   - LangGraph Integration: ❌ NOT WORKING")
+        print(f"   - Issue: Could not start simulation")
     
     return failed == 0
 
