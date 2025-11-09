@@ -75,8 +75,9 @@ class APIClient {
 
   async generatePersona(description: string, settings?: any) {
     const response = await this.client.post('/api/ai/generate/persona/async', {
-      message: description,
-      count: 1,
+      description: description,
+      message: description, // backwards compatibility
+      count: settings?.count || 1,
       model: settings?.model || 'gpt-5',
       temperature: settings?.temperature || 0.7,
       reasoning_effort: settings?.reasoning_effort || 'medium',
