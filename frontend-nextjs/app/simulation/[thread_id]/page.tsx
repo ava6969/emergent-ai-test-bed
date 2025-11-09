@@ -76,12 +76,9 @@ export default function SimulationPage() {
         </TabsContent>
 
         <TabsContent value="evaluate" className="flex-1 mt-4">
-          <Card className="h-full p-8 flex items-center justify-center">
-            <div className="text-center text-gray-500">
-              <p className="text-lg font-medium mb-2">Evaluation View</p>
-              <p className="text-sm">Coming soon - Analyze simulation quality and performance</p>
-            </div>
-          </Card>
+          <div className="h-full overflow-y-auto">
+            <EvaluateTab threadId={thread_id} messages={messages} />
+          </div>
         </TabsContent>
       </Tabs>
     </div>
