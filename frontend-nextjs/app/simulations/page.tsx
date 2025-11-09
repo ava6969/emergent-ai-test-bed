@@ -6,8 +6,9 @@ import { apiClient } from '@/lib/api/client';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Play, StopCircle, Clock, Target, User, Sparkles } from 'lucide-react';
-import { TrajectoryViewer } from '@/components/simulations/TrajectoryViewer';
+import { ChatOnlyThread } from '@/components/simulations/ChatOnlyThread';
 import { toast } from 'sonner';
+import { Message } from '@langchain/langgraph-sdk';
 
 export default function SimulationsPage() {
   const [selectedPersona, setSelectedPersona] = useState('');
