@@ -160,6 +160,21 @@ export default function GoalGenerationModal({ personas, products, onGenerate, on
               </div>
             )}
 
+            {/* Progress Indicator */}
+            {isGenerating && (
+              <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
+                  <div>
+                    <p className="font-medium text-sm">Generating goal with AI...</p>
+                    <p className="text-xs text-muted-foreground">
+                      AI is analyzing persona context, product documentation, and difficulty level. This may take 30-60 seconds.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Actions */}
             <div className="flex justify-end gap-2 pt-4">
               <Button type="button" variant="outline" onClick={onClose} disabled={isGenerating}>
