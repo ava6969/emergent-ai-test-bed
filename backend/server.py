@@ -669,6 +669,7 @@ class GoalGenerateRequest(BaseModel):
     difficulty: str = "medium"  # easy, medium, hard, expert
     max_turns_override: Optional[int] = None  # Override AI-suggested max_turns
     organization_id: Optional[str] = None
+    count: int = 1  # Number of goals to generate
 
 class GoalCreate(BaseModel):
     name: str
