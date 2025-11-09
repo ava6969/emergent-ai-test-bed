@@ -527,10 +527,12 @@ if __name__ == "__main__":
     success = test_simulation_functionality()
     
     if success:
-        print("\n🎉 All simulation functionality tests passed!")
-        print("✅ LangGraph integration is working correctly")
+        print("\n🎉 All updated simulation functionality tests passed!")
+        print("✅ Model factory integration with reasoning effort parameter is working correctly")
+        print("✅ TestEnvironment message handling refactor is working correctly")
+        print("✅ gpt-5 reasoning model with medium effort is working correctly")
         sys.exit(0)
     else:
-        print("\n💥 Some simulation tests failed!")
-        print("❌ Check LangGraph credentials or simulation engine setup")
+        print("\n💥 Some updated simulation tests failed!")
+        print("❌ Check model factory integration or TestEnvironment message handling")
         sys.exit(1)
