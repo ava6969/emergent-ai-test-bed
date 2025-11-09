@@ -688,7 +688,65 @@ class GoalUpdate(BaseModel):
     initial_prompt: Optional[str] = None
     max_turns: Optional[int] = None
 
-# AI Goal Generation (Async with polling)
+# AI Goal Generation (Synchronous)
+@api_router.post("/ai/generate/goal")
+async def generate_goal_sync(request: GoalGenerateRequest):
+    """Generate goals synchronously (no job polling)"""
+    if not goal_manager:
+        raise HTTPException(status_code=500, detail="Goal manager not initialized")
+    
+    try:
+        import time
+        start_time = time.time()
+        
+        # Get requirements (optional product/persona context)
+        requirements = {}
+        
+        # Generate goals sequentially
+        goals = await goal_manager.generate(
+            count=request.count,
+            persona_ids=request.persona_ids or [],
+            organization_id=request.organization_id,
+            requirements=requirements,
+            use_real_context=False,
+            complexity=request.difficulty
+        )
+        
+        if not goals:
+            raise HTTPException(status_code=500, detail="Goal generation failed - no goals returned")
+        
+        # Save all generated goals
+        for goal in goals:
+            # Override max_turns if specified
+            if request.max_turns_override:
+                goal.max_turns = request.max_turns_override
+            
+            # Store difficulty and product_id in metadata
+            if not goal.metadata:
+                goal.metadata = {}
+            goal.metadata["difficulty"] = request.difficulty
+            if request.product_id:
+                goal.metadata["product_id"] = request.product_id
+            
+            # Save to storage
+            await storage.save_goal(goal)
+        
+        generation_time = round(time.time() - start_time, 1)
+        goal_names = [g.name for g in goals]
+        goal_count_text = f"{len(goals)} goal{'s' if len(goals) > 1 else ''}"
+        
+        return {
+            "status": "completed",
+            "message": f"✓ Created {goal_count_text}: {', '.join(goal_names)}",
+            "goals": [g.model_dump() for g in goals],
+            "generation_time": generation_time
+        }
+        
+    except Exception as e:
+        logger.error(f"Goal generation error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+# AI Goal Generation (Async with polling) - DEPRECATED
 @api_router.post("/ai/generate/goal/async")
 async def generate_goal_async(request: GoalGenerateRequest, background_tasks: BackgroundTasks):
     """Start async goal generation with polling support"""
