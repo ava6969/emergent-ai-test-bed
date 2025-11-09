@@ -25,6 +25,25 @@ export function Personas() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
+  // Clear old settings with incorrect max_tokens on mount
+  React.useEffect(() => {
+    const settingsKey = 'generation_settings_persona';
+    const stored = localStorage.getItem(settingsKey);
+    if (stored) {
+      try {
+        const settings = JSON.parse(stored);
+        if (settings.max_tokens && settings.max_tokens < 1500) {
+          // Remove old settings
+          localStorage.removeItem(settingsKey);
+          console.log('Cleared old generation settings with insufficient max_tokens');
+        }
+      } catch (e) {
+        // Invalid JSON, remove it
+        localStorage.removeItem(settingsKey);
+      }
+    }
+  }, []);
+
   // Fetch personas
   const { data: personas = [], isLoading } = useQuery({
     queryKey: ['personas'],
