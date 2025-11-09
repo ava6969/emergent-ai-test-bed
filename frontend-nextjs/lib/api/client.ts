@@ -81,7 +81,8 @@ class APIClient {
   }
 
   async generatePersona(description: string, settings?: any) {
-    const response = await this.client.post('/api/ai/generate/persona/async', {
+    // Use synchronous endpoint - no polling needed
+    const response = await this.client.post('/api/ai/generate/persona', {
       description: description,
       message: description, // backwards compatibility
       count: settings?.count || 1,
