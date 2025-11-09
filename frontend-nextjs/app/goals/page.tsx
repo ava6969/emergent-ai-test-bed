@@ -62,24 +62,9 @@ export default function GoalsPage() {
   };
 
   const handleGenerate = async () => {
-    if (!generateInput.trim()) {
-      toast.error('Please enter a goal description');
-      return;
-    }
-
     try {
       setIsGenerating(true);
       setGenerationProgress(0);
-      
-      // Load settings from localStorage
-      const settingsKey = 'generation_settings_goal';
-      const storedSettings = localStorage.getItem(settingsKey);
-      const settings = storedSettings ? JSON.parse(storedSettings) : {
-        model: 'gpt-5',
-        temperature: 0.7,
-        reasoning_effort: 'medium',
-        max_tokens: 1500,
-      };
 
       const startResponse = await apiClient.generateGoal({
         persona_ids: selectedPersona ? [selectedPersona] : [],
