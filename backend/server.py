@@ -1120,10 +1120,11 @@ async def run_simulation(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-async def run_simulation_background(sim_id: str, persona_id: str, goal_id: str, max_turns: Optional[int], reasoning_model: Optional[str], reasoning_effort: Optional[str]):
-    """Background task for running simulation with real-time updates"""
+async def run_simulation_background(persona_id: str, goal_id: str, max_turns: Optional[int], reasoning_model: Optional[str], reasoning_effort: Optional[str]):
+    """Background task for running simulation - creates thread and runs loop"""
     try:
         # Run simulation with TestEnvironment (RL-style loop)
+        # This creates the thread, runs the loop, and updates thread_status
         result = await simulation_engine.run_with_test_environment(
             persona_id=persona_id,
             goal_id=goal_id,
@@ -1132,29 +1133,13 @@ async def run_simulation_background(sim_id: str, persona_id: str, goal_id: str, 
             max_turns=max_turns
         )
         
-        # Update session with thread_id so frontend can find it
-        session = get_simulation_session(sim_id)
-        if session:
-            session["thread_id"] = result.thread_id
-        
-        # Update with final result including trajectory
-        update_simulation_session(
-            simulation_id=sim_id,
-            status="completed",
-            current_turn=result.turns,
-            new_messages=result.trajectory,
-            goal_achieved=result.goal_achieved
-        )
+        # Result is now just {"thread_id": "..."}
+        logger.info(f"Simulation completed successfully - thread_id: {result['thread_id']}")
         
     except Exception as e:
-        print(f"Error in simulation background: {e}")
+        logger.error(f"Error in simulation background: {e}")
         import traceback
         traceback.print_exc()
-        update_simulation_session(
-            simulation_id=sim_id,
-            status="failed",
-            error=str(e)
-        )
 
 @api_router.get("/simulations/{simulation_id}")
 async def get_simulation_status(simulation_id: str):
