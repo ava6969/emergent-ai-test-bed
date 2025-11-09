@@ -255,8 +255,12 @@ export default function SimulationsPage() {
             </div>
             
             <ChatOnlyThread
-              messages={(simulationData?.trajectory || []) as Message[]}
+              messages={simulationData.trajectory || []}
               isLoading={isSimulating}
+              status={simulationData.status}
+              currentTurn={simulationData.current_turn}
+              maxTurns={simulationData.max_turns || 10}
+              goalAchieved={simulationData.goal_achieved}
             />
           </Card>
         </div>
