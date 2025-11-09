@@ -1483,7 +1483,14 @@ async def run_evaluation(request: EvaluationRequest, background_tasks: Backgroun
         for msg in reversed(trajectory):
             if msg["role"] == "ai" and msg.get("content"):
                 last_assistant_message = msg["content"]
+                logger.info(f"Found last AI message: {len(last_assistant_message)} chars")
                 break
+        
+        if not last_assistant_message:
+            logger.warning(f"No AI message found in trajectory of {len(trajectory)} messages")
+            # Log the roles we found
+            roles_found = [msg.get("role") for msg in trajectory[-5:]]
+            logger.warning(f"Last 5 message roles: {roles_found}")
         
         # Run evaluators - split into trajectory and simple evaluators
         import inspect
