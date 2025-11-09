@@ -36,7 +36,7 @@ export function Sidebar() {
       {/* New Simulation Button */}
       <div className="px-3 py-4">
         <Link href="/">
-          <button className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors">
+          <button className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-lg bg-black text-white hover:bg-gray-800 transition-colors">
             <span className="text-lg">+</span>
             New Simulation
           </button>
