@@ -14,8 +14,9 @@ import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 
 const DEFAULT_SETTINGS = {
-  model: 'gpt-4o-mini',
+  model: 'gpt-5',
   temperature: 0.7,
+  reasoning_effort: 'medium',
   max_tokens: 1500,
   use_exa_enrichment: false,
   exa_results_count: 3,
@@ -23,6 +24,18 @@ const DEFAULT_SETTINGS = {
 };
 
 const MIN_MAX_TOKENS = 1500; // Minimum required for structured output
+
+// Helper to check if model is a reasoning model
+const isReasoningModel = (model) => {
+  const modelLower = model.toLowerCase();
+  return modelLower.startsWith('o1') || 
+         modelLower.startsWith('o3') || 
+         modelLower.startsWith('gpt-5') ||
+         modelLower.startsWith('gpt-6') ||
+         modelLower.startsWith('gpt-7') ||
+         modelLower.startsWith('gpt-8') ||
+         modelLower.startsWith('gpt-9');
+};
 
 export function GenerationSettings({ open, onClose, type }) {
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
