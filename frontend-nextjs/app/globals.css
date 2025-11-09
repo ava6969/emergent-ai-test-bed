@@ -92,33 +92,54 @@ body::before {
 
 @keyframes glow {
   0%, 100% {
-    box-shadow: 0 0 5px var(--matrix-green-glow);
+    box-shadow: 0 0 10px var(--glow);
   }
   50% {
-    box-shadow: 0 0 20px var(--matrix-green-glow);
+    box-shadow: 0 0 20px var(--glow-bright);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
   }
 }
 
 .animate-glow {
-  animation: glow 2s ease-in-out infinite;
+  animation: glow 3s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    transparent 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 3s infinite;
 }
 
 /* Linear-style inputs */
 input, textarea, select {
-  background: transparent;
-  border: 1px solid rgba(0, 255, 65, 0.2);
-  color: var(--matrix-green);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  color: var(--primary);
   transition: all 0.2s ease;
 }
 
 input:focus, textarea:focus, select:focus {
   outline: none;
-  border-color: var(--matrix-green);
-  box-shadow: 0 0 10px var(--matrix-green-glow);
+  border-color: var(--border-light);
+  box-shadow: 0 0 0 3px var(--glow);
+  background: var(--bg-tertiary);
 }
 
 input::placeholder {
-  color: rgba(0, 255, 65, 0.3);
+  color: var(--secondary);
 }
 
 /* Button styles */
@@ -127,19 +148,20 @@ button {
 }
 
 button:hover {
-  box-shadow: 0 0 15px var(--matrix-green-glow);
+  box-shadow: 0 0 20px var(--glow);
 }
 
 /* Card styles */
-.matrix-card {
-  background: rgba(0, 255, 65, 0.03);
-  border: 1px solid rgba(0, 255, 65, 0.2);
+.dark-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
   transition: all 0.3s ease;
 }
 
-.matrix-card:hover {
-  border-color: var(--matrix-green);
-  box-shadow: 0 0 20px var(--matrix-green-glow);
+.dark-card:hover {
+  border-color: var(--border-light);
+  box-shadow: 0 0 30px var(--glow);
+  background: var(--bg-tertiary);
 }
 
 @custom-variant dark (&:is(.dark *));
