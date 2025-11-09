@@ -1068,8 +1068,15 @@ async def delete_product(product_id: str):
         raise HTTPException(status_code=500, detail="Storage not initialized")
     
     try:
+        # Check if product exists first
+        product = await storage.get_product(product_id)
+        if not product:
+            raise HTTPException(status_code=404, detail="Product not found")
+        
         await storage.delete_product(product_id)
         return {"success": True}
+    except HTTPException:
+        raise
     except Exception as e:
         print(f"Error deleting product: {e}")
         raise HTTPException(status_code=500, detail=str(e))
