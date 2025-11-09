@@ -167,8 +167,8 @@ export default function Home() {
               <option value="gpt-5">GPT-5 (Reasoning)</option>
               <option value="o1">O1 (Reasoning)</option>
               <option value="o3">O3 (Reasoning)</option>
-              <option value="gpt-4o">GPT-4o (Standard)</option>
-              <option value="gpt-4o-mini">GPT-4o Mini (Standard)</option>
+              <option value="gpt-4.1">GPT-4.1 (Latest)</option>
+              <option value="gpt-4.1-mini">GPT-4.1 Mini (Fast)</option>
             </select>
           </div>
 
