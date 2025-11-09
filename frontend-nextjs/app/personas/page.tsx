@@ -83,8 +83,12 @@ export default function PersonasPage() {
       
       const jobId = startResponse.job_id;
       
-      // Poll for status
-      const pollingInterval = setInterval(async () => {
+      // Poll for status with exponential backoff
+      let pollAttempts = 0;
+      let pollInterval = 2000; // Start with 2 seconds
+      const maxInterval = 5000; // Max 5 seconds between polls
+      
+      const pollStatus = async () => {
         try {
           const status = await apiClient.checkJobStatus(jobId);
           
@@ -96,7 +100,6 @@ export default function PersonasPage() {
           }
           
           if (status.status === 'completed') {
-            clearInterval(pollingInterval);
             queryClient.invalidateQueries({ queryKey: ['personas'] });
             setGenerateInput('');
             const personaCount = count > 1 ? `${count} personas` : 'persona';
@@ -107,17 +110,41 @@ export default function PersonasPage() {
               setGenerationStage('');
               setGenerationProgress(0);
             }, 1500);
+            return; // Stop polling
           }
           
           if (status.status === 'failed') {
-            clearInterval(pollingInterval);
             setIsGenerating(false);
-            toast.error(status.error || 'Generation failed');
+            const errorMsg = status.error || 'Generation failed';
+            if (errorMsg.includes('429') || errorMsg.includes('rate limit')) {
+              toast.error('Rate limit reached. Please wait a moment and try again.');
+            } else {
+              toast.error(errorMsg);
+            }
+            return; // Stop polling
           }
-        } catch (pollError) {
+          
+          // Continue polling with exponential backoff
+          pollAttempts++;
+          pollInterval = Math.min(pollInterval * 1.2, maxInterval); // Increase interval
+          setTimeout(pollStatus, pollInterval);
+          
+        } catch (pollError: any) {
           console.error('Polling error:', pollError);
+          
+          // Handle rate limit errors
+          if (pollError?.response?.status === 429) {
+            toast.error('Rate limit reached. Retrying in 10 seconds...');
+            setTimeout(pollStatus, 10000); // Wait 10 seconds before retry
+          } else {
+            // Continue polling on other errors
+            setTimeout(pollStatus, pollInterval);
+          }
         }
-      }, 1000);
+      };
+      
+      // Start polling
+      setTimeout(pollStatus, pollInterval);
       
     } catch (error: any) {
       setIsGenerating(false);
