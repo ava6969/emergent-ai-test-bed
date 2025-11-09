@@ -51,6 +51,11 @@ export default function SimulationPage() {
   const lastMsg = messages[messages.length - 1];
   const goalAchieved = lastMsg?.additional_kwargs?.reward === 1;
 
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages.length]);
+
   return (
     <div className="h-full flex flex-col p-6">
       {/* Header with New Simulation Button */}
