@@ -196,6 +196,143 @@ async def generate_persona_endpoint(request: GeneratePersonaRequest):
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.post("/ai/generate/persona/async")
+async def generate_persona_async(request: GeneratePersonaRequest, background_tasks: BackgroundTasks):
+    """Start persona generation and return job ID for polling"""
+    
+    if not persona_manager:
+        raise HTTPException(status_code=500, detail="Persona manager not initialized")
+    
+    try:
+        # Create job
+        job = create_job()
+        
+        # Start generation in background
+        background_tasks.add_task(
+            run_persona_generation,
+            job.id,
+            request
+        )
+        
+        return {
+            "job_id": job.id,
+            "status": "started",
+            "message": "Generation started. Poll /api/ai/generate/status/{job_id} for progress"
+        }
+        
+    except Exception as e:
+        print(f"Error starting generation: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/ai/generate/status/{job_id}")
+async def get_generation_status(job_id: str):
+    """Get the current status of a generation job (for polling)"""
+    
+    job = get_job(job_id)
+    
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+    
+    return job.to_dict()
+
+async def run_persona_generation(job_id: str, request: GeneratePersonaRequest):
+    """Background task that runs persona generation with progress updates"""
+    import asyncio
+    
+    try:
+        # Use description or message
+        description = request.description or request.message
+        if not description:
+            update_job(job_id, status="failed", error="description or message required")
+            return
+        
+        # Stage 1: Preparing
+        update_job(job_id, status="running", stage="Preparing generation", progress=10)
+        await asyncio.sleep(0.2)
+        
+        # Update generator config if custom settings provided
+        if request.model != "gpt-4o-mini" or request.temperature != 0.7 or request.max_tokens != 500:
+            update_job(job_id, stage=f"Configuring {request.model}", progress=15)
+            custom_config = create_generator_config(
+                model=request.model,
+                temperature=request.temperature,
+                max_tokens=request.max_tokens
+            )
+            persona_manager.generator = type(persona_manager.generator)(config=custom_config)
+            await asyncio.sleep(0.1)
+        
+        # Stage 2: Organization context (if applicable)
+        if request.organization_id:
+            update_job(job_id, stage="Loading organization context", progress=20)
+            await asyncio.sleep(0.3)
+        
+        # Stage 3: Exa enrichment (if enabled)
+        if request.use_exa_enrichment:
+            update_job(job_id, stage="Fetching real-world context (Exa.ai)", progress=30)
+            await asyncio.sleep(0.5)
+        
+        # Stage 4: Calling AI model
+        update_job(job_id, stage=f"Calling AI model ({request.model})...", progress=40)
+        
+        # Actual generation
+        import time
+        start_time = time.time()
+        
+        personas = await persona_manager.generate(
+            count=1,
+            requirements=description,
+            organization_id=request.organization_id,
+            use_real_context=request.use_exa_enrichment,
+            metadata_schema=request.metadata_schema
+        )
+        
+        end_time = time.time()
+        generation_time = round(end_time - start_time, 2)
+        
+        # Stage 5: Processing response
+        update_job(job_id, stage="Processing AI response", progress=85)
+        await asyncio.sleep(0.2)
+        
+        if not personas:
+            update_job(job_id, status="failed", error="No persona generated")
+            return
+        
+        persona = personas[0]
+        
+        # Stage 6: Saving
+        update_job(job_id, stage="Saving persona", progress=95)
+        await asyncio.sleep(0.1)
+        
+        # Stage 7: Complete
+        persona_dict = persona.model_dump()
+        result = {
+            "message": f"✓ Created persona: {persona.name}",
+            "generated_items": {
+                "persona": persona_dict
+            },
+            "actions": [
+                {"label": "Create Goal", "action": "create_goal", "variant": "default"},
+                {"label": "View Details", "action": "view_details"},
+                {"label": "Regenerate", "action": "regenerate"}
+            ]
+        }
+        
+        update_job(
+            job_id,
+            status="completed",
+            stage="Complete",
+            progress=100,
+            result=result,
+            generation_time=generation_time,
+            completed_at=datetime.now(timezone.utc)
+        )
+        
+    except Exception as e:
+        print(f"Error in background generation: {e}")
+        import traceback
+        traceback.print_exc()
+        update_job(job_id, status="failed", error=str(e), stage="Error occurred")
+
 @api_router.get("/ai/generate/persona/stream")
 async def generate_persona_streaming(
     description: str,
