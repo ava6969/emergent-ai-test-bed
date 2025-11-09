@@ -87,7 +87,8 @@ export default function GoalsPage() {
           if (status.status === 'completed') {
             clearInterval(pollingInterval);
             queryClient.invalidateQueries({ queryKey: ['goals'] });
-            toast.success(`Successfully created goal in ${status.generation_time}s`);
+            const goalCount = count > 1 ? `${count} goals` : 'goal';
+            toast.success(`Successfully created ${goalCount} in ${status.generation_time}s`);
             
             setTimeout(() => {
               setIsGenerating(false);
