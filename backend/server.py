@@ -682,7 +682,6 @@ async def generate_goal_background(job_id: str, request: GoalGenerateRequest):
     try:
         # Stage 1: Load context
         update_job(job_id, stage="Loading product documentation...", progress=10)
-        await asyncio.sleep(0.2)
         
         product_context = ""
         if request.product_id and storage:
@@ -698,7 +697,6 @@ async def generate_goal_background(job_id: str, request: GoalGenerateRequest):
         
         # Stage 2: Load persona context
         update_job(job_id, stage="Loading persona context...", progress=20)
-        await asyncio.sleep(0.2)
         
         # Build requirements
         requirements = f"Difficulty: {request.difficulty}"
