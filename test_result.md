@@ -253,9 +253,51 @@ class SimpleAgent(BaseModel):
 - `/app/backend/testbed/src/models/agent_config.py`: Added `created_at` field
 - `/app/backend/server.py`: Enhanced progress stages for Exa
 
+### Simulation Page Implementation ✅
+
+**Backend Implementation:**
+1. ✅ Fixed `simulation_engine.run()` method call in background task
+2. ✅ Made SimulationEngine initialization optional (requires LangGraph Cloud credentials)
+3. ✅ API endpoints ready:
+   - POST /api/simulations/run (starts simulation)
+   - GET /api/simulations/{simulation_id} (get status and trajectory)
+   - POST /api/simulations/{simulation_id}/stop (stop running simulation)
+4. ✅ Real-time polling for simulation updates via simulation_tracker.py
+
+**Frontend Implementation:**
+1. ✅ Created `/app/frontend/src/pages/Simulations.jsx` with:
+   - Persona selector (dropdown with preview)
+   - Goal selector (dropdown with preview)
+   - Optional max_turns override
+   - Live conversation trajectory display
+   - Multi-stage progress indicator
+   - Final results display (goal achieved/not achieved)
+2. ✅ Updated API client with simulation methods
+3. ✅ Added "Simulations" link to sidebar navigation
+4. ✅ Integrated into App.js routing
+
+**Files Modified:**
+- `/app/backend/server.py`: Fixed simulation background task method call
+- `/app/backend/testbed_bridge.py`: Made SimulationEngine optional, graceful error handling
+- `/app/frontend/src/lib/api/client.js`: Added simulation API methods
+- `/app/frontend/src/pages/Simulations.jsx`: Created new page
+- `/app/frontend/src/App.js`: Added Simulations route
+- `/app/frontend/src/components/layouts/Sidebar.jsx`: Added Simulations link
+
+**Limitation:**
+⚠ SimulationEngine requires LangGraph Cloud credentials to run actual simulations:
+- LANGGRAPH_API_URL
+- LANGGRAPH_API_KEY
+- EPOCH_ASSISTANT_ID (or EPOCH_AGENT_ID)
+
+Without these, the UI works but simulations will return an error. Backend gracefully handles missing credentials.
+
 ### Next Steps
-All persona features complete with Exa enrichment. Ready for Goals generation implementation.
+- Test backend simulation endpoints
+- Test frontend UI flow
+- Ask user for LangGraph credentials OR create simplified simulation engine using OpenAI directly
 
 ## Incorporate User Feedback
 - If user reports any issues, investigate and fix before proceeding
-- If user confirms functionality works, proceed with next feature (Goals generation)
+- If user has LangGraph credentials, configure them to enable full simulation functionality
+- If not, consider implementing simplified simulation engine
