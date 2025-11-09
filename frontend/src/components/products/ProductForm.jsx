@@ -89,36 +89,174 @@ export default function ProductForm({ product, onClose }) {
     }
   };
 
-  const handleFileUpload = (e) => {
-    const files = Array.from(e.target.files);
+  // Check if file is text-based
+  const isTextFile = (filename) => {
+    return TEXT_EXTENSIONS.some(ext => filename.toLowerCase().endsWith(ext));
+  };
+
+  // Process a single file
+  const processFile = async (file, path = '') => {
+    return new Promise((resolve) => {
+      const fullPath = path ? `${path}/${file.name}` : file.name;
+      
+      if (!isTextFile(file.name)) {
+        resolve(null); // Skip non-text files
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        resolve({
+          filename: fullPath,
+          content: event.target.result,
+        });
+      };
+      reader.onerror = () => resolve(null);
+      reader.readAsText(file);
+    });
+  };
+
+  // Process zip file
+  const processZipFile = async (file) => {
+    const zip = await JSZip.loadAsync(file);
+    const documents = [];
     
-    files.forEach((file) => {
-      if (file.name.endsWith('.md')) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          setFormData((prev) => ({
-            ...prev,
-            documents: [
-              ...prev.documents,
-              {
-                filename: file.name,
-                content: event.target.result,
-              },
-            ],
-          }));
-        };
-        reader.readAsText(file);
-      } else {
-        toast({
-          title: 'Invalid File',
-          description: 'Only .md files are allowed',
-          variant: 'destructive',
+    for (const [filename, zipEntry] of Object.entries(zip.files)) {
+      if (!zipEntry.dir && isTextFile(filename)) {
+        const content = await zipEntry.async('text');
+        documents.push({
+          filename: filename,
+          content: content,
         });
       }
-    });
+    }
     
-    // Reset file input
-    e.target.value = '';
+    return documents;
+  };
+
+  // Process folder (recursive)
+  const processFolderFiles = async (files, basePath = '') => {
+    const documents = [];
+    
+    for (const file of files) {
+      const relativePath = file.webkitRelativePath || file.name;
+      const doc = await processFile(file, '');
+      if (doc) {
+        doc.filename = relativePath;
+        documents.push(doc);
+      }
+    }
+    
+    return documents;
+  };
+
+  // Handle file/folder upload
+  const handleFilesUpload = async (files) => {
+    setIsProcessing(true);
+    const newDocuments = [];
+    let skippedCount = 0;
+
+    try {
+      for (const file of files) {
+        if (file.name.endsWith('.zip')) {
+          // Process zip file
+          const zipDocs = await processZipFile(file);
+          newDocuments.push(...zipDocs);
+        } else if (file.webkitRelativePath) {
+          // Part of folder upload - handle separately
+          continue;
+        } else if (isTextFile(file.name)) {
+          // Process single text file
+          const doc = await processFile(file);
+          if (doc) newDocuments.push(doc);
+        } else {
+          skippedCount++;
+        }
+      }
+
+      // Handle folder files
+      const folderFiles = Array.from(files).filter(f => f.webkitRelativePath);
+      if (folderFiles.length > 0) {
+        const folderDocs = await processFolderFiles(folderFiles);
+        newDocuments.push(...folderDocs);
+      }
+
+      // MERGE with existing documents (not replace)
+      setFormData((prev) => ({
+        ...prev,
+        documents: [...prev.documents, ...newDocuments],
+      }));
+
+      toast({
+        title: 'Documents Uploaded',
+        description: `Added ${newDocuments.length} document(s)${skippedCount > 0 ? `, skipped ${skippedCount} non-text file(s)` : ''}`,
+      });
+    } catch (error) {
+      toast({
+        title: 'Upload Error',
+        description: error.message,
+        variant: 'destructive',
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  // File input change handler
+  const handleFileInputChange = (e) => {
+    const files = Array.from(e.target.files);
+    handleFilesUpload(files);
+    e.target.value = ''; // Reset input
+  };
+
+  // Drag and drop handlers
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const items = Array.from(e.dataTransfer.items);
+    const files = [];
+
+    for (const item of items) {
+      if (item.kind === 'file') {
+        const entry = item.webkitGetAsEntry();
+        if (entry) {
+          await traverseFileTree(entry, files);
+        }
+      }
+    }
+
+    if (files.length > 0) {
+      handleFilesUpload(files);
+    }
+  };
+
+  // Recursive folder traversal for drag & drop
+  const traverseFileTree = async (entry, files, path = '') => {
+    if (entry.isFile) {
+      const file = await new Promise((resolve) => entry.file(resolve));
+      file.webkitRelativePath = path + file.name;
+      files.push(file);
+    } else if (entry.isDirectory) {
+      const reader = entry.createReader();
+      const entries = await new Promise((resolve) => reader.readEntries(resolve));
+      for (const childEntry of entries) {
+        await traverseFileTree(childEntry, files, path + entry.name + '/');
+      }
+    }
   };
 
   const handleRemoveDocument = (index) => {
