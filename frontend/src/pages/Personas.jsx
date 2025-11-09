@@ -66,55 +66,37 @@ export function Personas() {
       setElapsedTime(Math.floor((Date.now() - startTime) / 1000));
     }, 1000);
     
+    let pollingInterval = null;
+    
     try {
-      // Build URL with query parameters
-      const params = new URLSearchParams({
+      // Start generation (returns job ID)
+      const startResponse = await apiClient.startPersonaGeneration({
         description: generateInput.trim(),
+        organization_id: settings.organization_id || null,
+        use_exa_enrichment: settings.use_exa_enrichment || false,
         model: settings.model || 'gpt-4o-mini',
         temperature: settings.temperature || 0.7,
         max_tokens: settings.max_tokens || 500,
       });
       
-      if (settings.organization_id) {
-        params.append('organization_id', settings.organization_id);
-      }
-      if (settings.use_exa_enrichment) {
-        params.append('use_exa_enrichment', 'true');
-      }
+      const jobId = startResponse.job_id;
       
-      const apiUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
-      const url = `${apiUrl}/api/ai/generate/persona/stream?${params.toString()}`;
-      
-      // Create EventSource for SSE
-      const eventSource = new EventSource(url);
-      
-      eventSource.onmessage = (event) => {
+      // Poll for status every 1 second
+      pollingInterval = setInterval(async () => {
         try {
-          const data = JSON.parse(event.data);
+          const status = await apiClient.getGenerationStatus(jobId);
           
-          if (data.stage) {
-            setGenerationStage(data.stage);
+          // Update UI
+          if (status.stage) {
+            setGenerationStage(status.stage);
+          }
+          if (status.progress !== undefined) {
+            setGenerationProgress(status.progress);
           }
           
-          if (data.progress !== undefined) {
-            setGenerationProgress(data.progress);
-          }
-          
-          if (data.error) {
-            setGenerationError(data.error);
-            eventSource.close();
-            clearInterval(timer);
-            setIsGenerating(false);
-            toast({
-              title: 'Generation Failed',
-              description: data.error,
-              variant: 'destructive',
-            });
-          }
-          
-          if (data.complete && data.result) {
-            // Generation complete
-            eventSource.close();
+          // Check if complete
+          if (status.status === 'completed') {
+            clearInterval(pollingInterval);
             clearInterval(timer);
             
             // Refresh personas list
@@ -126,7 +108,7 @@ export function Personas() {
             // Show success
             toast({
               title: 'Persona Generated',
-              description: `Successfully created ${data.result.generated_items.persona.name} in ${data.generation_time}s`,
+              description: `Successfully created ${status.result.generated_items.persona.name} in ${status.generation_time}s`,
             });
             
             // Keep modal open briefly to show 100%
@@ -136,26 +118,28 @@ export function Personas() {
               setGenerationProgress(0);
             }, 1500);
           }
-        } catch (err) {
-          console.error('Error parsing SSE data:', err);
+          
+          // Check if failed
+          if (status.status === 'failed') {
+            clearInterval(pollingInterval);
+            clearInterval(timer);
+            setGenerationError(status.error);
+            setIsGenerating(false);
+            toast({
+              title: 'Generation Failed',
+              description: status.error,
+              variant: 'destructive',
+            });
+          }
+        } catch (pollError) {
+          console.error('Polling error:', pollError);
+          // Don't stop polling on single error
         }
-      };
-      
-      eventSource.onerror = (error) => {
-        console.error('SSE error:', error);
-        eventSource.close();
-        clearInterval(timer);
-        setGenerationError('Connection error. Please try again.');
-        setIsGenerating(false);
-        toast({
-          title: 'Connection Error',
-          description: 'Failed to connect to server',
-          variant: 'destructive',
-        });
-      };
+      }, 1000); // Poll every 1 second
       
     } catch (error) {
       clearInterval(timer);
+      if (pollingInterval) clearInterval(pollingInterval);
       setGenerationError(error.message);
       setIsGenerating(false);
       toast({
