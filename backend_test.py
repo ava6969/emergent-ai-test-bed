@@ -1,20 +1,21 @@
 #!/usr/bin/env python3
 """
 Backend API Testing for Simulation Endpoints
-Tests the new simulation API endpoints to ensure they handle missing LangGraph credentials gracefully.
+Tests the simulation API endpoints with LangGraph credentials configured.
 """
 
 import requests
 import json
 import sys
 import uuid
+import time
 from datetime import datetime
 
 # Backend URL from environment
 BACKEND_URL = "https://agentlab-3.preview.emergentagent.com/api"
 
-def test_simulation_endpoints():
-    """Test simulation endpoints with missing LangGraph credentials"""
+def test_simulation_functionality():
+    """Test actual simulation functionality with LangGraph credentials configured"""
     
     print("=" * 60)
     print("TESTING SIMULATION API ENDPOINTS")
