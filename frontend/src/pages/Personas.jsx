@@ -72,6 +72,9 @@ export function Personas() {
       localStorage.getItem('generation_settings_persona') || '{}'
     );
     
+    // Ensure max_tokens is at least 1500 (required for structured output)
+    const maxTokens = Math.max(settings.max_tokens || 1500, 1500);
+    
     // Start elapsed timer
     const startTime = Date.now();
     const timer = setInterval(() => {
@@ -88,7 +91,7 @@ export function Personas() {
         use_exa_enrichment: settings.use_exa_enrichment || false,
         model: settings.model || 'gpt-4o-mini',
         temperature: settings.temperature || 0.7,
-        max_tokens: settings.max_tokens || 1500,
+        max_tokens: maxTokens,
       });
       
       const jobId = startResponse.job_id;
