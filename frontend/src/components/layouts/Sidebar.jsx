@@ -6,6 +6,7 @@ import {
   Building2,
   Package,
   Sparkles,
+  Play,
 } from 'lucide-react';
 
 const navigation = [
@@ -13,6 +14,7 @@ const navigation = [
   { name: 'Goals', page: 'goals', icon: Target },
   { name: 'Products', page: 'products', icon: Package },
   { name: 'Organizations', page: 'organizations', icon: Building2 },
+  { name: 'Simulations', page: 'simulations', icon: Play },
 ];
 
 export function Sidebar({ currentPage, onNavigate }) {
