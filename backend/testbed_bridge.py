@@ -28,7 +28,7 @@ from src.generation.config import GeneratorConfig
 DATA_DIR = Path(__file__).parent / "testbed_data"
 DATA_DIR.mkdir(exist_ok=True)
 
-storage = FileStorage(data_dir=str(DATA_DIR))
+storage = FileStorage(base_path=str(DATA_DIR))
 print(f"✓ Initialized FileStorage at: {DATA_DIR}")
 
 # Exa integration (optional)
