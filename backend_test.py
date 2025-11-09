@@ -15,19 +15,26 @@ from datetime import datetime
 BACKEND_URL = "https://evaluscape.preview.emergentagent.com/api"
 
 def test_simulation_functionality():
-    """Test actual simulation functionality with LangGraph credentials configured"""
+    """Test updated simulation functionality with new model factory and reasoning effort parameter"""
     
     print("=" * 60)
-    print("TESTING SIMULATION FUNCTIONALITY WITH LANGGRAPH")
+    print("TESTING UPDATED SIMULATION FUNCTIONALITY")
+    print("Testing: Model Factory Integration & Reasoning Effort Parameter")
     print("=" * 60)
     
-    # Use specific test data as requested
+    # Use specific test data as requested in review
     persona_id = "TRD-027"  # Elena Marquez
     goal_id = "momentum_analysis_001"  # Sector Momentum Analysis
+    reasoning_model = "gpt-5"  # Default reasoning model
+    reasoning_effort = "medium"  # Default reasoning effort
+    max_turns = 2  # For faster testing
     
     print(f"\n1. Testing with specified test data:")
     print(f"   Persona ID: {persona_id} (Elena Marquez)")
     print(f"   Goal ID: {goal_id} (Sector Momentum Analysis)")
+    print(f"   Reasoning Model: {reasoning_model}")
+    print(f"   Reasoning Effort: {reasoning_effort}")
+    print(f"   Max Turns: {max_turns} (for faster testing)")
     
     # Verify personas and goals exist
     try:
