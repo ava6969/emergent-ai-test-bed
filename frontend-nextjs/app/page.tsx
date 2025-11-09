@@ -229,8 +229,9 @@ export default function Home() {
             whileTap={{ scale: 0.98 }}
             onClick={handleStartSimulation}
             disabled={isStarting || !selectedPersona || !selectedGoal}
-            className="w-full py-4 bg-[#00FF41] bg-opacity-10 border border-[#00FF41] rounded text-[#00FF41] font-medium hover:bg-opacity-20 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 animate-glow"
+            className="w-full py-4 bg-gradient-to-r from-[#2A2A2A] to-[#1E1E1E] border border-[#3A3A3A] rounded text-white font-medium hover:from-[#3A3A3A] hover:to-[#2A2A2A] hover:border-[#4A4A4A] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 animate-glow relative overflow-hidden"
           >
+            <div className="absolute inset-0 animate-shimmer"></div>
             {isStarting ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
