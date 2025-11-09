@@ -301,7 +301,7 @@ export default function GoalsPage() {
               </Button>
               <Button
                 onClick={handleGenerate}
-                disabled={isGenerating || !generateInput.trim()}
+                disabled={isGenerating}
               >
                 <Sparkles className="h-4 w-4 mr-2" />
                 {isGenerating ? 'Generating...' : 'Generate'}
