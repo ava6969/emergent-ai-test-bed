@@ -716,6 +716,113 @@ async def delete_goal(goal_id: str):
         raise HTTPException(status_code=404, detail="Goal not found")
     return {"success": True}
 
+# Product Models
+class ProductCreate(BaseModel):
+    name: str
+    description: str
+    website: Optional[str] = None
+    documents: List[Dict[str, str]] = []  # [{filename: "doc.md", content: "..."}]
+
+class ProductUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    website: Optional[str] = None
+    documents: Optional[List[Dict[str, str]]] = None
+
+@api_router.get("/products")
+async def list_products():
+    """List all products using FileStorage"""
+    if not file_storage:
+        raise HTTPException(status_code=500, detail="Storage not initialized")
+    
+    try:
+        products = await file_storage.list_products()
+        return [p.model_dump() for p in products]
+    except Exception as e:
+        print(f"Error listing products: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/products")
+async def create_product(data: ProductCreate):
+    """Create a new product"""
+    if not file_storage:
+        raise HTTPException(status_code=500, detail="Storage not initialized")
+    
+    try:
+        from testbed.src.storage.models import Product
+        product = Product(
+            id=str(uuid.uuid4()),
+            name=data.name,
+            description=data.description,
+            website=data.website,
+            documents=data.documents,
+            created_at=datetime.now(timezone.utc).isoformat()
+        )
+        await file_storage.save_product(product)
+        return product.model_dump()
+    except Exception as e:
+        print(f"Error creating product: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.put("/products/{product_id}")
+async def update_product(product_id: str, data: ProductUpdate):
+    """Update a product"""
+    if not file_storage:
+        raise HTTPException(status_code=500, detail="Storage not initialized")
+    
+    try:
+        product = await file_storage.get_product(product_id)
+        if not product:
+            raise HTTPException(status_code=404, detail="Product not found")
+        
+        # Update fields
+        if data.name is not None:
+            product.name = data.name
+        if data.description is not None:
+            product.description = data.description
+        if data.website is not None:
+            product.website = data.website
+        if data.documents is not None:
+            product.documents = data.documents
+        
+        await file_storage.save_product(product)
+        return product.model_dump()
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error updating product: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.delete("/products/{product_id}")
+async def delete_product(product_id: str):
+    """Delete a product"""
+    if not file_storage:
+        raise HTTPException(status_code=500, detail="Storage not initialized")
+    
+    try:
+        await file_storage.delete_product(product_id)
+        return {"success": True}
+    except Exception as e:
+        print(f"Error deleting product: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.delete("/products")
+async def delete_all_products():
+    """Delete all products"""
+    if not file_storage:
+        raise HTTPException(status_code=500, detail="Storage not initialized")
+    
+    try:
+        products = await file_storage.list_products()
+        deleted_count = 0
+        for product in products:
+            await file_storage.delete_product(product.id)
+            deleted_count += 1
+        return {"success": True, "deleted_count": deleted_count}
+    except Exception as e:
+        print(f"Error deleting all products: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 # Organization Models
 class OrganizationCreate(BaseModel):
     name: str
