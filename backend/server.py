@@ -1471,24 +1471,39 @@ async def run_evaluation(request: EvaluationRequest, background_tasks: Backgroun
                 break
         
         # Run evaluators - split into trajectory and simple evaluators
+        import inspect
         eval_results = []
         
         for evaluator, eval_name in zip(evaluators, request.evaluators):
             try:
                 # Trajectory evaluator needs full trajectory
                 if eval_name == "trajectory_accuracy":
-                    result = await evaluator(
-                        outputs=trajectory,
-                        inputs=eval_context["goal"],
-                        context=eval_context
-                    )
+                    if inspect.iscoroutinefunction(evaluator):
+                        result = await evaluator(
+                            outputs=trajectory,
+                            inputs=eval_context["goal"],
+                            context=eval_context
+                        )
+                    else:
+                        result = evaluator(
+                            outputs=trajectory,
+                            inputs=eval_context["goal"],
+                            context=eval_context
+                        )
                 else:
                     # Simple evaluators need just the output text
-                    result = await evaluator(
-                        outputs=last_assistant_message,
-                        inputs=eval_context["goal"],
-                        context=eval_context
-                    )
+                    if inspect.iscoroutinefunction(evaluator):
+                        result = await evaluator(
+                            outputs=last_assistant_message,
+                            inputs=eval_context["goal"],
+                            context=eval_context
+                        )
+                    else:
+                        result = evaluator(
+                            outputs=last_assistant_message,
+                            inputs=eval_context["goal"],
+                            context=eval_context
+                        )
                 eval_results.append(result)
             except Exception as e:
                 logger.error(f"Evaluator {eval_name} failed: {e}", exc_info=True)
