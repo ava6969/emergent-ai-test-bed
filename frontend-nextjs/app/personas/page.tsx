@@ -28,7 +28,7 @@ export default function PersonasPage() {
     if (stored) {
       try {
         const settings = JSON.parse(stored);
-        if (settings.max_tokens && settings.max_tokens < 1500) {
+        if (settings.max_tokens && settings.max_tokens < 4000) {
           localStorage.removeItem(settingsKey);
         }
       } catch (e) {
