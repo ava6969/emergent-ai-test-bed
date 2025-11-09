@@ -654,3 +654,31 @@ Without these, the UI works but simulations will return an error. Backend gracef
 - Simulations page correctly defaults to GPT-5 with medium reasoning effort
 - No critical issues found during comprehensive testing
 - System is ready for end users
+
+## New Testing Session (2025-11-09 - Current)
+
+### User Problem Statement
+User requested verification and testing of:
+1. Recent UI improvements on simulation and goals pages (persona/goal dropdowns with descriptions, persona name in header, turn counter logic)
+2. CRUD functionality for Products page
+3. CRUD functionality for Organizations page
+
+### Implementation Summary
+
+#### UI Improvements Implemented ✅
+1. **Persona Dropdowns** - Updated to show descriptions alongside names in Goals and Simulation creation forms
+2. **Goal Dropdowns** - Updated to include redacted descriptions in Simulation creation form
+3. **Simulation Page Header** - Replaced "Persona" placeholder with actual persona name from thread metadata
+4. **Turn Counter Logic** - Adjusted to always show turn counter during running simulations
+
+#### CRUD Features Implemented ✅
+1. **Products Page** - Full CRUD operations (Create, Read, Update, Delete)
+2. **Organizations Page** - Full CRUD operations (Create, Read, Update, Delete)
+
+### Testing Phase: Backend Testing
+
+**Testing Scope:**
+- Products API endpoints (GET, POST, PUT, DELETE)
+- Organizations API endpoints (GET, POST, PUT, DELETE)
+- Simulation API endpoints (verify no regression from recent changes)
+- Data validation and error handling
