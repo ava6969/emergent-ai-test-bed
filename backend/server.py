@@ -324,26 +324,43 @@ async def run_persona_generation(job_id: str, request: GeneratePersonaRequest):
         persona = personas[0]  # Keep for backwards compatibility with single persona
         
         # Stage 6: Saving
-        update_job(job_id, stage="Saving persona", progress=95)
+        if request.count > 1:
+            update_job(job_id, stage=f"Saving {request.count} personas", progress=95)
+        else:
+            update_job(job_id, stage="Saving persona", progress=95)
         
         # Stage 7: Complete
-        persona_dict = persona.model_dump()
+        personas_dicts = [p.model_dump() for p in personas]
         
-        # Extract tags from metadata and add as top-level field for UI
-        if "tags" in persona.metadata:
-            persona_dict["tags"] = persona.metadata["tags"]
+        # Extract tags from metadata for all personas
+        for i, p in enumerate(personas):
+            if "tags" in p.metadata:
+                personas_dicts[i]["tags"] = p.metadata["tags"]
         
-        result = {
-            "message": f"✓ Created persona: {persona.name}",
-            "generated_items": {
-                "persona": persona_dict
-            },
-            "actions": [
-                {"label": "Create Goal", "action": "create_goal", "variant": "default"},
-                {"label": "View Details", "action": "view_details"},
-                {"label": "Regenerate", "action": "regenerate"}
-            ]
-        }
+        # Return appropriate result based on count
+        if request.count == 1:
+            result = {
+                "message": f"✓ Created persona: {persona.name}",
+                "generated_items": {
+                    "persona": personas_dicts[0]
+                },
+                "actions": [
+                    {"label": "Create Goal", "action": "create_goal", "variant": "default"},
+                    {"label": "View Details", "action": "view_details"},
+                    {"label": "Regenerate", "action": "regenerate"}
+                ]
+            }
+        else:
+            result = {
+                "message": f"✓ Created {len(personas)} personas: {', '.join(p.name for p in personas)}",
+                "generated_items": {
+                    "personas": personas_dicts
+                },
+                "actions": [
+                    {"label": "View All", "action": "view_all"},
+                    {"label": "Create Goals", "action": "create_goals"}
+                ]
+            }
         
         update_job(
             job_id,
