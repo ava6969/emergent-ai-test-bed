@@ -479,7 +479,8 @@ def test_simulation_functionality():
     
     # Summary
     print("\n" + "=" * 60)
-    print("SIMULATION FUNCTIONALITY TEST RESULTS")
+    print("UPDATED SIMULATION FUNCTIONALITY TEST RESULTS")
+    print("Model Factory Integration & Reasoning Effort Parameter")
     print("=" * 60)
     
     passed = 0
