@@ -249,6 +249,18 @@ export default function PersonasPage() {
             disabled={isGenerating}
             className="flex-1"
           />
+          <div className="flex items-center gap-2">
+            <label className="text-sm text-gray-600 whitespace-nowrap">Count:</label>
+            <Input
+              type="number"
+              min="1"
+              max="10"
+              value={count}
+              onChange={(e) => setCount(Math.min(10, Math.max(1, parseInt(e.target.value) || 1)))}
+              disabled={isGenerating}
+              className="w-20"
+            />
+          </div>
           <Button
             variant="ghost"
             size="icon"
