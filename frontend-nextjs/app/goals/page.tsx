@@ -65,8 +65,10 @@ export default function GoalsPage() {
     try {
       setIsGenerating(true);
       setGenerationProgress(0);
+      setGenerationStage('Generating goals...');
 
-      const startResponse = await apiClient.generateGoal({
+      // Synchronous generation - no polling needed
+      const response = await apiClient.generateGoal({
         persona_ids: selectedPersona ? [selectedPersona] : [],
         difficulty: difficulty || 'medium',
         count: count,
@@ -74,83 +76,31 @@ export default function GoalsPage() {
         product_id: undefined, // TODO: Add product context
       });
 
-      const jobId = startResponse.job_id;
-
-      // Poll for status with exponential backoff
-      let pollAttempts = 0;
-      let pollInterval = 2000; // Start with 2 seconds
-      const maxInterval = 5000; // Max 5 seconds between polls
+      // Success!
+      queryClient.invalidateQueries({ queryKey: ['goals'] });
+      const goalCount = count > 1 ? `${count} goals` : 'goal';
+      toast.success(response.message || `Successfully created ${goalCount}`);
       
-      const pollStatus = async () => {
-        try {
-          const status = await apiClient.checkJobStatus(jobId);
-
-          setGenerationStage(status.stage || '');
-          setGenerationProgress(status.progress || 0);
-
-          if (status.status === 'completed') {
-            queryClient.invalidateQueries({ queryKey: ['goals'] });
-            const goalCount = count > 1 ? `${count} goals` : 'goal';
-            toast.success(`Successfully created ${goalCount} in ${status.generation_time}s`);
-            
-            setTimeout(() => {
-              setIsGenerating(false);
-              setGenerationProgress(0);
-              setGenerationStage('');
-              setCreateModalOpen(false);
-              // Reset form
-              setSelectedPersona('');
-              setDifficulty('');
-              setCount(1);
-            }, 500);
-            return; // Stop polling
-          } else if (status.status === 'failed') {
-            const errorMsg = status.error || 'Unknown error';
-            if (errorMsg.includes('429') || errorMsg.includes('rate limit')) {
-              toast.error('Rate limit reached. Please wait a moment and try again.');
-            } else {
-              toast.error(`Generation failed: ${errorMsg}`);
-            }
-            setIsGenerating(false);
-            setGenerationProgress(0);
-            setGenerationStage('');
-            return; // Stop polling
-          }
-          
-          // Continue polling with exponential backoff
-          pollAttempts++;
-          if (pollAttempts > 120) { // 2 minute timeout
-            toast.error('Generation timeout - please try again');
-            setIsGenerating(false);
-            return;
-          }
-          
-          pollInterval = Math.min(pollInterval * 1.2, maxInterval); // Increase interval
-          setTimeout(pollStatus, pollInterval);
-          
-        } catch (error: any) {
-          console.error('Polling error:', error);
-          
-          // Handle rate limit errors
-          if (error?.response?.status === 429) {
-            toast.error('Rate limit reached. Retrying in 10 seconds...');
-            setTimeout(pollStatus, 10000); // Wait 10 seconds before retry
-          } else {
-            // Continue polling on other errors
-            setTimeout(pollStatus, pollInterval);
-          }
-        }
-      };
-      
-      // Start polling
-      setTimeout(pollStatus, pollInterval);
-
-    } catch (error: any) {
-      console.error('Generation error:', error);
-      toast.error(error.message || 'Failed to start generation');
       setIsGenerating(false);
       setGenerationProgress(0);
       setGenerationStage('');
+      setCreateModalOpen(false);
+      // Reset form
+      setSelectedPersona('');
+      setDifficulty('');
+      setCount(1);
+      
+    } catch (error: any) {
+      setIsGenerating(false);
+      setGenerationProgress(0);
+      setGenerationStage('');
+      
+      const errorMsg = error?.response?.data?.detail || error.message || 'Failed to generate goals';
+      if (errorMsg.includes('429') || errorMsg.includes('rate limit')) {
+        toast.error('Rate limit reached. Please wait a moment and try again.');
+      } else {
+        toast.error(errorMsg);
+      }
     }
   };
 
