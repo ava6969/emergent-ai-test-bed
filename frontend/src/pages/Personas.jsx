@@ -31,31 +31,7 @@ export function Personas() {
     queryFn: () => apiClient.getPersonas(),
   });
 
-  // Generate persona mutation
-  const generateMutation = useMutation({
-    mutationFn: async (description) => {
-      return await apiClient.generatePersona({
-        description,
-        conversation_id: 'personas_page',
-        context: {},
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries(['personas']);
-      setGenerateInput('');
-      toast({
-        title: 'Persona Generated',
-        description: 'Successfully generated new persona',
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: 'Generation Failed',
-        description: error.message,
-        variant: 'destructive',
-      });
-    },
-  });
+  // Note: We use SSE directly in handleGenerate, no mutation needed
 
   // Delete mutation
   const deleteMutation = useMutation({
