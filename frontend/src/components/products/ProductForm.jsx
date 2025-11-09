@@ -17,9 +17,23 @@ export default function ProductForm({ product, onClose }) {
     website: '',
     documents: [], // [{filename: string, content: string}]
   });
+  const [isDragging, setIsDragging] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const fileInputRef = useRef(null);
+  const folderInputRef = useRef(null);
   
   const queryClient = useQueryClient();
   const { toast } = useToast();
+
+  // Supported text file extensions
+  const TEXT_EXTENSIONS = [
+    '.txt', '.md', '.xml', '.json', '.html', '.css', '.js', '.jsx',
+    '.ts', '.tsx', '.py', '.java', '.c', '.cpp', '.h', '.hpp',
+    '.yaml', '.yml', '.sh', '.bash', '.sql', '.csv', '.log',
+    '.env', '.gitignore', '.dockerignore', '.conf', '.ini',
+    '.toml', '.rst', '.tex', '.r', '.rb', '.go', '.rs', '.swift',
+    '.kt', '.scala', '.php', '.pl', '.lua', '.vim', '.dockerfile'
+  ];
 
   useEffect(() => {
     if (product) {
