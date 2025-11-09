@@ -88,7 +88,7 @@ export function Personas() {
         use_exa_enrichment: settings.use_exa_enrichment || false,
         model: settings.model || 'gpt-4o-mini',
         temperature: settings.temperature || 0.7,
-        max_tokens: settings.max_tokens || 500,
+        max_tokens: settings.max_tokens || 1500,
       });
       
       const jobId = startResponse.job_id;
