@@ -92,7 +92,8 @@ export function Simulations() {
         selectedPersona,
         selectedGoal,
         maxTurns ? parseInt(maxTurns) : null,
-        reasoningModel
+        reasoningModel,
+        reasoningEffort
       );
       setSimulationId(response.simulation_id);
       setSimulationData({
