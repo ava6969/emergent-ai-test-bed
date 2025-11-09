@@ -1162,13 +1162,74 @@ async def run_simulation_background(sim_id: str, persona_id: str, goal_id: str, 
 
 @api_router.get("/simulations/{simulation_id}")
 async def get_simulation_status(simulation_id: str):
-    """Get simulation status and trajectory"""
+    """Get simulation status by fetching thread directly from LangGraph"""
+    from testbed_bridge import simulation_engine
+    
+    # simulation_id is actually the sim_run_id, we need to get the thread_id
+    # For now, check the old session first (backwards compat during migration)
     session = get_simulation_session(simulation_id)
+    if session and session.get("thread_id"):
+        thread_id = session["thread_id"]
+    else:
+        # Try to find thread by simulation_run_id in metadata
+        try:
+            threads = await simulation_engine.epoch_client.client.threads.search(
+                metadata={"simulation_run_id": simulation_id},
+                limit=1
+            )
+            if threads and len(threads) > 0:
+                thread_id = threads[0]["thread_id"]
+            else:
+                raise HTTPException(status_code=404, detail="Thread not found for simulation")
+        except Exception as e:
+            raise HTTPException(status_code=404, detail=f"Simulation not found: {str(e)}")
     
-    if not session:
-        raise HTTPException(status_code=404, detail="Simulation not found")
-    
-    return session
+    # Get thread messages
+    try:
+        history = await simulation_engine.epoch_client.get_thread_history(thread_id)
+        
+        # Extract messages
+        if isinstance(history, dict):
+            messages = history.get("values", {}).get("messages", [])
+        elif isinstance(history, list):
+            messages = history
+        else:
+            messages = []
+        
+        # Check if simulation should stop (last message has stop=True)
+        should_stop = False
+        last_message_is_human = False
+        if messages:
+            last_msg = messages[-1]
+            if isinstance(last_msg, dict):
+                should_stop = last_msg.get("additional_kwargs", {}).get("stop", False)
+                last_message_is_human = last_msg.get("type") == "human"
+        
+        # Get thread metadata
+        thread_info = await simulation_engine.epoch_client.client.threads.get(thread_id)
+        metadata = thread_info.get("metadata", {})
+        
+        # Calculate current turn (count human messages / 2)
+        human_count = sum(1 for m in messages if isinstance(m, dict) and m.get("type") == "human")
+        current_turn = human_count
+        
+        return {
+            "simulation_id": simulation_id,
+            "thread_id": thread_id,
+            "persona_id": metadata.get("persona_id"),
+            "persona_name": metadata.get("persona_name"),
+            "goal_id": metadata.get("goal_id"),
+            "goal_name": metadata.get("goal_name"),
+            "max_turns": metadata.get("max_turns", 5),
+            "status": "completed" if should_stop else "running",
+            "current_turn": current_turn,
+            "trajectory": messages,
+            "started_at": metadata.get("started_at"),
+            "should_continue_polling": not should_stop or last_message_is_human
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get simulation status: {str(e)}")
 
 @api_router.post("/simulations/{simulation_id}/stop")
 async def stop_simulation_endpoint(simulation_id: str):
