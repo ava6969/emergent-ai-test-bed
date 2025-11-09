@@ -1070,9 +1070,17 @@ async def run_simulation(
     persona_id: str,
     goal_id: str,
     max_turns: Optional[int] = None,
+    reasoning_model: Optional[str] = None,
     background_tasks: BackgroundTasks = None
 ):
-    """Start a simulation run"""
+    """Start a simulation run with TestEnvironment
+    
+    Args:
+        persona_id: ID of persona to simulate
+        goal_id: ID of goal to achieve
+        max_turns: Optional max turns override
+        reasoning_model: Model for test environment (e.g., gpt-o1, gpt-4o)
+    """
     if not simulation_engine:
         raise HTTPException(status_code=500, detail="Simulation engine not initialized")
     
@@ -1095,19 +1103,21 @@ async def run_simulation(
             max_turns=max_turns or goal.max_turns
         )
         
-        # Start background simulation
+        # Start background simulation with TestEnvironment
         background_tasks.add_task(
             run_simulation_background,
             sim_id,
             persona_id,
             goal_id,
-            max_turns
+            max_turns,
+            reasoning_model
         )
         
         return {
             "simulation_id": sim_id,
             "status": "running",
-            "message": "Simulation started"
+            "message": "Simulation started",
+            "reasoning_model": reasoning_model or "gpt-4o"
         }
     except Exception as e:
         print(f"Error starting simulation: {e}")
