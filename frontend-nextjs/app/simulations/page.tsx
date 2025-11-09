@@ -6,7 +6,7 @@ import { apiClient } from '@/lib/api/client';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Play, StopCircle, Clock, Target, User, Sparkles } from 'lucide-react';
-import { SimpleMessageView } from '@/components/simulations/SimpleMessageView';
+import { ThreadMessagesOnly } from '@/components/simulations/ThreadMessagesOnly';
 import { toast } from 'sonner';
 import { Message } from '@langchain/langgraph-sdk';
 
