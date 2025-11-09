@@ -76,8 +76,12 @@ export default function GoalsPage() {
 
       const jobId = startResponse.job_id;
 
-      // Poll for status
-      const pollingInterval = setInterval(async () => {
+      // Poll for status with exponential backoff
+      let pollAttempts = 0;
+      let pollInterval = 2000; // Start with 2 seconds
+      const maxInterval = 5000; // Max 5 seconds between polls
+      
+      const pollStatus = async () => {
         try {
           const status = await apiClient.checkJobStatus(jobId);
 
@@ -85,7 +89,6 @@ export default function GoalsPage() {
           setGenerationProgress(status.progress || 0);
 
           if (status.status === 'completed') {
-            clearInterval(pollingInterval);
             queryClient.invalidateQueries({ queryKey: ['goals'] });
             const goalCount = count > 1 ? `${count} goals` : 'goal';
             toast.success(`Successfully created ${goalCount} in ${status.generation_time}s`);
@@ -100,24 +103,47 @@ export default function GoalsPage() {
               setDifficulty('');
               setCount(1);
             }, 500);
+            return; // Stop polling
           } else if (status.status === 'failed') {
-            clearInterval(pollingInterval);
-            toast.error(`Generation failed: ${status.error || 'Unknown error'}`);
+            const errorMsg = status.error || 'Unknown error';
+            if (errorMsg.includes('429') || errorMsg.includes('rate limit')) {
+              toast.error('Rate limit reached. Please wait a moment and try again.');
+            } else {
+              toast.error(`Generation failed: ${errorMsg}`);
+            }
             setIsGenerating(false);
             setGenerationProgress(0);
             setGenerationStage('');
+            return; // Stop polling
           }
-        } catch (error) {
+          
+          // Continue polling with exponential backoff
+          pollAttempts++;
+          if (pollAttempts > 120) { // 2 minute timeout
+            toast.error('Generation timeout - please try again');
+            setIsGenerating(false);
+            return;
+          }
+          
+          pollInterval = Math.min(pollInterval * 1.2, maxInterval); // Increase interval
+          setTimeout(pollStatus, pollInterval);
+          
+        } catch (error: any) {
           console.error('Polling error:', error);
+          
+          // Handle rate limit errors
+          if (error?.response?.status === 429) {
+            toast.error('Rate limit reached. Retrying in 10 seconds...');
+            setTimeout(pollStatus, 10000); // Wait 10 seconds before retry
+          } else {
+            // Continue polling on other errors
+            setTimeout(pollStatus, pollInterval);
+          }
         }
-      }, 1000);
-
-      // Cleanup on unmount
-      setTimeout(() => {
-        if (pollingInterval) {
-          clearInterval(pollingInterval);
-        }
-      }, 120000); // 2 minute timeout
+      };
+      
+      // Start polling
+      setTimeout(pollStatus, pollInterval);
 
     } catch (error: any) {
       console.error('Generation error:', error);
