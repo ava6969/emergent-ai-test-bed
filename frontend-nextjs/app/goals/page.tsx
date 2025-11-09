@@ -196,6 +196,76 @@ export default function GoalsPage() {
           </div>
         )}
       </div>
+
+      {/* Generation Input */}
+      <div className="border-t p-6 bg-white">
+        <div className="flex gap-2">
+          <Input
+            placeholder="Describe the goal to generate... (e.g., 'Create a trading strategy backtest goal')"
+            value={generateInput}
+            onChange={(e) => setGenerateInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !isGenerating) {
+                handleGenerate();
+              }
+            }}
+            disabled={isGenerating}
+            className="flex-1"
+          />
+          <div className="flex items-center gap-2">
+            <label className="text-sm text-gray-600 whitespace-nowrap">Count:</label>
+            <Input
+              type="number"
+              min="1"
+              max="10"
+              value={count}
+              onChange={(e) => setCount(Math.min(10, Math.max(1, parseInt(e.target.value) || 1)))}
+              disabled={isGenerating}
+              className="w-20"
+            />
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setSettingsOpen(true)}
+            disabled={isGenerating}
+          >
+            <Settings className="h-5 w-5" />
+          </Button>
+          <Button
+            onClick={handleGenerate}
+            disabled={isGenerating || !generateInput.trim()}
+          >
+            <Sparkles className="h-4 w-4 mr-2" />
+            {isGenerating ? 'Generating...' : 'Generate'}
+          </Button>
+        </div>
+        
+        {/* Progress Bar */}
+        {isGenerating && (
+          <div className="mt-4">
+            <div className="flex justify-between text-sm mb-1">
+              <span className="text-gray-600">{generationStage}</span>
+              <span className="text-gray-600">{generationProgress}%</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div
+                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${generationProgress}%` }}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Generation Settings Modal */}
+      <GenerationSettingsModal
+        open={settingsOpen}
+        onOpenChange={setSettingsOpen}
+        settingsKey="generation_settings_goal"
+        title="Goal Generation Settings"
+        description="Configure AI model parameters for generating goals"
+      />
     </div>
   );
 }
