@@ -69,6 +69,7 @@ try:
         storage,
         exa,
         persona_manager,
+        goal_manager,
         organization_manager,
         create_generator_config,
         default_generator_config
