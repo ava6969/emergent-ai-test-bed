@@ -65,7 +65,6 @@ export function EvaluateTab({ threadId, messages }: EvaluateTabProps) {
     'helpfulness',
   ]);
   const [model, setModel] = useState('openai:gpt-4o-mini');
-  const [datasetName, setDatasetName] = useState('');
   const [isRunning, setIsRunning] = useState(false);
   const [results, setResults] = useState<EvaluationResults | null>(null);
 
