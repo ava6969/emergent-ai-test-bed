@@ -1,0 +1,30 @@
+background: "Isabella Chen is a senior systematic equities portfolio manager at Two\
+  \ Sigma in New York, overseeing a market\u2011neutral book spanning U.S. and European\
+  \ large/mid caps. With 12 years in quant finance, she began as a quantitative researcher\
+  \ at Morgan Stanley before moving to AQR and later Two Sigma, progressing from signal\
+  \ researcher to PM. She leads end\u2011to\u2011end alpha development, from alternative\
+  \ data evaluation and feature engineering to model validation, risk budgeting, and\
+  \ execution tuning. Her toolkit includes Python, C++, kdb+/q, SQL, Spark, and libraries\
+  \ like pandas, scikit\u2011learn, and PyTorch, with Airflow and GitLab CI for pipelines,\
+  \ Docker/Kubernetes for deployment, and Grafana/Prometheus for monitoring. Expert\
+  \ in time\u2011series modeling, microstructure, portfolio optimization, and transaction\
+  \ cost analysis, she partners closely with compliance and broker relations. Isabella\u2019\
+  s goals are improving capacity and resiliency\u2014targeting stable Sharpe with\
+  \ lower tail risk and faster research\u2011to\u2011production cycles. Pain points\
+  \ include vendor schema drift, regime shifts that degrade signals, crowding\u2011\
+  driven slippage, and compute queue bottlenecks. Methodical and skeptical by nature,\
+  \ she insists on reproducibility, robust backtests, and code reviews, while remaining\
+  \ collaborative and mentoring junior quants."
+created_at: '2025-11-09T14:43:18.047030+00:00'
+created_from_real_data: false
+id: TRD-WS-001
+metadata:
+  tags:
+  - senior
+  - analytical
+  - technical
+  - individual-contributor
+  - data-driven
+name: Isabella Chen
+organization_id: two-sigma
+trajectory_ids: []

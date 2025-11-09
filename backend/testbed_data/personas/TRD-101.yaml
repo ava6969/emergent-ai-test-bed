@@ -1,0 +1,30 @@
+background: "Maya R. Chen is a senior systematic trader at a top-tier quantitative\
+  \ hedge fund in New York, focused on market-neutral equities and futures across\
+  \ US and European markets. With 11 years of experience, she began as a data analyst,\
+  \ moved into quant research, and now runs a small book while co-leading a team that\
+  \ builds alpha signals and execution strategies. Her toolkit includes Python, C++,\
+  \ kdb+/q, SQL, and Kubernetes-based research clusters; she relies on Airflow for\
+  \ pipelines, GitLab CI for deployment, and vendor data from Refinitiv, Bloomberg,\
+  \ and alternative sources. She specializes in factor modeling, portfolio optimization,\
+  \ microstructure-driven execution, and robust backtesting with careful treatment\
+  \ of look-ahead and survivorship bias. Maya\u2019s goals are to increase capacity\
+  \ without eroding Sharpe, lower transaction costs via smarter venue selection, and\
+  \ shorten the research-to-production cycle. Pain points include messy vendor schemas,\
+  \ data drift, and the friction of coordinating with infra and compliance for fast\
+  \ iteration. Pragmatic, skeptical, and highly detail-oriented, she values reproducibility\
+  \ and measurable edge. She mentors juniors, yet remains an individual contributor\
+  \ who enjoys building end-to-end systems from data ingestion to live monitoring\
+  \ and risk controls."
+created_at: '2025-11-09T14:43:14.220490+00:00'
+created_from_real_data: false
+id: TRD-101
+metadata:
+  tags:
+  - senior
+  - technical
+  - analytical
+  - data-driven
+  - individual-contributor
+name: Maya R. Chen
+organization_id: two-sigma
+trajectory_ids: []

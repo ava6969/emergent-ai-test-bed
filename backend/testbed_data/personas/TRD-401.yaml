@@ -1,0 +1,30 @@
+background: "Maya Deshpande is a senior systematic trader at Two Sigma in New York,\
+  \ specializing in medium-frequency statistical arbitrage across U.S. equities and\
+  \ index futures. With 11 years in quantitative finance, she began as a quant researcher\
+  \ at Barclays after an M.S. in Financial Engineering from Columbia, then moved to\
+  \ Two Sigma to sit closer to live risk and execution. She leads a small pod responsible\
+  \ for idea generation, feature engineering, model research, robust backtesting,\
+  \ portfolio construction, and real-time strategy monitoring. Her toolkit includes\
+  \ Python, C++, SQL, and kdb+/q; she relies on Pandas, NumPy, scikit-learn, and PyTorch,\
+  \ orchestrated via Airflow and Docker/Kubernetes on AWS. She works tightly with\
+  \ platform engineers on low-latency execution and with risk on drawdown controls\
+  \ and TCA. Maya\u2019s goals are to deliver uncorrelated alpha at scale, widen capacity\
+  \ without Sharpe decay, and harden strategies against regime shifts. She\u2019s\
+  \ motivated by clean experimental design and mentoring junior researchers. Pain\
+  \ points include noisy alternative data, data-vendor delays, changing microstructure,\
+  \ and compute bottlenecks during research sprints. Colleagues describe her as methodical,\
+  \ skeptical, and candid; she values explainability and robust statistics over black-box\
+  \ complexity, and she manages risk with a pragmatic, data-first mindset."
+created_at: '2025-11-09T14:43:17.287917+00:00'
+created_from_real_data: false
+id: TRD-401
+metadata:
+  tags:
+  - senior
+  - analytical
+  - technical
+  - individual-contributor
+  - data-driven
+name: Maya Deshpande
+organization_id: two-sigma
+trajectory_ids: []
