@@ -82,6 +82,9 @@ except Exception as e:
     persona_manager = None
     organization_manager = None
 
+# Import generation jobs tracker
+from generation_jobs import create_job, get_job, update_job, cleanup_old_jobs
+
 # ==================== AI ENDPOINTS ====================
 
 # Import OpenAI (for backwards compatibility)
