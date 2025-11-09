@@ -228,33 +228,82 @@ export default function ProductForm({ product, onClose }) {
     setIsDragging(false);
 
     const items = Array.from(e.dataTransfer.items);
-    const files = [];
+    const fileObjects = [];
 
     for (const item of items) {
       if (item.kind === 'file') {
         const entry = item.webkitGetAsEntry();
         if (entry) {
-          await traverseFileTree(entry, files);
+          await traverseFileTree(entry, fileObjects);
         }
       }
     }
 
-    if (files.length > 0) {
-      handleFilesUpload(files);
+    if (fileObjects.length > 0) {
+      // Process file objects with paths
+      await processDroppedFiles(fileObjects);
+    }
+  };
+
+  // Process dropped files with paths
+  const processDroppedFiles = async (fileObjects) => {
+    setIsProcessing(true);
+    const newDocuments = [];
+    let skippedCount = 0;
+
+    try {
+      for (const fileObj of fileObjects) {
+        if (isTextFile(fileObj.file.name)) {
+          const content = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target.result);
+            reader.onerror = reject;
+            reader.readAsText(fileObj.file);
+          });
+
+          newDocuments.push({
+            filename: fileObj.path,
+            content: content,
+          });
+        } else {
+          skippedCount++;
+        }
+      }
+
+      // MERGE with existing documents
+      setFormData((prev) => ({
+        ...prev,
+        documents: [...prev.documents, ...newDocuments],
+      }));
+
+      toast({
+        title: 'Documents Uploaded',
+        description: `Added ${newDocuments.length} document(s)${skippedCount > 0 ? `, skipped ${skippedCount} non-text file(s)` : ''}`,
+      });
+    } catch (error) {
+      toast({
+        title: 'Upload Error',
+        description: error.message,
+        variant: 'destructive',
+      });
+    } finally {
+      setIsProcessing(false);
     }
   };
 
   // Recursive folder traversal for drag & drop
-  const traverseFileTree = async (entry, files, path = '') => {
+  const traverseFileTree = async (entry, fileObjects, path = '') => {
     if (entry.isFile) {
       const file = await new Promise((resolve) => entry.file(resolve));
-      file.webkitRelativePath = path + file.name;
-      files.push(file);
+      fileObjects.push({
+        file: file,
+        path: path + file.name,
+      });
     } else if (entry.isDirectory) {
       const reader = entry.createReader();
       const entries = await new Promise((resolve) => reader.readEntries(resolve));
       for (const childEntry of entries) {
-        await traverseFileTree(childEntry, files, path + entry.name + '/');
+        await traverseFileTree(childEntry, fileObjects, path + entry.name + '/');
       }
     }
   };
