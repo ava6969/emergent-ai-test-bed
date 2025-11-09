@@ -6,6 +6,7 @@ import { Personas } from '@/pages/Personas';
 import { Goals } from '@/pages/Goals';
 import { Products } from '@/pages/Products';
 import { Organizations } from '@/pages/Organizations';
+import { Simulations } from '@/pages/Simulations';
 
 // Create a client
 const queryClient = new QueryClient({
