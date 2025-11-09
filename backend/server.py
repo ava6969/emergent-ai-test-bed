@@ -1106,6 +1106,7 @@ async def run_simulation(
         )
         
         # Start background simulation with TestEnvironment
+        # Pass sim_id so we can update session with thread_id immediately
         background_tasks.add_task(
             run_simulation_background,
             sim_id,
