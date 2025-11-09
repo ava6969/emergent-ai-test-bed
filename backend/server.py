@@ -164,9 +164,9 @@ async def generate_persona_endpoint(request: GeneratePersonaRequest):
             )
             persona_manager.generator = type(persona_manager.generator)(config=custom_config)
         
-        # Generate persona using PersonaManager
+        # Generate persona(s) using PersonaManager
         personas = await persona_manager.generate(
-            count=1,
+            count=request.count,
             requirements=description,
             organization_id=request.organization_id,
             use_real_context=request.use_exa_enrichment,
@@ -176,22 +176,33 @@ async def generate_persona_endpoint(request: GeneratePersonaRequest):
         if not personas:
             raise HTTPException(status_code=500, detail="No persona generated")
         
-        persona = personas[0]
+        # Convert all personas to dict for response
+        personas_dicts = [p.model_dump() for p in personas]
         
-        # Convert to dict for response
-        persona_dict = persona.model_dump()
-        
-        return {
-            "message": f"✓ Created persona: {persona.name}",
-            "generated_items": {
-                "persona": persona_dict
-            },
-            "actions": [
-                {"label": "Create Goal", "action": "create_goal", "variant": "default"},
-                {"label": "View Details", "action": "view_details"},
-                {"label": "Regenerate", "action": "regenerate"}
-            ]
-        }
+        # Return appropriate message based on count
+        if request.count == 1:
+            return {
+                "message": f"✓ Created persona: {personas[0].name}",
+                "generated_items": {
+                    "persona": personas_dicts[0]
+                },
+                "actions": [
+                    {"label": "Create Goal", "action": "create_goal", "variant": "default"},
+                    {"label": "View Details", "action": "view_details"},
+                    {"label": "Regenerate", "action": "regenerate"}
+                ]
+            }
+        else:
+            return {
+                "message": f"✓ Created {len(personas)} personas: {', '.join(p.name for p in personas)}",
+                "generated_items": {
+                    "personas": personas_dicts
+                },
+                "actions": [
+                    {"label": "View All", "action": "view_all"},
+                    {"label": "Create Goals", "action": "create_goals"}
+                ]
+            }
         
     except Exception as e:
         print(f"Error generating persona: {e}")
