@@ -174,6 +174,11 @@ class APIClient {
     return response.data;
   }
 
+  async updateProduct(id: string, data: { name: string; description: string }): Promise<Product> {
+    const response = await this.client.put(`/api/products/${id}`, data);
+    return response.data;
+  }
+
   async deleteProduct(id: string): Promise<void> {
     await this.client.delete(`/api/products/${id}`);
   }
