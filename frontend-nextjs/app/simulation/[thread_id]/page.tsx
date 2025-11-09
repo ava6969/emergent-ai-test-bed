@@ -49,6 +49,19 @@ export default function SimulationPage() {
 
   return (
     <div className="h-full flex flex-col p-6">
+      {/* Header with New Simulation Button */}
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Simulation View</h1>
+        <Button
+          onClick={() => router.push('/')}
+          variant="outline"
+          size="sm"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          New Simulation
+        </Button>
+      </div>
+
       <Tabs defaultValue="trajectory" className="flex-1 flex flex-col">
         <TabsList className="w-full justify-start border-b rounded-none h-12 bg-transparent p-0">
           <TabsTrigger 
