@@ -49,7 +49,7 @@ export function MessageRenderer({ message }: MessageRendererProps) {
                 ) : (
                   <ChevronRight className="w-4 h-4 text-amber-700 flex-shrink-0" />
                 )}
-                <Tool className="w-4 h-4 text-amber-700 flex-shrink-0" />
+                <Wrench className="w-4 h-4 text-amber-700 flex-shrink-0" />
                 <span className="font-mono text-sm text-amber-900 font-semibold">
                   {toolCall.name}
                 </span>
