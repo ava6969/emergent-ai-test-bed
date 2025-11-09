@@ -1336,6 +1336,169 @@ async def get_thread_status_endpoint(thread_id: str):
     
     return get_thread_status(thread_id)
 
+# ==================== EVALUATION ENDPOINTS ====================
+
+class EvaluationRequest(BaseModel):
+    thread_id: str
+    evaluators: List[str] = ["trajectory_accuracy", "goal_completion", "helpfulness"]
+    model: str = "openai:gpt-4o-mini"
+    dataset_name: Optional[str] = None
+
+class EvaluationResult(BaseModel):
+    eval_id: str
+    thread_id: str
+    status: str  # "running", "completed", "failed"
+    evaluators: List[str]
+    results: Optional[Dict] = None
+    error: Optional[str] = None
+    created_at: datetime
+    completed_at: Optional[datetime] = None
+
+@api_router.post("/evaluations/run")
+async def run_evaluation(request: EvaluationRequest, background_tasks: BackgroundTasks):
+    """Run evaluation on a simulation trajectory
+    
+    This endpoint:
+    1. Fetches messages from the thread
+    2. Converts to dataset format
+    3. Runs selected evaluators
+    4. Returns results
+    """
+    from testbed_bridge import simulation_engine
+    
+    if not simulation_engine:
+        raise HTTPException(status_code=503, detail="Simulation engine not initialized")
+    
+    try:
+        # Generate evaluation ID
+        eval_id = str(uuid.uuid4())
+        
+        # Fetch thread messages
+        history = await simulation_engine.epoch_client.get_thread_history(request.thread_id)
+        
+        # Extract messages
+        if isinstance(history, dict):
+            messages = history.get("values", {}).get("messages", [])
+        elif isinstance(history, list):
+            messages = history
+        else:
+            messages = []
+        
+        if not messages:
+            raise HTTPException(status_code=404, detail="No messages found in thread")
+        
+        # Get thread metadata
+        thread_info = await simulation_engine.epoch_client.client.threads.get(request.thread_id)
+        metadata = thread_info.get("metadata", {})
+        
+        # Calculate total reward from messages
+        total_reward = 0
+        positive_rewards = 0
+        negative_penalties = 0
+        
+        for msg in messages:
+            if isinstance(msg, dict):
+                reward = msg.get("additional_kwargs", {}).get("reward", 0)
+                if reward > 0:
+                    positive_rewards += reward
+                elif reward < 0:
+                    negative_penalties += abs(reward)
+                total_reward += reward
+        
+        # Convert trajectory to dataset format
+        trajectory = []
+        for msg in messages:
+            if isinstance(msg, dict):
+                trajectory.append({
+                    "role": msg.get("type", "unknown"),
+                    "content": msg.get("content", ""),
+                    "additional_kwargs": msg.get("additional_kwargs", {})
+                })
+        
+        # Prepare evaluation context
+        eval_context = {
+            "trajectory": trajectory,
+            "total_reward": total_reward,
+            "positive_rewards": positive_rewards,
+            "negative_penalties": negative_penalties,
+            "goal": metadata.get("goal_name", "Unknown"),
+            "persona": metadata.get("persona_name", "Unknown"),
+        }
+        
+        # Run evaluators
+        from testbed.src.evaluation.evaluator_factory import EvaluatorFactory
+        
+        factory = EvaluatorFactory(default_model=request.model)
+        evaluators = factory.create_evaluators(request.evaluators)
+        
+        if not evaluators:
+            raise HTTPException(status_code=400, detail="No valid evaluators configured")
+        
+        # Run all evaluators
+        eval_results = await factory.run_evaluators(
+            evaluators=evaluators,
+            outputs={"trajectory": trajectory},
+            inputs={"goal": eval_context["goal"]},
+            context=eval_context
+        )
+        
+        # Store evaluation result
+        result = EvaluationResult(
+            eval_id=eval_id,
+            thread_id=request.thread_id,
+            status="completed",
+            evaluators=request.evaluators,
+            results={
+                "total_reward": total_reward,
+                "positive_rewards": positive_rewards,
+                "negative_penalties": negative_penalties,
+                "evaluations": eval_results,
+                "metadata": {
+                    "goal": eval_context["goal"],
+                    "persona": eval_context["persona"],
+                    "message_count": len(messages),
+                    "model": request.model
+                }
+            },
+            created_at=datetime.now(timezone.utc),
+            completed_at=datetime.now(timezone.utc)
+        )
+        
+        # Store in MongoDB
+        doc = result.model_dump()
+        doc['created_at'] = doc['created_at'].isoformat()
+        if doc['completed_at']:
+            doc['completed_at'] = doc['completed_at'].isoformat()
+        
+        await db.evaluations.insert_one(doc)
+        
+        return result
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Evaluation failed: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Evaluation failed: {str(e)}")
+
+@api_router.get("/evaluations/{eval_id}")
+async def get_evaluation(eval_id: str):
+    """Get evaluation results by ID"""
+    try:
+        result = await db.evaluations.find_one({"eval_id": eval_id})
+        
+        if not result:
+            raise HTTPException(status_code=404, detail="Evaluation not found")
+        
+        # Remove MongoDB _id
+        result.pop('_id', None)
+        
+        return result
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch evaluation: {str(e)}")
+
 # Include the router in the main app
 app.include_router(api_router)
 
