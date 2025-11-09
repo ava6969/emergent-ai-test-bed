@@ -29,16 +29,22 @@ export function Sidebar() {
       {/* Logo */}
       <div className="flex h-16 items-center px-6 border-b">
         <Link href="/" className="flex items-center gap-2">
-          <div className="text-2xl">⚙️</div>
-          <div>
-            <div className="font-bold">EpochAI</div>
-            <div className="text-xs text-gray-500">TestBed</div>
-          </div>
+          <div className="text-2xl font-bold text-black">DAGIVerse</div>
+        </Link>
+      </div>
+
+      {/* New Simulation Button */}
+      <div className="px-3 py-4">
+        <Link href="/">
+          <button className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors">
+            <span className="text-lg">+</span>
+            New Simulation
+          </button>
         </Link>
       </div>
 
       {/* Main Navigation */}
-      <nav className="space-y-1 px-3 py-4">
+      <nav className="space-y-1 px-3">
         {navigation.map((item) => {
           const isActive = pathname === item.href;
           return (
