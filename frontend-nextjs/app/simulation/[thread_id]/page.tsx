@@ -57,7 +57,10 @@ export default function SimulationPage() {
     enabled: !!thread_id,
   });
 
-  const messages = stream.messages || [];
+  // Merge messages from stream and polling
+  const streamMessages = stream.messages || [];
+  const polledMessages = threadState?.values?.messages || [];
+  const messages = polledMessages.length > 0 ? polledMessages : streamMessages;
   const status = statusData?.status || 'running';
   const currentTurn = statusData?.current_turn || 0;
   const maxTurns = statusData?.max_turns || 5;
