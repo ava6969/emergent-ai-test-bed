@@ -10,6 +10,7 @@ import { Trash2, Settings, Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
+import { GenerationSettingsModal } from '@/components/GenerationSettingsModal';
 
 export default function PersonasPage() {
   const [generateInput, setGenerateInput] = useState('');
@@ -17,6 +18,7 @@ export default function PersonasPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationStage, setGenerationStage] = useState('');
   const [generationProgress, setGenerationProgress] = useState(0);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const queryClient = useQueryClient();
 
   // Clear old settings with incorrect max_tokens on mount
