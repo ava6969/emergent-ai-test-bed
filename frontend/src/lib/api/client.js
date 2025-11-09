@@ -137,6 +137,33 @@ class APIClient {
     return response.data;
   }
 
+  // ==================== PRODUCT ENDPOINTS ====================
+
+  async getProducts() {
+    const response = await this.client.get('/api/products');
+    return response.data;
+  }
+
+  async createProduct(data) {
+    const response = await this.client.post('/api/products', data);
+    return response.data;
+  }
+
+  async updateProduct(id, data) {
+    const response = await this.client.put(`/api/products/${id}`, data);
+    return response.data;
+  }
+
+  async deleteProduct(id) {
+    const response = await this.client.delete(`/api/products/${id}`);
+    return response.data;
+  }
+
+  async deleteAllProducts() {
+    const response = await this.client.delete('/api/products');
+    return response.data;
+  }
+
   // ==================== SIMULATION ENDPOINTS ====================
 
   async runSimulation(config) {
