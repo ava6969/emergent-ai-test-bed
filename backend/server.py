@@ -269,7 +269,7 @@ Format your response as JSON:
         }
         
     except Exception as e:
-        logger.error(f"Error generating goal: {e}")
+        print(f"Error generating goal: {e}")
         return {
             "message": f"Sorry, I encountered an error generating the goal: {str(e)}",
             "actions": []
