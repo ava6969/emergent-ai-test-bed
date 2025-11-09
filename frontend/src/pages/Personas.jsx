@@ -17,6 +17,10 @@ export function Personas() {
   const [showForm, setShowForm] = useState(false);
   const [editingPersona, setEditingPersona] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [generationStage, setGenerationStage] = useState('');
+  const [generationProgress, setGenerationProgress] = useState(0);
+  const [generationError, setGenerationError] = useState(null);
+  const [elapsedTime, setElapsedTime] = useState(0);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
