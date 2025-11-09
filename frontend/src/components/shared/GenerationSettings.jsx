@@ -116,19 +116,20 @@ export function GenerationSettings({ open, onClose, type }) {
             <Input
               type="number"
               value={settings.max_tokens}
-              onChange={(e) =>
+              onChange={(e) => {
+                const value = parseInt(e.target.value);
                 setSettings({
                   ...settings,
-                  max_tokens: parseInt(e.target.value),
-                })
-              }
-              min={100}
-              max={2000}
-              step={50}
+                  max_tokens: value < MIN_MAX_TOKENS ? MIN_MAX_TOKENS : value,
+                });
+              }}
+              min={MIN_MAX_TOKENS}
+              max={4000}
+              step={100}
               className="text-base"
             />
             <p className="text-xs text-muted-foreground">
-              Maximum length of generated content
+              Maximum length of generated content (min: {MIN_MAX_TOKENS} for structured output)
             </p>
           </div>
 
