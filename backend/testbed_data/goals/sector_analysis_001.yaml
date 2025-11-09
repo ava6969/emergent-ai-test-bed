@@ -1,0 +1,41 @@
+agent_ids:
+- '1'
+evaluators:
+- correctness
+- hallucination
+- conciseness
+generated_with_real_context: false
+id: sector_analysis_001
+initial_prompt: Can you help me find out which US equity sectors performed the best
+  over the last 30 trading days?
+max_turns: 5
+metadata:
+  complexity: medium
+  data_sources: daily OHLCV data from S&P 500 constituents (Refinitiv)
+  difficulty: medium
+  overall_goal: Identify top performing sectors based on historical data
+  product_id: 685a8109-a36a-439f-b6c8-adb1de6cc3d3
+  quantitative_metrics: average_total_return, sector_composition, data_completeness
+  scenario_type: research
+  timeframes: last 30 trading days ending at the most recent market close (4:00 PM
+    ET)
+name: Sector Performance Comparison
+objective: Analyze the performance of US equity sectors over the last 30 trading days
+  ending at the most recent market close (4:00 PM ET) using daily OHLCV data from
+  S&P 500 constituents sourced from Refinitiv. The analysis should identify the top
+  3 sectors by average total return, calculated using a cap-weighted methodology that
+  incorporates adjusted close prices and dividends.
+simulation_mode: false
+success_criteria: "- Agent identifies 3 sectors with the highest cap-weighted average\
+  \ total return over the last 30 trading days.\n- Provides quantitative ranking with\
+  \ percentage returns (\xB10.01% precision).\n- Includes sector composition (number\
+  \ of stocks per sector) based on GICS classification.\n- Validates data completeness\
+  \ with at least 95% of expected data points (Nstocks \xD7 Ndays closing prices)\
+  \ present per sector and \u226598% per individual stock.\n- Handles missing data\
+  \ with forward-fill allowed only for up to 2 consecutive days of missing data (no\
+  \ forward-fill across delistings or sector changes) and specifies rejection criteria\
+  \ for incomplete data.\n- Delivers results in a structured format (JSON or CSV)\
+  \ including fields: sector_code, sector_name, n_constituents, avg_return_pct, rank,\
+  \ window_start, window_end, data_source, classification, and weighting, within 5\
+  \ minutes of request."
+test_cases: []
