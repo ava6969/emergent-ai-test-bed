@@ -288,7 +288,7 @@ async def run_persona_generation(job_id: str, request: GeneratePersonaRequest):
             
             # If Exa was used, show completion
             if request.use_exa_enrichment:
-                update_job(job_id, stage=f"✓ Exa enrichment complete, generating with AI...", progress=50)
+                update_job(job_id, stage="✓ Exa enrichment complete, generating with AI...", progress=50)
                 await asyncio.sleep(0.2)
             else:
                 # Stage 4: Calling AI model
