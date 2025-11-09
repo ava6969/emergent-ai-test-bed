@@ -292,8 +292,56 @@ class SimpleAgent(BaseModel):
 
 Without these, the UI works but simulations will return an error. Backend gracefully handles missing credentials.
 
+### Backend Simulation Endpoints Testing ✅
+
+**Test Date**: 2025-11-09 07:22:50
+**Test File**: `/app/backend_test.py`
+**Test Status**: ALL TESTS PASSED
+
+**Endpoints Tested:**
+
+1. **POST /api/simulations/run** ✅
+   - **Test**: Start simulation with valid persona_id (TRD-027) and goal_id (momentum_analysis_001)
+   - **Expected**: 500 status with "Simulation engine not initialized"
+   - **Result**: ✅ PASS - Correctly returned 500 with expected error message
+   - **Reason**: SimulationEngine requires LangGraph Cloud credentials (LANGGRAPH_API_URL, LANGGRAPH_API_KEY)
+
+2. **GET /api/simulations/{simulation_id}** ✅
+   - **Test**: Get status of non-existent simulation_id
+   - **Expected**: 404 status with "Simulation not found"
+   - **Result**: ✅ PASS - Correctly returned 404 with expected error message
+
+3. **POST /api/simulations/{simulation_id}/stop** ✅
+   - **Test**: Stop non-existent simulation_id
+   - **Expected**: 404 status with "Simulation not found"
+   - **Result**: ✅ PASS - Correctly returned 404 with expected error message
+
+4. **GET /api/simulations** ✅
+   - **Test**: List all simulations
+   - **Expected**: 200 status with empty array
+   - **Result**: ✅ PASS - Successfully retrieved 0 simulations
+
+**Test Data Used:**
+- **Persona**: Elena Marquez (ID: TRD-027) - Senior investment advisor and momentum strategist
+- **Goal**: Sector Momentum Analysis (ID: momentum_analysis_001) - Analyze momentum of US equity sectors
+
+**Key Findings:**
+- ✅ All simulation endpoints handle missing LangGraph credentials gracefully
+- ✅ Proper error messages returned for missing SimulationEngine initialization
+- ✅ Correct 404 responses for non-existent simulation resources
+- ✅ Backend gracefully degrades when LangGraph Cloud is not configured
+- ✅ No crashes or unexpected errors during testing
+
+**Limitation Confirmed:**
+⚠ SimulationEngine requires LangGraph Cloud credentials to run actual simulations:
+- LANGGRAPH_API_URL
+- LANGGRAPH_API_KEY
+- EPOCH_ASSISTANT_ID (or EPOCH_AGENT_ID)
+
+Without these, the UI works but simulations will return an error. Backend gracefully handles missing credentials.
+
 ### Next Steps
-- Test backend simulation endpoints
+- ✅ Backend simulation endpoints tested and working correctly
 - Test frontend UI flow
 - Ask user for LangGraph credentials OR create simplified simulation engine using OpenAI directly
 
