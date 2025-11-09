@@ -1,0 +1,39 @@
+agent_ids:
+- '1'
+evaluators:
+- correctness
+- hallucination
+- conciseness
+generated_with_real_context: false
+id: macro_economic_analysis_001_v3
+initial_prompt: Can you help me analyze how macroeconomic indicators from January
+  2010 to December 2022 have impacted the performance of the S&P 500?
+max_turns: 5
+metadata:
+  complexity: medium
+  data_sources: BEA GDP data, BLS CPI-U inflation data, BLS U-3 unemployment data,
+    S&P 500 total return index from S&P Dow Jones Indices (SPXT)
+  difficulty: medium
+  overall_goal: Analyze macroeconomic impacts on S&P 500 total return index performance
+  product_id: 685a8109-a36a-439f-b6c8-adb1de6cc3d3
+  quantitative_metrics: correlation coefficients, summary statistics, p-values
+  scenario_type: analysis
+  timeframes: January 2010 to December 2022
+name: Macro Economic Indicator Analysis
+objective: Analyze the impact of macroeconomic indicators on the performance of the
+  S&P 500 total return index using monthly data from January 2010 to December 2022,
+  aligning quarterly GDP growth rates with monthly index returns.
+simulation_mode: false
+success_criteria: "- Evaluate the Pearson correlation between quarterly GDP growth\
+  \ rates (BEA), year-over-year inflation rates (BLS CPI-U SA), and monthly unemployment\
+  \ rates (BLS U-3 SA) against monthly S&P 500 total return index returns from January\
+  \ 2010 to December 2022.\n- Compute and report correlation coefficients (\xB10.01\
+  \ precision) and p-values for all indicator pairs, highlighting statistically significant\
+  \ results where |r| \u2265 0.3 and p < 0.05.\n- Provide summary statistics for each\
+  \ macroeconomic indicator: mean, standard deviation, minimum, and maximum values.\n\
+  - Include visualizations of trends and correlations: time-series plots, scatter\
+  \ plots with regression lines, and a correlation heatmap, provided in PDF and PNG\
+  \ formats.\n- Ensure data completeness for each indicator is >95% and handle missing\
+  \ data by dropping months with any missing values.\n- Deliver results within 15\
+  \ minutes of request, assuming pre-cached data for the S&P 500 total return index."
+test_cases: []
