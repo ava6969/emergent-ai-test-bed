@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ChevronDown, ChevronRight, Code, Tool } from 'lucide-react';
+import { ChevronDown, ChevronRight, Code, Wrench } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import type { Message } from '@langchain/langgraph-sdk';
 
