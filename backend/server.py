@@ -1413,29 +1413,15 @@ async def run_evaluation(request: EvaluationRequest, background_tasks: Backgroun
         # Generate evaluation ID
         eval_id = str(uuid.uuid4())
         
-        # Fetch thread messages
-        history = await simulation_engine.epoch_client.get_thread_history(request.thread_id)
+        # Fetch thread state to get messages
+        state = await simulation_engine.epoch_client.client.threads.get_state(request.thread_id)
         
-        # Extract messages from history
-        # History is a list of checkpoint states, each with a 'values' field containing messages
+        # Extract messages from state
         messages = []
-        if isinstance(history, list):
-            # Get the last checkpoint which has all messages
-            if history:
-                last_checkpoint = history[-1]
-                if isinstance(last_checkpoint, dict) and "values" in last_checkpoint:
-                    messages = last_checkpoint.get("values", {}).get("messages", [])
-        elif isinstance(history, dict):
-            # Single checkpoint
-            messages = history.get("values", {}).get("messages", [])
+        if isinstance(state, dict):
+            messages = state.get("values", {}).get("messages", [])
         
-        logger.info(f"Extracted {len(messages)} messages from history")
-        if len(messages) == 0 and isinstance(history, list) and history:
-            logger.warning(f"History structure: {list(history[-1].keys())}")
-            values = history[-1].get('values', {})
-            logger.warning(f"Values content: {list(values.keys())}")
-            msgs_in_values = values.get('messages', [])
-            logger.warning(f"Messages in values: {len(msgs_in_values)} items, type: {type(msgs_in_values)}")
+        logger.info(f"Extracted {len(messages)} messages from thread state")
         
         if not messages:
             raise HTTPException(status_code=404, detail="No messages found in thread")
