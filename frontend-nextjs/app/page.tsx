@@ -159,7 +159,7 @@ export default function Home() {
             className="grid grid-cols-2 gap-4"
           >
             <div>
-              <label className="block text-sm font-medium mb-3 text-[#00FF41] opacity-80">
+              <label className="block text-sm font-medium mb-3 text-[#E5E5E5]">
                 <Clock className="inline w-4 h-4 mr-2" />
                 Max Turns
               </label>
@@ -169,12 +169,12 @@ export default function Home() {
                 onChange={(e) => setMaxTurns(e.target.value)}
                 disabled={isStarting}
                 placeholder={selectedGoalObj ? String(selectedGoalObj.max_turns) : '5'}
-                className="w-full px-4 py-3 bg-transparent border border-[#00FF41] border-opacity-20 rounded text-[#00FF41] focus:border-opacity-60 focus:outline-none transition-all"
+                className="w-full px-4 py-3 bg-[#141414] border border-[#2A2A2A] rounded text-[#E5E5E5] focus:border-[#3A3A3A] focus:bg-[#1E1E1E] focus:outline-none transition-all"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-3 text-[#00FF41] opacity-80">
+              <label className="block text-sm font-medium mb-3 text-[#E5E5E5]">
                 <Sparkles className="inline w-4 h-4 mr-2" />
                 Model
               </label>
@@ -182,12 +182,12 @@ export default function Home() {
                 value={reasoningModel}
                 onChange={(e) => setReasoningModel(e.target.value)}
                 disabled={isStarting}
-                className="w-full px-4 py-3 bg-transparent border border-[#00FF41] border-opacity-20 rounded text-[#00FF41] focus:border-opacity-60 focus:outline-none transition-all"
+                className="w-full px-4 py-3 bg-[#141414] border border-[#2A2A2A] rounded text-[#E5E5E5] focus:border-[#3A3A3A] focus:bg-[#1E1E1E] focus:outline-none transition-all"
               >
-                <option value="gpt-5" className="bg-black">GPT-5</option>
-                <option value="gpt-4o" className="bg-black">GPT-4o</option>
-                <option value="o1" className="bg-black">O1</option>
-                <option value="o3" className="bg-black">O3</option>
+                <option value="gpt-5" className="bg-[#0A0A0A]">GPT-5</option>
+                <option value="gpt-4o" className="bg-[#0A0A0A]">GPT-4o</option>
+                <option value="o1" className="bg-[#0A0A0A]">O1</option>
+                <option value="o3" className="bg-[#0A0A0A]">O3</option>
               </select>
             </div>
           </motion.div>
