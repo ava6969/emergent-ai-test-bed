@@ -1118,8 +1118,8 @@ async def run_simulation(
 async def run_simulation_background(sim_id: str, persona_id: str, goal_id: str, max_turns: Optional[int]):
     """Background task for running simulation with real-time updates"""
     try:
-        # Run simulation (this is blocking and takes time)
-        result = await simulation_engine.run(
+        # Run simulation directly (bypasses LangSmith evaluation)
+        result = await simulation_engine.run_direct(
             persona_id=persona_id,
             goal_id=goal_id,
             max_turns=max_turns,
