@@ -97,7 +97,8 @@ export default function PersonasPage() {
             clearInterval(pollingInterval);
             queryClient.invalidateQueries({ queryKey: ['personas'] });
             setGenerateInput('');
-            toast.success(`Successfully created persona in ${status.generation_time}s`);
+            const personaCount = count > 1 ? `${count} personas` : 'persona';
+            toast.success(`Successfully created ${personaCount} in ${status.generation_time}s`);
             
             setTimeout(() => {
               setIsGenerating(false);
