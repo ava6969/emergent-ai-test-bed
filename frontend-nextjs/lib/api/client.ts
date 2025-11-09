@@ -90,7 +90,7 @@ class APIClient {
   }
 
   async checkJobStatus(jobId: string) {
-    const response = await this.client.get(`/api/ai/jobs/${jobId}`);
+    const response = await this.client.get(`/api/ai/generate/status/${jobId}`);
     return response.data;
   }
 
