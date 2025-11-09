@@ -1470,10 +1470,17 @@ async def run_evaluation(request: EvaluationRequest, background_tasks: Backgroun
                 last_assistant_message = msg["content"]
                 break
         
+        # Prepare outputs for evaluators
+        # Trajectory evaluator needs full trajectory, others need just output
+        outputs_data = {
+            "response": last_assistant_message,  # For simple evaluators
+            "trajectory": trajectory  # For trajectory evaluators
+        }
+        
         # Run all evaluators
         eval_results = await factory.run_evaluators(
             evaluators=evaluators,
-            outputs=last_assistant_message,  # Pass the actual response text
+            outputs=outputs_data,  # Pass both trajectory and response
             inputs=eval_context["goal"],  # Pass goal as string
             context=eval_context
         )
