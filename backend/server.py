@@ -1375,9 +1375,13 @@ async def get_thread_status_endpoint(thread_id: str):
             metadata = thread_info.get("metadata", {})
             max_turns = metadata.get("max_turns", 5)
             
-            # Calculate current turn
-            human_count = sum(1 for m in messages if isinstance(m, dict) and m.get("type") == "human")
-            current_turn = human_count
+            # Calculate current turn (only count environment step messages, not initial message)
+            current_turn = sum(
+                1 for m in messages 
+                if isinstance(m, dict) 
+                and m.get("type") == "human" 
+                and m.get("additional_kwargs", {}).get("environment_step") is True
+            )
             
             # Determine status from messages
             # Check if last human message has stop=True or if max turns reached
