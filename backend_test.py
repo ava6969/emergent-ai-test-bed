@@ -300,10 +300,10 @@ def test_simulation_functionality():
             print(f"❌ Exception: {e}")
             test_results.append(("GET /api/simulations/{id}", "FAIL", f"Exception: {e}"))
     
-    print("\n4. Testing Simulation Data Structure...")
+    print("\n4. Testing Model Factory Integration & Message Conversion...")
     print("-" * 50)
     
-    # Test 3: Verify simulation data structure if we have data
+    # Test 3: Verify model factory integration and message handling
     if simulation_id:
         try:
             # Get final simulation state
