@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for Simulation Endpoints
-Tests the simulation API endpoints with LangGraph credentials configured.
+Backend API Testing for AI-Native Testbed Application
+Tests CRUD operations for Products, Organizations, and regression testing for existing functionality.
 """
 
 import requests
